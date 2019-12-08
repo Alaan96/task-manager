@@ -1,0 +1,28 @@
+@import 'fonts';
+@import 'colors';
+
+.shadow {
+	box-shadow: 0 .2rem .5rem rgba(0, 0, 0, 0.16);
+}
+.transparent {
+	opacity: .5;
+}
+.rounded {
+	border-radius: 1rem 1rem 0 0;
+}
+.round {
+	border-radius: 50px;
+}
+
+$nav-width: 13rem;
+$orders-width: 22rem;
+
+/* Z-index */
+// Menu-btn, nav
+$high: 100;
+
+// Header, cart, filter
+$mid: 50;
+
+@import 'mixins';
+

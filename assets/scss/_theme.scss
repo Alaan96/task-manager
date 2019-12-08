@@ -1,0 +1,70 @@
+*, *::before, *::after {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+}
+
+button:focus, input:focus, textarea:focus {
+	outline: none;
+}
+
+:root {
+	font-size: 16px;
+	font-family: $niramit;
+}
+
+button {
+	background: transparent;
+	border: none;
+}
+
+li {
+	list-style-type: none;
+}
+
+a {
+	color: $primary;
+	text-decoration: none;
+	cursor: pointer;
+	
+	&:hover {
+		filter: brightness(120%);
+	}
+}
+
+// input {
+// 	background: transparent;
+// 	height: 2rem;
+// 	color: $primary;
+// 	border: 1px solid $primary;
+// 	border-radius: 1rem;
+// }
+
+body {
+	min-height: 100vh;
+	background: linear-gradient(#769fd4, #4b1688);
+  color: #efefef;
+}
+
+/* Typography styles */
+
+.app-title {
+	height: 17rem;
+	@include center;
+	font-size: 4rem;
+	color: $primary;
+	// font-family: $niramit;
+}
+
+.label {
+	font-family: $niramit;
+	font-size: .75rem;
+	font-weight: 700;
+	color: $primary;
+}
+
+.task-title {
+	font-size: 1rem;
+	font-weight: 700;
+	color: $primary;
+}

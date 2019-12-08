@@ -23,7 +23,13 @@ module.exports = {
   ** Global CSS
   */
   css: [
+    '@/assets/scss/main.scss'
   ],
+  styleResources: {
+    scss: [
+      '@/assets/scss/_utilities.scss'
+    ]
+  },
   /*
   ** Plugins to load before mounting the App
   */
@@ -33,7 +39,7 @@ module.exports = {
   ** Nuxt.js dev-modules
   */
   buildModules: [
-    '@nuxt/typescript-build'
+    // '@nuxt/typescript-build'
   ],
   /*
   ** Nuxt.js modules
@@ -42,6 +48,7 @@ module.exports = {
     // Doc: https://axios.nuxtjs.org/usage
     '@nuxtjs/axios',
     '@nuxtjs/pwa',
+    '@nuxtjs/style-resources',
     // Doc: https://github.com/nuxt-community/dotenv-module
     '@nuxtjs/dotenv',
   ],
