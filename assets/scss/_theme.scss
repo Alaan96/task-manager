@@ -32,13 +32,11 @@ a {
 	}
 }
 
-// input {
-// 	background: transparent;
-// 	height: 2rem;
-// 	color: $primary;
-// 	border: 1px solid $primary;
-// 	border-radius: 1rem;
-// }
+input {
+	background: inherit;
+	border: none;
+	color: inherit;
+}
 
 body {
 	min-height: 100vh;

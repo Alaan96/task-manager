@@ -9,7 +9,7 @@
 export default {
 	data() {
     return {
-      title: "App",
+      title: "Apepé",
     };
   },
 }

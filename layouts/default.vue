@@ -4,6 +4,8 @@
   </div>
 </template>
 
-<style lang="scss">
-
+<style lang="scss" scoped>
+	div {
+		margin: 0 .5rem;
+	}
 </style>
