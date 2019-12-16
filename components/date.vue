@@ -3,7 +3,7 @@
     <div class="days">
       <span
         v-for="day in days"
-        :keys="day"
+        :key="day"
         class="task-title"
         :class="{'today': today(day)}">
         {{day.slice(0, 1)}}
@@ -17,14 +17,8 @@
 import { mapState } from 'vuex';
 
 export default {
-  data() {
-    return {
-
-    }
-  },
   methods: {
     today(day) {
-      console.log(day == this.dia)
       if(day === this.days[this.day]) {
         return true
       } else {
@@ -35,23 +29,14 @@ export default {
   computed: {
     day() {
       if (this.days[0] === 'Lunes') {
-        let day = new Date(this.year, this.month, 1).getDay() - 1
+        let day = new Date(this.year, this.month, this.date).getDay() - 1
         if (day < 0) {
           day = 6
         }
         return day
       } else if (this.days[0] === 'Domingo') {
-        return new Date(this.year, this.month, 1).getDay()
+        return new Date(this.year, this.month, this.date).getDay()
       }
-
-      // if (this.startsOnSunday) {
-      //   return this.days[this.day]
-      // } else {
-      //   if (this.day === 0) {
-      //     this.day = 7
-      //     return this.days[this.day]
-      //   }
-      // }
     },
     ...mapState('calendary', {
       year: 'year',

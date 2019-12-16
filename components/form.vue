@@ -5,7 +5,7 @@
 		<form @submit.prevent>
 			<field
 				v-for="field in fields"
-				:keys="field.name"
+				:key="field.name"
 				:placeholder="field.placeholder"
 				:title="field.title"
 				:name="field.name"

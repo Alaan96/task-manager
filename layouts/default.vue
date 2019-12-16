@@ -1,11 +1,11 @@
 <template>
-  <div>
+  <main>
     <nuxt />
-  </div>
+  </main>
 </template>
 
 <style lang="scss" scoped>
-	div {
+	main {
 		margin: 0 .5rem;
 	}
 </style>

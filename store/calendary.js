@@ -10,26 +10,26 @@ export const state = () => ({
 })
 
 export const mutations = {
-  // changeMonth(state, orientation) {
-  //   if (orientation) {
-  //     if (orientation === 'previous') {
-  //       state.month -= 1
-  //       if (state.month < 0) {
-  //         state.month = 11
-  //         state.year -= 1
-  //       }
-  //     } else if (orientation === 'next') {
-  //       state.month += 1
-  //       if (state.month > 11) {
-  //         state.month = 0
-  //         state.year += 1
-  //       }
-  //     }
-  //     console.log(`Go to ${orientation} month`)
-  //   } else {
-  //     console.log('Orientation undefined')
-  //   }
-  // },
+  changeMonth(state, orientation) {
+    if (orientation) {
+      if (orientation === 'previous') {
+        state.month -= 1
+        if (state.month < 0) {
+          state.month = 11
+          state.year -= 1
+        }
+      } else if (orientation === 'next') {
+        state.month += 1
+        if (state.month > 11) {
+          state.month = 0
+          state.year += 1
+        }
+      }
+      // console.log(`Go to ${orientation} month`)
+    } else {
+      console.log('Orientation undefined')
+    }
+  },
   //	chageWeekOrder(state) {
   //		
   //	}
