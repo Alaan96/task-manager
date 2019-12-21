@@ -30,6 +30,11 @@ export const mutations = {
       console.log('Orientation undefined')
     }
   },
+  setMonth(state, month) {
+    if (month && typeof month === 'number') {
+      state.month = month
+    }
+  },
   //	chageWeekOrder(state) {
   //		
   //	}

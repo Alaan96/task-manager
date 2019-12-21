@@ -37,8 +37,9 @@ export default {
         }
       },
       set(fullDate) {
-        console.log('entra por aca', fullDate)
-        this.$store.commit('date/changeSelected', fullDate)
+        if (fullDate) {
+          this.$store.commit('date/changeSelected', fullDate)
+        }
       }
     },
     today() {
@@ -109,11 +110,23 @@ circle {
   opacity: 1;
 }
 
+
+@keyframes new-selection {
+  from {
+    transform: scale(.6);
+  }
+  to {
+    transform: scale(1);
+  }
+}
 .selected {
   & .border {
     fill: transparent;
     stroke: $line;
     stroke-width: 2px;
+
+    animation: new-selection .2s ease;
+    transform-origin: center;
   }
 }
 </style>

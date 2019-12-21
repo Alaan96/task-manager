@@ -1,12 +1,26 @@
 <template>
   <div>
     <header>
-      <button @click="changeMonth('previous')">previous</button>
-      <span @click="changeMonth">{{months[month]}}</span>
-      <button @click="changeMonth('next')">next</button>
+      <div class="month">
+        <span @click="changeCalendaryTo('months')">{{months[month]}}</span>
+        <div v-if="calendary === 'default'">
+          <button @click="changeMonth('previous')">
+            <arrow></arrow>
+          </button>
+          <button @click="changeMonth('next')">
+            <arrow direction="down"></arrow>
+          </button>
+        </div>
+      </div>
+
+      <span class="year">{{year}}</span>
     </header>
 
-    <section>
+    <month-picker
+      v-if="calendary === 'months'">
+    </month-picker>
+
+    <section v-else-if="calendary === 'default'">
       <div
         class="week">
         <span
@@ -22,7 +36,7 @@
           :style="{transform: `translateY(-${calendaryPosition}px)`}"
           @touchstart="calendaryTouched"
           @touchmove="calendaryLoad"
-          @touchend="calendaryEnd">
+          @touchend="calendaryChange">
           <number
             v-for="(date, index) in datesList"
             :key="index"
@@ -31,13 +45,11 @@
             :index="index"
             :monthNumber="date.monthNumber"
             :data-date="date.fullDate"
-            @click.native="selectDate(date.number)"
             >
           </number>
   
         </div>
       </div>
-      {{$store.state.date.selected}}
     </section>
   </div>
 </template>
@@ -46,15 +58,28 @@
 import { mapState } from 'vuex'
 
 import number from '@/components/number'
+import monthPicker from '@/components/month-picker'
+
+// Icons
+import arrow from '@/components/icons/arrow'
 
 export default {
   data() {
     return {
+      calendary: 'default',
+
+      // Dates of the year
       datesList: [],
+
+      // Every first day of the year (used to move the calendary)
       firstDays: [],
+
+      // Number that defines which month the user is in
       calendaryPosition: parseInt(localStorage.getItem('calendary-position')) || 0,
 
-      // Touch
+      calendaryYear: 0,
+
+      // Initialization vars for touch events
       touch: {
         start: 0,
         end: 0,
@@ -64,15 +89,20 @@ export default {
     }
   },
   components: {
-    number
+    number,
+    'month-picker': monthPicker,
+    arrow // Icon
   },
   methods: {
-    loadDatesList() {
+    loadDatesList(year) {
+      // Reset datesList
+      this.datesList = []
+
       let firstDay
       if (this.days[0] === 'Lunes') {
-        firstDay = new Date(this.year, 0, 1).getDay() - 1
+        firstDay = new Date(year, 0, 1).getDay() - 1
       } else if (this.days[0] === 'Domingo') {
-        firstDay = new Date(this.year, 0, 1).getDay()
+        firstDay = new Date(year, 0, 1).getDay()
       }
 
       // Load previous dates
@@ -132,8 +162,9 @@ export default {
       this.adjustCalendary(this.month)
     },
 
-    selectDate(number) {
-      // console.log('Hola jejox', number)
+    // Change the calendar mode between normal, months, years
+    changeCalendaryTo(mode) {
+      this.calendary = mode
     },
 
     // Touch functions
@@ -144,7 +175,7 @@ export default {
       this.touch.end = event.touches[0].screenY
       this.touch.swype = this.touch.start - this.touch.end
     },
-    calendaryEnd() {
+    calendaryChange() {
       if (this.touch.swype <= -this.touch.threshold) {
         this.changeMonth('previous')
       } else if(this.touch.swype >= this.touch.threshold) {
@@ -154,13 +185,26 @@ export default {
     }
   },
   beforeMount() {
-    this.loadDatesList()
+    this.loadDatesList(this.year)
+    this.calendaryYear = this.year
   },
   mounted() {
     this.saveEveryFirstDay(this.year)
     this.saveCalendaryPosition()
   },
+  beforeUpdate() {
+    if (this.year !== this.calendaryYear) {
+      // console.log('Años distintos')
+      this.loadDatesList(this.year)
+      this.calendaryYear = this.year
+    } else {
+      // console.log('Años iguales')
+    }
+  },
   computed: {
+    today() {
+      return this.$store.getters['today/today']
+    },
     dates() {
       return this.$store.getters['calendary/dates']
     },
@@ -189,13 +233,34 @@ export default {
 <style lang="scss" scoped>
 header {
   width: 100%;
-  padding: 1rem 0;
-  @include center;
+  padding: 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
   & span {
     font-size: 1.3rem;
     font-weight: 700;
     color: $primary;
   }
+
+  & .month {
+    display: flex;
+    align-items: center;
+    & span {
+      width: 7rem;
+      display: inline-block;
+    }
+
+    & button {
+      width: 1.3rem;
+      margin: 0 .25rem;
+    }
+  }
+  & .year {
+    font-family: $lato;
+  }
+
 }
 
 section {

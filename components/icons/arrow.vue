@@ -5,13 +5,27 @@
         M ${strokeWidth}, ${size / 2 - strokeWidth}
         L ${size / 2}, ${strokeWidth}
         L ${size - strokeWidth}, ${size / 2 - strokeWidth}`"
-      :style="{'stroke-width': strokeWidth}"
+      :style="[{'stroke-width': strokeWidth}, {'transform': `rotate(${arrowDirection}deg)`}]"
     />
   </svg>
 </template>
 
 <script>
 export default {
+  computed: {
+    arrowDirection() {
+      switch(this.direction) {
+        case 'right':
+          return 270
+        case 'down':
+          return 180
+        case 'left':
+          return 90
+        default:
+          return 0
+      }
+    }
+  },
   props: {
     size: {
       type: Number,
@@ -20,6 +34,10 @@ export default {
     strokeWidth: {
       type: Number,
       default: 2
+    },
+    direction: {
+      type: String,
+      // default: 'up'
     }
   }
 }
@@ -32,5 +50,7 @@ path {
   fill: transparent;
   stroke-linejoin: round;
   stroke-linecap: round;
+
+  transform-origin: center;
 }
 </style>
