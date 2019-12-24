@@ -15,7 +15,7 @@ export default {
 .tag-container {
   width: 100%;
   margin: 0;
-  padding: 0;
+  padding: 0 1rem;
   display: flex;
   flex-wrap: wrap;
 

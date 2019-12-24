@@ -1,7 +1,8 @@
 <template>
   <div>
-    <!-- <date></date> -->
-    <calendary></calendary>
+    <date></date>
+    <!-- <calendary></calendary> -->
+    <task form></task>
     <task></task>
   </div>
 </template>
@@ -9,7 +10,7 @@
 <script>
 import date from '@/components/date'
 import calendary from '@/components/calendary'
-import task from '@/components/task'
+import task from '@/components/task/task'
 
 export default {
   components: {
