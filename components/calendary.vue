@@ -75,7 +75,7 @@ export default {
       firstDays: [],
 
       // Number that defines which month the user is in
-      calendaryPosition: parseInt(localStorage.getItem('calendary-position')) || 0,
+      calendaryPosition: 0, //parseInt(localStorage.getItem('calendary-position')) || 0
 
       calendaryYear: 0,
 
