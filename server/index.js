@@ -1,7 +1,21 @@
+require('./config/config')
+
 const express = require('express')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
+
+const mongoose = require('mongoose')
+const bodyParser = require('body-parser')
 const app = express()
+
+// Parse application/x-www-form-urlencoded
+app.use(bodyParser.urlencoded({ extended: false }))
+
+// Parse application/json
+app.use(bodyParser.json())
+
+// Import database
+const db = require('./database')
 
 // Import and Set Nuxt.js options
 const config = require('../nuxt.config.js')
