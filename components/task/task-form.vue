@@ -1,143 +1,163 @@
 <template>
-  <div class="container" :class="{active}">
+  <form @submit.prevent
+    :class="{active}"
+    ref="task-form"
+    @click="toggleForm('open')">
+    
+    <div class="task-field">
+      <input type="text"
+        name="title"
+        placeholder="Agregar nueva tarea o evento..."
+        required
+        autocomplete="off"
+        ref="task-form-title"
+        @invalid.prevent
+        v-model="value.title">
+    </div>
 
-    <button class="close"
-      @click="active = false">
-      <cross :size="16" :strokeWidth="2"></cross>
-    </button>
+    <div class="task-field">
+      <input type="text"
+        name="description"
+        placeholder="Detalle de la tarea"
+        autocomplete="off"
+        v-model="value.description">
+    </div>
 
-    <!-- Task form -->
-    <form @submit.prevent
-      @click="active = true">
-      
-      <!-- Title -->
-      <div class="task-field">
-        <input type="text"
-          name="title"
-          v-model="value.title"
-          @click="removePlaceholder('title')">
-      </div>
-
-      <!-- Description -->
-      <div class="task-field">
+    
+    <div class="task-field" ref="task-form-list">
+      <header>
         <input type="text"
           name="description"
-          v-model="value.description">
-      </div>
-      
-      <!-- List -->
-      <div class="task-field">
-        <header>
-          <input type="text"
-            name="description"
-            v-model="value.list.title">
-          <arrow></arrow>
-        </header>
-        <div
-          v-for="(item, index) in value.list.items"
-          :key="`Item ${index + 1}`"
-          class="items">
-          <input type="text"
-            v-model="value.list.items[index].text">
-          <div>
-            <cross rotate></cross>
-          </div>
-        </div>
-        <div class="new-item">
-          <span>"Enter para un nuevo item"</span>
-        </div>
-      </div>
-
-      <section class="priority">
-        <!-- Important -->
-        <button
-          class="toggle"
-          :class="{'btn-active': value.important}">
-          <label for="task-important">Importante</label>
-          <input type="checkbox"
-            id="task-important"
-            v-model="value.important">
-        </button>
-
-        <!-- Urgent -->
-        <button
-          class="toggle"
-          :class="{'btn-active': value.urgent}">
-          <label for="task-urgent">Urgente</label>
-          <input type="checkbox"
-            id="task-urgent"
-            v-model="value.urgent">
-        </button>
-      </section>
-
-      <section>
-        <div class="time">
-          <!-- Hours -->
-          <div class="initial">
-            <input type="text"
-              v-model="value.time.initial.hour">
-            <simple-button
-              :text="['Desactivar', 'Activar']"
-              :condition="value.time.initial.active"
-              :fontSize=".5">
-            </simple-button>
-          </div>
-          <span>a</span>
-          <div class="final">
-            <input type="text"
-              v-model="value.time.final.hour">
-            <simple-button
-            :text="['Desactivar', 'Activar']"
-            :condition="value.time.final.active"
-            :fontSize=".5">
-          </simple-button>
-          </div>
-        </div>
-
-        <div class="time">
-          <!-- Date -->
-          <div>
-            <input type="text"
-              class="date"
-              v-model="value.date">
-            <simple-button
-              text="Usar calendario"
-              :fontSize=".5">
-            </simple-button>
-          </div>
-        </div>
-      </section>
-
-      <!-- Tags -->
-      <section class="tags">
-        <div class="new-tag">
-          <input type="text"
-            v-model="newTag.tag">
-          <simple-button
-            text="cambiar color"
-            :fontSize=".5">
-          </simple-button>
+          placeholder="Lista"
+          autocomplete="off"
+          v-model="value.list.title">
+        <arrow></arrow>
+      </header>
+      <div
+        v-for="(item, index) in value.list.items"
+        :key="`Item ${index + 1}`"
+        class="items">
+        <input type="text"
+          :placeholder="'Item ' + (index + 1)"
+          autocomplete="off"
+          v-model="value.list.items[index].text"
+          @keyup.enter="addNewItem()">
+        <div>
           <cross rotate></cross>
         </div>
-        <tags></tags>
-      </section>
+      </div>
+      <div class="new-item">
+        <span @click="addNewItem()">"Enter para un nuevo item"</span>
+      </div>
+    </div>
 
-      <section class="task-actions">
-        <!-- Save -->
-        <button @click="saveTask()">
-          Guardar
-        </button>
+    <section class="priority">
+      <button
+        class="toggle"
+        :class="{'btn-active': value.important}">
+        <label for="task-important">Importante</label>
+        <input type="checkbox"
+          id="task-important"
+          v-model="value.important">
+      </button>
 
-        <!-- Discard -->
-        <button @click="discardTask()">
-          Descartar
-        </button>
-      </section>
+      <button
+        class="toggle"
+        :class="{'btn-active': value.urgent}">
+        <label for="task-urgent">Urgente</label>
+        <input type="checkbox"
+          id="task-urgent"
+          v-model="value.urgent">
+      </button>
+    </section>
 
+    <section>
+      <div class="time">
+        <div class="initial">
+          <input type="text"
+            autocomplete="off"
+            :disabled="!value.time.initial.active"
+            v-model="value.time.initial.hour">
+          <div class="time-initial-active">
+            <label for="initial-hour"
+              class="min-text">
+              {{ value.time.initial.active ? 'Desactivar' : 'Activar' }}
+            </label>
+            <input type="checkbox"
+              id="initial-hour"
+              v-model="value.time.initial.active">
+          </div>
+        </div>
+        <span>a</span>
+        <div class="final">
+          <input type="text"
+            autocomplete="off"
+            :disabled="!value.time.final.active"
+            v-model="value.time.final.hour">
+          <div class="time-final-active">
+            <label for="final-hour"
+              class="min-text">
+              {{ value.time.final.active ? 'Desactivar' : 'Activar' }}
+            </label>
+            <input type="checkbox"
+              id="final-hour"
+              v-model="value.time.final.active">
+          </div>
+        </div>
+      </div>
 
+      <div class="time">
+        <div>
+          <input type="text"
+            class="date"
+            :disabled="!value.date.active"
+            v-model="value.date.string">
+          <div>
+            <label for="date-active"
+              class="min-text">
+              {{ value.date.active ? 'Desactivar fecha' : 'Activar fecha' }}
+            </label>
+            <input type="checkbox"
+              id="date-active"
+              v-model="value.date.active">
+          </div>
+        </div>
+      </div>
+    </section>
 
-    </form>
-  </div>
+    <section class="tags">
+      <div class="new-tag">
+        <input type="text"
+          placeholder="Nueva etiqueta"
+          autocomplete="off"
+          v-model="newTag.tag">
+        <div class="tag-color">
+          <label for="tag-color"
+            class="min-text">
+            cambiar color
+          </label>
+          <input type="color"
+            id="tag-color"
+            v-model="newTag.color">
+        </div>
+        <cross rotate></cross>
+      </div>
+      <tags></tags>
+    </section>
+
+    <section class="task-actions">
+      <button
+        @click.stop="saveTask()">
+        Guardar
+      </button>
+
+      <button
+        @click.stop="discardTask()">
+        Descartar
+      </button>
+    </section>
+
+  </form>
 </template>
 
 <script>
@@ -161,18 +181,56 @@ export default {
 			active: false,
 
 			newTag: {
-				tag: 'Nueva etiqueta',
-				color: ''
+				tag: '',
+				color: '#66BBD1'
 			}
 		}
-	},
+  },
   methods: {
-		removePlaceholder(field) {
-			// let placeholder = 'Agregar nueva tarea o evento...'
-			// if (this.task[field] === placeholder) {
-			// 	// this.task[field] = ''
-			// }
-		}
+    toggleForm(action) {
+      if (action === 'open') {
+        if (this.active === false) {
+          this.active = true
+        }
+      } else if (action === 'close') {
+        if (this.active === true) {
+          this.active = false
+        }
+      } else {
+        this.active = !this.active
+      }
+      console.log('action', this.active)
+    },
+		saveTask() {
+      let title = this.value.title
+
+      if (typeof title === 'string' && title !== '') {
+        this.$store.commit('task/addTask', this.value)
+        this.$emit('saveTask')
+        this.toggleForm('close')
+
+      } else if (title.length === 0) {
+        this.$refs['task-form-title'].classList.add('field-required')
+        setTimeout( () => {
+          this.$refs['task-form-title'].classList.remove('field-required')
+          this.$refs['task-form-title'].focus()
+        }, 600 );
+
+      }
+    },
+    discardTask() {
+      // this.$refs['task-form'].reset()
+      this.toggleForm('close')
+    },
+    addNewItem() {
+      this.value.list.items.push({completed: false, text: ''})
+      let list = Array.from(this.$refs['task-form-list'].querySelectorAll('input'))
+      let lastInput = list[list.length - 1]
+      lastInput.focus()
+      console.log(list)
+      console.log(list.length)
+      console.log(lastInput)
+    }
 	},
   props: {
     value: {
@@ -185,44 +243,12 @@ export default {
 <style lang="scss" scoped>
 
 $btn-height: 2rem;
-$fade: all .4s ease;
-
-
-.container {
-	min-height: 3rem;
-	position: relative;
-	z-index: 20;
-	transition: $fade;
-
-	& button.close {
-		width: 3.5rem;
-    height: $btn-height;
-    @include center;
-		position: absolute;
-		top: -$btn-height;
-		right: .5rem;
-		// font-family: $lato;
-		background: $line;
-		border-top-left-radius: .5rem;
-		border-top-right-radius: .5rem;
-
-		transition: $fade;
-		transform: scaleY(0);
-		transform-origin: bottom;
-		opacity: 0;
-		color: $primary;
-		z-index: 10;
-
-		&  * /* Icon */ {
-			width: 30%;
-		}
-	}
-}
+$fade: .4s ease;
 
 form {
   width: 100%;
+  min-height: 3rem;
   padding: 0 .5rem;
-	min-height: 3rem;
 	margin: .5rem auto 1.5rem auto;
 	background: $line;
 	border-left: .5rem solid transparent;
@@ -235,12 +261,10 @@ form {
 	padding-top: .1rem;
 	height: 3rem;
 	overflow-y: hidden;
-	
+	transition: .4s ease;
 	
 	& .task-field {
 		width: 100%;
-		// display: flex;
-    // justify-content: flex-start;
     justify-content: center;
     align-items: center;
     flex-direction: column;
@@ -259,12 +283,40 @@ input {
 	border: none;
 	border-bottom: 1px solid $line;
 	
+
 	&[name="title"] {
 		height: 3rem;
 		font-size: 1rem;
 	}
+
+  &:focus {
+    color: $primary;
+  }
+  &:valid {
+    color: $primary;
+  }
+  &:invalid {
+    border-color: $light;
+  }
+  &[disabled] {
+    text-decoration: line-through;
+  }
 }
 
+::-webkit-input-placeholder {
+  color: $light;
+}
+// :-moz-placeholder {
+//    color: $light;
+//    opacity: 1 /* esto es porque Firefox le reduce la opacidad por defecto */;
+// }
+// ::-moz-placeholder {
+//    color: $light;
+//    opacity:  1;
+// }
+// :-ms-input-placeholder {
+//    color: $light;
+// }
 
 
 // List
@@ -378,6 +430,10 @@ button.btn-active {
 			font-size: 1rem;
 			font-family: $lato;
 
+      &[type="checkbox"] {
+        display: none;
+      }
+
 			&.date {
 				width: 6em;
 			}
@@ -403,8 +459,14 @@ button.btn-active {
 
 		& input {
 			width: auto;
-			border: none;
-		}
+      border: none;
+    }
+    
+    & .tag-color {
+      & input[type="color"] {
+        display: none;
+      }
+    }
 
 		& svg {
 			width: 100%;
@@ -417,16 +479,35 @@ button.btn-active {
 	@include spaced-buttons;
 }
 
-
+.min-text {
+  font-size: .5rem;
+}
 
 .active {
-	& form {
-		height: auto;
-		border-left-color: $line;
+  min-height: 28rem;
+  border-left-color: $line;
+}
+
+.field-required {
+	animation: flicker .6s linear;
+}
+
+@keyframes flicker {
+	// 0% {
+	// 	opacity: 1;
+	// }
+	25% {
+		opacity: .4;
 	}
-	& button.close {
-		transform: scaleY(1);
+	50% {
 		opacity: 1;
 	}
+	75% {
+		opacity: .4;
+	}
+	100% {
+		opacity: 1;
+	}
+
 }
 </style>
