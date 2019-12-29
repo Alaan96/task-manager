@@ -16,6 +16,13 @@ export default {
     date,
     calendary,
     task,
+  },
+  middleware: 'authenticated',
+  beforeMount() {
+    console.log(this.$store.state.user.logged)
+    // if (!this.$store.state.user.logged) {
+    //   this.$router.push('/login')
+    // }
   }
 }
 </script>

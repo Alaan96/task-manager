@@ -3,11 +3,10 @@
 		@click="onFocus"
 		:class="[{'focus': focus}, {'warning': onWarning}]"
 		class="credentials">
-		<label :for="name" v-if="label === true">{{title}}</label>
 		<input 
 			type="text"
-			:id="name"
-			:name="name" 
+			:name="name"
+			:placeholder="placeholder"
 			:ref="name"
 			@focus="onFocus"
 			@blur="blur"
