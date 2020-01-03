@@ -18,12 +18,6 @@
 				<slot></slot>
 			</div>
 		</form>
-
-		<!-- Login/Signin status info -->
-		<info
-			:status="res.status"
-			:text="res.message">
-		</info>
 	</div>
 
 	<div class="err" v-else>
@@ -35,16 +29,13 @@
 
 <script>
 import field from '@/components/field'
-import info from '@/components/info'
+
+import { notify } from '@/assets/mixins/notify' // Mixin
 
 export default {
 	data() {
 		return {
-			values: {},
-			res: {
-				status: '',
-				message: ''
-			}
+			values: {}
 		};
 	},
 	methods: {
@@ -80,14 +71,17 @@ export default {
 			this.$axios.$post(`http://localhost:3000/${this.context}`, this.values)
 				.then( res => this[this.context](res))
 				.catch( err => {
+					let error = {}
 					if (err.response.data) {
-						console.log(err.response.data)
-						this.res.status = err.response.data.status
-						this.res.message = err.response.data.message
+						error = err.response.data
+						console.log(error)
+						console.log(error.message)
+						this.notify(error.status, error.message)
 					} else {
-						console.log(err)
-						this.res.status = err.status
-						this.res.message = err.message
+						error = err
+						console.log(error)
+						console.log(error.message)
+						this.notify(error.status, error.message)
 					}
 				})
 		},
@@ -121,6 +115,7 @@ export default {
 		  })
 		})
 	},
+	mixins: [notify],
 	props: {
 		context: {
 			type: String,
@@ -146,8 +141,7 @@ export default {
 		}
 	},
 	components: {
-		field,
-		info
+		field
 	}
 }
 </script>

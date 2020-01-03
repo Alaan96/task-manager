@@ -1,39 +1,35 @@
 <template>
   <div
-    class="info"
-    :class="[{active}, {'err': status === 'error'}]"
-    @click="active = !active">
-    {{'Cannot access to database.'}}
+    class="notification"
+    :class="[{active}, {'err': status === 'error'}]">
+    {{text}}
   </div>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+
 export default {
-  data() {
-    return {
-      active: false
-    }
+  computed: {
+    ...mapState('notify', {
+      text: 'text',
+      status: 'status',
+      active: 'active',
+    })
   },
-  props: {
-    text: {
-      type: String
-    },
-    status: {
-      type: String
-    }
-  }
 }
 </script>
 
 <style lang="scss" scoped>
-.info {
-  width: 16rem;
+$notification-size: 14rem;
+
+.notification {
+  width: $notification-size;
   height: 2em;
   padding: 0 .5rem;
   @include center;
   font-size: 1rem;
   background: $line;
-  // border: .1rem solid $line;
   border-right: none;
   color: $primary;
   box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
@@ -43,13 +39,7 @@ export default {
   bottom: 3em;
   transition: .4s ease;
 
-  transform: translateX(16rem);
-}
-
-@keyframes show {
-  // from {
-
-  // }
+  transform: translateX($notification-size);
 }
 
 .active {
