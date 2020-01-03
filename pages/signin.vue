@@ -1,5 +1,6 @@
 <template>
 	<signin-form
+		context="signin"
 		title="Completá con tus datos"
 		storeModule="signin"
 		btnText="Registrarse">

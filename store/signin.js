@@ -1,23 +1,23 @@
 export const state = () => ({
 	fields: [
 		{
-			placeholder: "",
-			title: "Nombre",
-			name: "signin-name",
-			pattern: "^([a-zA-ZáÁéÉíÍóÓúÚñÑ]+)( [a-zA-ZáÁéÉíÍóÓúÚñÑ]+)?$"
+			placeholder: "Nombre",
+			name: "name",
+			pattern: "^([a-zA-ZáÁéÉíÍóÓúÚñÑ]+)( [a-zA-ZáÁéÉíÍóÓúÚñÑ]+)?$",
+			type: 'text'
 		},
 		{
-			placeholder: "",
-			title: "Email",
-			name: "signin-email",
+			placeholder: "Email",
+			name: "email",
 			pattern:
-				"^([a-zA-ZñÑ0-9.-_]+)@([a-zA-ZñÑ0-9-_]+).([a-z]{2,8})(.[a-z]{2,8})?$"
+				"^([a-zA-ZñÑ0-9-\S._]+)@([a-zA-ZñÑ0-9-\S_]+).([a-z]{2,8})(.[a-z]{2,8})?$",
+				type: 'email'
 		},
 		{
-			placeholder: "",
-			title: "Contraseña",
-			name: "signin-pass",
-			pattern: '^([a-zA-Z0-9 !#$%&() * +,/:;<=>?@^_`|~]{8,30})'
+			placeholder: "Contraseña",
+			name: "password",
+			pattern: '^([a-zA-Z0-9-\S!#$%&() * +,/:;<=>?@^_`|~]{8,30})',
+			type: 'password'
 		}
 	],
 

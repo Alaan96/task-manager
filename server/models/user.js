@@ -10,12 +10,13 @@ let userSchema = new Schema({
   },
   email: {
     type: String,
-    required: [true, 'Email is required.']
+    required: [true, 'Email is required.'],
+    index: true,
+    unique: true
   },
   password: {
     type: String,
     required: [true, 'Password is required.'],
-    unique: true
   },
   google: {
     type: Boolean,

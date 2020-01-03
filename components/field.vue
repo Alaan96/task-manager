@@ -1,15 +1,11 @@
 <template>
-	<div 
-		@click="onFocus"
-		:class="[{'focus': focus}, {'warning': onWarning}]"
-		class="credentials">
+	<div class="credentials">
 		<input 
-			type="text"
+			:type="type"
 			:name="name"
+			:pattern="pattern"
 			:placeholder="placeholder"
-			:ref="name"
-			@focus="onFocus"
-			@blur="blur"
+			autocomplete="off"
 			@keyup="validate(value[name], pattern)"
 			v-model.trim="value[name]"/>
 	</div>
@@ -17,15 +13,8 @@
 
 <script>
 	export default {
-		data() {
-			return {
-				label: true,
-				valid: false,
-				warning: false,
-				focus: false,
-			}
-		},
 		methods: {
+			// Validate with regexp
 			validate(value, pattern, flag = 'g') {
 				if (value && pattern) {
 					let regex = new RegExp(pattern, flag)
@@ -42,59 +31,11 @@
 					}
 				}
 			},
-			onFocus() {
-				this.focus = true
-				if (this.focus = true) {
-					this.label = false
-				}
-				this.$refs[this.name].focus()
-			},
-			blur() {
-				this.focus = false
-				if (this.value[this.name] === '') {
-					this.label = true
-				}
-			}
-		},
-		computed: {
-			onWarning() {
-				// Campo inválido con foco
-				if (this.warning === true && this.focus === true && this.value[this.name].length >= 1) {
-					// return true
-					return false
-				} else 
-				// Campo vacío con foco
-				if (this.value[this.name].length === 0 && this.focus === true) {
-					return false
-				}	else
-				// Campo inválido sin foco
-				if (this.warning === true && this.focus === false) {
-					return true
-				}
-			},
-			// selectOptions() {
-			// 	if (typeof this.options === 'string') {
-			// 		return this.$store.getters[this.options]
-			// 	} else if (typeof this.options === 'object') {
-			// 		return this.options
-			// 	} else {
-			// 		console.log('No se han podido cargar los valores del select')
-			// 	}
-			// }
-		// },
-		// created() {
-		// 	if (typeof this.pattern === 'undefined') {
-		// 			this.$store.commit('form/addValidField', this.name)
-		// 	}
 		},
 		props: {
 			placeholder: {
 				type: String,
 				required: false
-			},
-			title: {
-				type: String,
-				required: true
 			},
 			name: {
 				type: String,
@@ -105,24 +46,10 @@
 				type: String,
 				required: false
 			},
-			// type: {
-			// 	type: String,
-			// 	required: false,
-			// 	default: 'text'
-			// },
-			// element: {
-			// 	type: String,
-			// 	default: 'input'
-			// },
-			// options: {
-			// 	type: [Array, String],
-			// 	required: false
-			// },
-			// readonly: {
-			// 	type: Boolean,
-			// 	requred: false,
-			// 	default: false
-			// },
+			type: {
+				type: String,
+				required: true
+			},
 			// V-model object must be declare in parent data()
 			value: {
 				type: Object
@@ -131,9 +58,6 @@
 				type: String,
 				required: false
 			}
-		},
-		components: {
-
 		}
 	}
 </script>
@@ -142,33 +66,38 @@
 .credentials {
 	margin-bottom: 1.5rem;
 	position: relative;
-	opacity: .6;
-
-	& label {
-		position: absolute;
-		top: .1rem;
-		left: 1rem;
-	}
+	// opacity: .6;
 
 	& input {
 		width: 100%;
 		height: 2rem;
 		padding: 0 1rem;
 		background: transparent;
-		color: $primary;
-		border: 1px solid $primary;
+		color: $light;
+		border: 1px solid $line;
 		border-radius: 1rem;
+
+		&:focus {
+    	color: $primary;
+		}
+		&:invalid {
+			border-color: $cancel;
+		}
 	}
 }
 
-.focus {
-	opacity: 1;
+::-webkit-input-placeholder {
+  color: $light;
 }
-
-.warning {
-	& input {
-		color: $cancel;
-		border: 1px solid $cancel;
-	}
-}
+// :-moz-placeholder {
+//    color: $light;
+//    opacity: 1 /* esto es porque Firefox le reduce la opacidad por defecto */;
+// }
+// ::-moz-placeholder {
+//    color: $light;
+//    opacity:  1;
+// }
+// :-ms-input-placeholder {
+//    color: $light;
+// }
 </style>

@@ -7,9 +7,9 @@
 				v-for="field in fields"
 				:key="field.name"
 				:placeholder="field.placeholder"
-				:title="field.title"
 				:name="field.name"
 				:pattern="field.pattern"
+				:type="field.type"
 				v-model="values"
 				:storeModule="storeModule">
 			</field>
@@ -18,6 +18,12 @@
 				<slot></slot>
 			</div>
 		</form>
+
+		<!-- Login/Signin status info -->
+		<info
+			:status="res.status"
+			:text="res.message">
+		</info>
 	</div>
 
 	<div class="err" v-else>
@@ -28,12 +34,17 @@
 </template>
 
 <script>
-import field from "@/components/field";
+import field from '@/components/field'
+import info from '@/components/info'
 
 export default {
 	data() {
 		return {
-			values: {}
+			values: {},
+			res: {
+				status: '',
+				message: ''
+			}
 		};
 	},
 	methods: {
@@ -65,17 +76,33 @@ export default {
 		
 	  sendForm() {
 	    // Enviar formulario
-	    console.log('Enviando el formulario')
-	    // if (this.method) {
-	    //   console.log('Store method')
-	    //   this.$store.commit(this.method, this.values)
-	    // } else {
-	    //   console.log('Axios method')
-	    //   this.$axios.$post('http://localhost:3000/send', this.values)
-	    //     .then(res => console.log(res))
-	    //     .catch(error => console.log(error))
-	    // }
-	  },
+			console.log('Enviando el formulario')
+			this.$axios.$post(`http://localhost:3000/${this.context}`, this.values)
+				.then( res => this[this.context](res))
+				.catch( err => {
+					if (err.response.data) {
+						console.log(err.response.data)
+						this.res.status = err.response.data.status
+						this.res.message = err.response.data.message
+					} else {
+						console.log(err)
+						this.res.status = err.status
+						this.res.message = err.message
+					}
+				})
+		},
+		login(res) {
+			console.log(res)
+			if (res.status === 'success') {
+				this.$store.commit('user/login')
+				this.$router.push('/')
+			}
+		},
+		signin(res) {
+			if (res.status === 'success') {
+				this.$router.push('/login')
+			}
+		}
 	},
 	computed: {
 		fields() {
@@ -86,7 +113,6 @@ export default {
 		},
 	},
 	created() {
-		console.log(this.storeModule)
 		this.fields.forEach( field => {
 		  Object.defineProperty(this.values, field.name, {
 		    enumerable: true,
@@ -96,6 +122,10 @@ export default {
 		})
 	},
 	props: {
+		context: {
+			type: String,
+			required: true
+		},
 		title: {
 			type: String,
 			required: false
@@ -116,9 +146,10 @@ export default {
 		}
 	},
 	components: {
-		field
+		field,
+		info
 	}
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -154,10 +185,6 @@ export default {
 			}
 		}
 	}
-}
-
-.focus {
-	opacity: 1;
 }
 
 .err {

@@ -1,5 +1,6 @@
 <template>
 	<login-form
+		context="login"
 		title="Ingresá a tu cuenta"
 		storeModule="login"
 		btnText="Ingresar">

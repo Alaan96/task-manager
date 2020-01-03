@@ -5,5 +5,8 @@ export const state = () => ({
 export const mutations = {
   login(state) {
     state.logged = true
+  },
+  logout(state) {
+    state.logged = false
   }
 }

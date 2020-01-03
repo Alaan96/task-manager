@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({ extended: false }))
 // Parse application/json
 app.use(bodyParser.json())
 
+// API routes
+app.use(require('./routes/index'))
+
 // Import database
 const db = require('./database')
 

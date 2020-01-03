@@ -1,12 +1,10 @@
 let mongoose = require('mongoose')
 
-let server = 'mongodb://localhost:27017/'
-
-let database = 'task-manager'
-
-// mongoose.set('useFindAndMofify', false) // err
-// mongoose.Promise = global.Promise
-mongoose.connect(`${server}${database}`, { useNewUrlParser: true })
+mongoose.connect(process.env.URLDB,
+                { useNewUrlParser: true,
+                  useFindAndModify: false,
+                  useCreateIndex: true,
+                  useUnifiedTopology: true })
   .then(() => {
     console.log(`
 
