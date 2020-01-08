@@ -1,5 +1,7 @@
 <template>
   <main>
+    <nav-menu></nav-menu>
+
     <nuxt />
 
     <!-- Notifications -->
@@ -8,10 +10,12 @@
 </template>
 
 <script>
+import menu from '@/components/menu'
 import notify from '@/components/notify'
 
 export default {
   components: {
+    'nav-menu': menu,
     notify
   }
 }
