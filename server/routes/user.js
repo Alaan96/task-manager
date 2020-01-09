@@ -3,8 +3,10 @@ const express = require('express')
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken')
 const _ = require('underscore')
+const nodemailer = require('nodemailer')
 
 const User = require('../models/user')
+const { setToken, getDecodedToken } = require('../config/token-methods')
 
 const app = express()
 
@@ -52,9 +54,7 @@ app.post('/login', (req, res) => {
       })
     }
 
-    let token = jwt.sign({
-      user: userDB
-    }, process.env.SEED, { expiresIn: process.env.TOKEN_EXPIRES_IN})
+    let token = jwt.sign({user: userDB}, process.env.SEED, { expiresIn: process.env.TOKEN_EXPIRES_IN })
 
     return res.json({
       status: 'success',
@@ -205,9 +205,8 @@ app.delete('/user/disable/:id', (req, res) => {
   })
 })
 
-// Incomplete
 // Reset password
-app.post('/reset-password', (req, res) => {
+app.post('/password-reset', (req, res) => {
   let email = req.body.email
 
   if (!email) {
@@ -216,11 +215,12 @@ app.post('/reset-password', (req, res) => {
       message: 'Email is required.'
     })
   }
+
   let user_email = {
     email
   }
 
-  User.findOne({user_email})
+  User.findOne(user_email)
       .exec( (err, userDB) => {
         if (err) {
           return res.status(500).json({
@@ -233,16 +233,112 @@ app.post('/reset-password', (req, res) => {
         if (!userDB) {
           return res.status(404).json({
             status: 'error',
-            message: 'User not found.'
+            message: 'User not found with that email.'
           })
         }
 
-        res.json({
-          status: 'Incomplete',
-          message: 'This route is incomplete.'
-        })
+        let token = setToken(userDB.id, userDB.password)
+        console.log('Token: ' + token)
 
+
+        let transporter = nodemailer.createTransport({
+          host: "smtp.gmail.com",
+          service: 'gmail',
+          port: 587,
+          // secure: false, // true for 465, false for other ports
+          auth: {
+            user: process.env.EMAIL,
+            pass: process.env.PASS
+          },
+          tls: {
+            rejectUnauthorized: false
+          }
+        });
+
+        const mailOptions = {
+          from: `"Alan Test" ${process.env.EMAIL}`,
+          to: email,
+          subject: 'Password reset - APP',
+          text: "Hello world?",
+          html: `
+          <b>Hello world?</b>
+          <h1>Link de cambio de contraseña</h1>
+          <a href="http://localhost:3000/new-password/${token}">
+            http://localhost:3000/new-password/${token}
+          </a>`
+        }
+
+        transporter.sendMail(mailOptions, (err, info) => {
+          if (err) {
+            console.log('Error al enviar el mail :c', err)
+            return res.status(500).json({
+              status: 'error',
+              message: 'Unable to send the email.',
+              err
+            })
+          }
+
+          if (info) {
+            console.log('Se ha enviado el mail c:', info)
+            return res.json({
+              status: 'success',
+              message: 'Email sent.',
+              info,
+              token
+            })
+          }
+        })
       })
+})
+
+// Set a new password
+app.post('/new-password/:token', (req, res) => {
+  const token = req.params.token
+  const password = req.body.password
+  
+  if (!token) {
+    return res.status(401).json({
+      status: 'error',
+      message: 'Unauthorized URL.'
+    })
+  }
+
+  if (!password) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'New password is required.'
+    })
+  }
+  
+  const decoded = getDecodedToken(token)
+
+  const newPassword = {
+    password
+  }
+
+  User.findByIdAndUpdate(decoded.id, newPassword, { new: true }, (err, userDB) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to access users.',
+        err
+      })
+    }
+
+    if (!userDB) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.'
+      })
+    }
+
+    return res.json({
+      status: 'test',
+      message: 'Testing decoded token.',
+      decoded,
+      newPass
+    })
+  })
 })
 
 // Set user birthday date

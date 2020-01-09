@@ -4,6 +4,7 @@
 		title="Completá con tus datos"
 		storeModule="signin"
 		btnText="Registrarse">
+		<nuxt-link to="/login">Volver a Login</nuxt-link>
 	</signin-form>
 </template>
 

@@ -17,7 +17,11 @@ if (!online) {
 process.env.URLDB = urlDB
 
 // TOKEN EXPIRES
-process.env.TOKEN_EXPIRES_IN = 60 * 60 * 24 * 30
+process.env.TOKEN_EXPIRES_IN =  60 * 60 * 24 *30
 
 // AUTHENTICATION SEED
 process.env.SEED = process.env.SEED || 'auth-seed-9878'
+
+// Email test
+process.env.EMAIL = 'alantestmail03@gmail.com'
+process.env.PASS = 'passdelmail'

@@ -1,6 +1,8 @@
 @import 'fonts';
 @import 'colors';
 
+$shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
+
 .shadow {
 	box-shadow: 0 .2rem .5rem rgba(0, 0, 0, 0.16);
 }

@@ -11,9 +11,12 @@
 				:pattern="field.pattern"
 				:type="field.type"
 				v-model="values"
-				:storeModule="storeModule">
+				:storeModule="storeModule"
+				:color="inputColor"
+				:validation="validate">
 			</field>
-			<div class="buttons">
+			<div class="actions">
+				<p>{{info}}</p>
 				<button @click="submit">{{btnText}}</button>
 				<slot></slot>
 			</div>
@@ -68,7 +71,7 @@ export default {
 	  sendForm() {
 	    // Enviar formulario
 			console.log('Enviando el formulario')
-			this.$axios.$post(`http://localhost:3000/${this.context}`, this.values)
+			this.$axios.$post(`http://localhost:3000/${this.context}${this.params}`, this.values)
 				.then( res => this[this.context](res))
 				.catch( err => {
 					let error = {}
@@ -85,6 +88,15 @@ export default {
 					}
 				})
 		},
+		'password-reset'(res) {
+			console.log(res)
+			localStorage.setItem('token', res.token)
+			console.log(localStorage.getItem('token'))
+		},
+		'new-password'(res) {
+			console.log(res)
+			console.log('New password set.')
+		},
 		login(res) {
 			console.log(res)
 			if (res.status === 'success') {
@@ -100,7 +112,11 @@ export default {
 	},
 	computed: {
 		fields() {
-			return this.$store.getters[`${this.storeModule}/fields`]
+			if (this.formFields) {
+				return this.formFields
+			} else {
+				return this.$store.getters[`${this.storeModule}/fields`]
+			}
 		},
 		validFields() {
 			return this.$store.getters[`${this.storeModule}/validFields`]
@@ -117,6 +133,9 @@ export default {
 	},
 	mixins: [notify],
 	props: {
+		formFields: {
+			type: [Array, String]
+		},
 		context: {
 			type: String,
 			required: true
@@ -138,6 +157,18 @@ export default {
 		btnText: {
 			type: String,
 			required: false
+		},
+		info: {
+			type: String,
+			requried: false
+		},
+		inputColor: {
+			type: String
+		},
+		params: {
+			type: String,
+			required: false,
+			default: ''
 		}
 	},
 	components: {
@@ -148,8 +179,10 @@ export default {
 
 <style lang="scss" scoped>
 .login-form {
-	// width: 100%;
-	margin: 0 4rem;
+	max-width: 14.5rem;
+	width: 100%;
+	margin: auto;
+	// margin: 0 4rem;
 
 	& span {
 		display: inline-block;
@@ -159,12 +192,17 @@ export default {
 	& form {
 		width: 100%;
 
-		& .buttons {
+		& .actions {
 			width: 100%;
 			display: flex;
 			justify-content: center;
 			align-items: center;
 			flex-direction: column;
+
+			& p {
+				width: 100%;
+				font-size: .75rem;
+			}
 
 			& button {
 				width: 10rem;
@@ -175,7 +213,7 @@ export default {
 				background: $tertiary;
 				color: $primary;
 				border-radius: 1rem;
-				box-shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
+				box-shadow: $shadow;
 			}
 		}
 	}

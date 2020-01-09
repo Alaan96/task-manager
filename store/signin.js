@@ -11,7 +11,7 @@ export const state = () => ({
 			name: "email",
 			pattern:
 				"^([a-zA-ZñÑ0-9-\S._]+)@([a-zA-ZñÑ0-9-\S_]+).([a-z]{2,8})(.[a-z]{2,8})?$",
-				type: 'email'
+			type: 'email'
 		},
 		{
 			placeholder: "Contraseña",
