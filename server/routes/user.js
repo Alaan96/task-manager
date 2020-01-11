@@ -6,6 +6,7 @@ const _ = require('underscore')
 const nodemailer = require('nodemailer')
 
 const User = require('../models/user')
+const { authenticate } = require('../middlewares/authentication')
 const { setToken, getDecodedToken } = require('../config/token-methods')
 
 const app = express()
@@ -100,7 +101,7 @@ app.post('/signin', (req, res) => {
 })
 
 // Get all users
-app.get('/users', (req, res) => {
+app.get('/users', authenticate, (req, res) => {
   let validUser = { enabled: true }
 
   // Options
@@ -133,7 +134,7 @@ app.get('/users', (req, res) => {
 })
 
 // Get one specific user
-app.get('/user/:id', (req, res) => {
+app.get('/user/:id', authenticate,(req, res) => {
   let id = req.params.id
 
   if (!id) {
@@ -170,7 +171,7 @@ app.get('/user/:id', (req, res) => {
 })
 
 // 'Delete' an user
-app.delete('/user/disable/:id', (req, res) => {
+app.delete('/user/disable/:id', authenticate, (req, res) => {
   let id = req.params.id
 
   if (!id) {
@@ -206,7 +207,7 @@ app.delete('/user/disable/:id', (req, res) => {
 })
 
 // Reset password
-app.post('/password-reset', (req, res) => {
+app.post('/password-reset', authenticate, (req, res) => {
   let email = req.body.email
 
   if (!email) {
@@ -292,7 +293,7 @@ app.post('/password-reset', (req, res) => {
 })
 
 // Set a new password
-app.post('/new-password/:token', (req, res) => {
+app.post('/new-password/:token', authenticate, (req, res) => {
   const token = req.params.token
   const password = req.body.password
   
@@ -342,7 +343,7 @@ app.post('/new-password/:token', (req, res) => {
 })
 
 // Set user birthday date
-app.post('/set-birthday', (req, res) => {
+app.post('/set-birthday', authenticate, (req, res) => {
   let birthday = req.body.birthday
 
   if (!birthday) {
@@ -412,7 +413,7 @@ app.post('/set-birthday', (req, res) => {
 })
 
 // Update propery
-app.put('/user/:id', (req, res) => {
+app.put('/user/:id', authenticate, (req, res) => {
   const id = req.params.id
   const body = _.pick(req.body, ['name', 'email'])
 

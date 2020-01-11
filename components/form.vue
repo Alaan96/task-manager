@@ -90,8 +90,8 @@ export default {
 		},
 		'password-reset'(res) {
 			console.log(res)
-			localStorage.setItem('token', res.token)
-			console.log(localStorage.getItem('token'))
+			localStorage.setItem('pass-token', res.token)
+			console.log(localStorage.getItem('pass-token'))
 		},
 		'new-password'(res) {
 			console.log(res)
@@ -100,6 +100,7 @@ export default {
 		login(res) {
 			console.log(res)
 			if (res.status === 'success') {
+				localStorage.setItem('token', res.token)
 				this.$store.commit('user/login')
 				this.$router.push('/')
 			}
