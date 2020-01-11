@@ -1,6 +1,5 @@
 <template>
   <div class="container">
-    <!-- Ruta de cambio de contraseña con el token {{$route.params.token}} -->
     <password-change
       title="Nueva contraseña"
       :fields="fields"
@@ -34,7 +33,7 @@ export default {
     }
   },
   beforeMount() {
-    let token = localStorage.getItem('token')
+    let token = localStorage.getItem('pass-token')
     if (!token) {
       console.log('Redireccionado lince.')
       // this.$router.push('/')
