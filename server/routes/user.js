@@ -134,7 +134,7 @@ app.get('/users', authenticate, (req, res) => {
 })
 
 // Get one specific user
-app.get('/user/:id', authenticate,(req, res) => {
+app.get('/user/:id', authenticate, (req, res) => {
   let id = req.params.id
 
   if (!id) {

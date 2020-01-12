@@ -15,6 +15,10 @@
 				:color="inputColor"
 				:validation="validate">
 			</field>
+			<div class="check-input" v-if="context === 'login'">
+				<input type="checkbox" id="keepSession" v-model="keepSession">
+				<label for="keepSession">Mantener sessión</label>
+			</div>
 			<div class="actions">
 				<p>{{info}}</p>
 				<button @click="submit">{{btnText}}</button>
@@ -38,8 +42,9 @@ import { notify } from '@/assets/mixins/notify' // Mixin
 export default {
 	data() {
 		return {
-			values: {}
-		};
+			values: {},
+			keepSession: false
+		}
 	},
 	methods: {
 	  submit() {
@@ -101,7 +106,12 @@ export default {
 			console.log(res)
 			if (res.status === 'success') {
 				localStorage.setItem('token', res.token)
-				this.$store.commit('user/login')
+				localStorage.setItem('id', res.user._id)
+				if (this.keepSession) {
+					localStorage.setItem('keepSession', this.keepSession)
+					this.$store.commit('user/login')
+				}
+				// this.$store.commit('user/setId', res.user._id)
 				this.$router.push('/')
 			}
 		},

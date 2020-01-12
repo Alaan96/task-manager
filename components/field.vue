@@ -21,12 +21,12 @@ export default {
 				if (value && pattern) {
 					let regex = new RegExp(pattern, flag)
 					if(regex.test(value)) {
-						console.log('Valid')
+						// console.log('Valid')
 						// this.warning = false
 						// this.valid = true
 						this.$store.commit(`${this.storeModule}/addValidField`, this.name)
 					} else {
-						console.log('Invalid')
+						// console.log('Invalid')
 						// this.warning = true
 						// this.valid = false
 						this.$store.commit(`${this.storeModule}/removeInvalidField`, this.name)
