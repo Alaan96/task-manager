@@ -18,8 +18,8 @@ const authenticate = (req, res, next) => {
         err
       })
     }
-    console.log(decoded)
-    // req.user = decoded.user
+    // console.log(decoded)
+    req.user = decoded.user
   })
   next()
 }

@@ -12,10 +12,6 @@ let taskSchema = new Schema({
     type: String,
     required: false
   },
-  list: {
-    type: Object,
-    required: false
-  },
   important: {
     type: Boolean,
     required: false
@@ -37,14 +33,22 @@ let taskSchema = new Schema({
     required: false,
     default: 'Tarea'
   },
+  list: {
+    type: Object,
+    required: false
+  },
   active: {
     type: Boolean,
     required: false,
     default: true
   },
-  creationData: {
-    type: Object,
+  author: {
+    type: String,
     required: true
+  },
+  sharedWith: {
+    type: Array,
+    required: false
   }
 })
 
