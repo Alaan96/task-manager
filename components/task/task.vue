@@ -186,7 +186,7 @@ export default {
 	display: flex;
 	align-items: flex-start;
 	flex-direction: column;
-	border-radius: .5rem;
+	border-radius: $radius;
 	position: relative;
 
 	& > * {
@@ -248,7 +248,7 @@ export default {
 		right: 0;
 		background: $secondary;
 		font-weight: 700;
-		border-radius: 0 .5rem 0 .5rem;
+		border-radius: 0 $radius 0 $radius;
 	}
 
 	& .time {
@@ -265,7 +265,7 @@ export default {
 		font-size: 1.25rem;
 		font-family: $lato;
 		font-weight: 700;
-		border-radius: .5rem;
+		border-radius: $radius;
 		transition: .2s ease;
 		& span {
 			width: 47%;
@@ -291,9 +291,9 @@ export default {
 	opacity: .4;
 }
 
-.urgent {
+// .urgent {
 	// filter: brightness(150%);
 	// background: $light;
 	// box-shadow: 0 0 .75rem transparentize($cancel, .6);
-}
+// }
 </style>

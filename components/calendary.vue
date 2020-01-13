@@ -234,6 +234,7 @@ export default {
 header {
   width: 100%;
   padding: 1rem;
+  padding-top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;

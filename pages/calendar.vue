@@ -1,8 +1,8 @@
 <template>
   <div class="container">
-    <date></date>
+    <calendary></calendary>
 
-    <task-form></task-form>
+    <task form></task>
 
     <task 
       v-for="task in list"
@@ -18,22 +18,18 @@
 </template>
 
 <script>
-import date from '@/components/date'
+import calendary from '@/components/calendary'
 import task from '@/components/task/task'
-import taskForm from '@/components/task/task-form'
 
 export default {
   components: {
-    date,
+    calendary,
     task,
-    'task-form': taskForm
   },
   middleware: 'authenticated',
   beforeMount() {
     if (!this.$store.state.user.logged) {
       this.$router.push('/login')
-    } else {
-      console.log('The user is logged.')
     }
   },
   computed: {

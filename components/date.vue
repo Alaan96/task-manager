@@ -51,7 +51,7 @@ export default {
 <style lang="scss" scoped>
 .days {
   width: 100%;
-  margin-top: 1rem;
+  // margin-top: 1rem;
   display: flex;
   justify-content: center;
 

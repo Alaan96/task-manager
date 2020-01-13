@@ -12,7 +12,7 @@
         autocomplete="off"
         ref="task-form-title"
         @invalid.prevent
-        v-model="value.title">
+        v-model="task.title">
     </div>
 
     <div class="task-field">
@@ -20,113 +20,14 @@
         name="description"
         placeholder="Detalle de la tarea"
         autocomplete="off"
-        v-model="value.description">
+        v-model="task.description">
     </div>
-
-    
-    <div class="task-field" ref="task-form-list">
-      <header>
-        <input type="text"
-          name="description"
-          placeholder="Lista"
-          autocomplete="off"
-          v-model="value.list.title">
-        <arrow></arrow>
-      </header>
-      <div
-        v-for="(item, index) in value.list.items"
-        :key="`Item ${index + 1}`"
-        class="items">
-        <input type="text"
-          :placeholder="'Item ' + (index + 1)"
-          autocomplete="off"
-          v-model="value.list.items[index].text"
-          @keyup.enter="addNewItem()">
-        <div>
-          <cross rotate></cross>
-        </div>
-      </div>
-      <div class="new-item">
-        <span @click="addNewItem()">"Enter para un nuevo item"</span>
-      </div>
-    </div>
-
-    <section class="priority">
-      <button
-        class="toggle"
-        :class="{'btn-active': value.important}">
-        <label for="task-important">Importante</label>
-        <input type="checkbox"
-          id="task-important"
-          v-model="value.important">
-      </button>
-
-      <button
-        class="toggle"
-        :class="{'btn-active': value.urgent}">
-        <label for="task-urgent">Urgente</label>
-        <input type="checkbox"
-          id="task-urgent"
-          v-model="value.urgent">
-      </button>
-    </section>
-
-    <section>
-      <div class="time">
-        <div class="initial">
-          <input type="text"
-            autocomplete="off"
-            :disabled="!value.time.initial.active"
-            v-model="value.time.initial.hour">
-          <div class="time-initial-active">
-            <label for="initial-hour"
-              class="min-text">
-              {{ value.time.initial.active ? 'Desactivar' : 'Activar' }}
-            </label>
-            <input type="checkbox"
-              id="initial-hour"
-              v-model="value.time.initial.active">
-          </div>
-        </div>
-        <span>a</span>
-        <div class="final">
-          <input type="text"
-            autocomplete="off"
-            :disabled="!value.time.final.active"
-            v-model="value.time.final.hour">
-          <div class="time-final-active">
-            <label for="final-hour"
-              class="min-text">
-              {{ value.time.final.active ? 'Desactivar' : 'Activar' }}
-            </label>
-            <input type="checkbox"
-              id="final-hour"
-              v-model="value.time.final.active">
-          </div>
-        </div>
-      </div>
-
-      <div class="time">
-        <div>
-          <input type="text"
-            class="date"
-            :disabled="!value.date.active"
-            v-model="value.date.string">
-          <div>
-            <label for="date-active"
-              class="min-text">
-              {{ value.date.active ? 'Desactivar fecha' : 'Activar fecha' }}
-            </label>
-            <input type="checkbox"
-              id="date-active"
-              v-model="value.date.active">
-          </div>
-        </div>
-      </div>
-    </section>
 
     <section class="tags">
-      <div class="new-tag">
+      <button class="create-tag">
+        Crear etiqueta
+      </button>
+      <!-- <div class="new-tag">
         <input type="text"
           placeholder="Nueva etiqueta"
           autocomplete="off"
@@ -141,9 +42,111 @@
             v-model="newTag.color">
         </div>
         <cross rotate></cross>
-      </div>
+      </div> -->
       <tags></tags>
     </section>
+
+    <section class="priority">
+      <button
+        class="toggle"
+        :class="{'btn-active': task.important}">
+        <label for="task-important">Importante</label>
+        <input type="checkbox"
+          id="task-important"
+          v-model="task.important">
+      </button>
+
+      <button
+        class="toggle"
+        :class="{'btn-active': task.urgent}">
+        <label for="task-urgent">Urgente</label>
+        <input type="checkbox"
+          id="task-urgent"
+          v-model="task.urgent">
+      </button>
+    </section>
+
+    <section>
+      <div class="time">
+        <div class="initial">
+          <input type="text"
+            autocomplete="off"
+            :disabled="!task.time.initial.active"
+            v-model="task.time.initial.hour">
+          <div class="time-initial-active">
+            <label for="initial-hour"
+              class="min-text">
+              {{ task.time.initial.active ? 'Desactivar' : 'Activar' }}
+            </label>
+            <input type="checkbox"
+              id="initial-hour"
+              v-model="task.time.initial.active">
+          </div>
+        </div>
+        <span>a</span>
+        <div class="final">
+          <input type="text"
+            autocomplete="off"
+            :disabled="!task.time.final.active"
+            v-model="task.time.final.hour">
+          <div class="time-final-active">
+            <label for="final-hour"
+              class="min-text">
+              {{ task.time.final.active ? 'Desactivar' : 'Activar' }}
+            </label>
+            <input type="checkbox"
+              id="final-hour"
+              v-model="task.time.final.active">
+          </div>
+        </div>
+      </div>
+
+      <div class="time">
+        <div>
+          <input type="text"
+            class="date"
+            :disabled="!task.date.active"
+            v-model="task.date.text">
+          <div>
+            <label for="date-active"
+              class="min-text">
+              {{ task.date.active ? 'Desactivar fecha' : 'Activar fecha' }}
+            </label>
+            <input type="checkbox"
+              id="date-active"
+              v-model="task.date.active">
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <div class="task-field" ref="task-form-list">
+      <header>
+        <input type="text"
+          name="list"
+          placeholder="Lista"
+          autocomplete="off"
+          v-model="task.list.title">
+        <arrow></arrow>
+      </header>
+      <div
+        v-for="(item, index) in task.list.items"
+        :key="`Item ${index + 1}`"
+        class="items">
+        <input type="text"
+          :placeholder="'Item ' + (index + 1)"
+          autocomplete="off"
+          v-model="task.list.items[index].text"
+          @keyup.enter="addNewItem()">
+        <div>
+          <cross rotate></cross>
+        </div>
+      </div>
+      <div class="new-item">
+        <span @click="addNewItem()">"Enter para un nuevo item"</span>
+      </div>
+    </div>
+
 
     <section class="task-actions">
       <button
@@ -164,6 +167,9 @@
 import simpleBtn from '@/components/simple-button'
 import tags from '@/components/tags'
 
+// Mixins
+import { helpers } from '@/assets/mixins/api-helpers'
+
 // Icons
 import cross from '@/components/icons/cross'
 import arrow from '@/components/icons/arrow'
@@ -176,9 +182,49 @@ export default {
 		cross, // Icon
 		arrow // Icon
   },
+  mixins: [helpers],
   data() {
 		return {
-			active: false,
+      active: false,
+
+      // values: {
+      //   title: '',
+      //   description: '',
+      //   tag: '',
+      //   important: false,
+      //   urgent: false,
+      //   list: []
+      // },
+      
+      task: {
+				title: '',
+				description: '',
+        tag: {
+          text: 'Tarea',
+          color: '#66BBD1'
+        },
+				important: false,
+				urgent: false,
+				time: {
+          initial: {
+            hour: '09:00',
+						active: false
+					},
+					final: {
+            hour: '13:00',
+						active: false
+					}
+				},
+				date: {
+          text: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
+					active: false
+				},
+        list: {
+          title: '',
+          items: [],
+
+        },
+			},
 
 			newTag: {
 				tag: '',
@@ -202,11 +248,17 @@ export default {
       console.log('action', this.active)
     },
 		saveTask() {
-      let title = this.value.title
+      let title = this.task.title
 
       if (typeof title === 'string' && title !== '') {
-        this.$store.commit('task/addTask', this.value)
+        let id = localStorage.getItem('id')
+        let url = `${this.url}/save-task/${id}`
+        this.$axios.$post(url, this.task)
+          .then( res => console.log(res))
+          .catch( err => console.log(err))
+        // this.$store.commit('task/addTask', this.task)
         this.$emit('saveTask')
+        this.resetForm()
         this.toggleForm('close')
 
       } else if (title.length === 0) {
@@ -220,10 +272,43 @@ export default {
     },
     discardTask() {
       // this.$refs['task-form'].reset()
+      this.resetForm()
       this.toggleForm('close')
     },
+
+    resetForm() {
+      this.task = {
+				title: '',
+				description: '',
+        tag: {
+          text: 'Tarea',
+          color: '#66BBD1'
+        },
+				important: false,
+				urgent: false,
+				time: {
+          initial: {
+            hour: '09:00',
+						active: false
+					},
+					final: {
+            hour: '13:00',
+						active: false
+					}
+				},
+				date: {
+          text: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
+					active: false
+				},
+        list: {
+          title: '',
+          items: [],
+        },
+			}
+    },
+
     addNewItem() {
-      this.value.list.items.push({completed: false, text: ''})
+      this.task.list.items.push({completed: false, text: ''})
       let list = Array.from(this.$refs['task-form-list'].querySelectorAll('input'))
       let lastInput = list[list.length - 1]
       lastInput.focus()
@@ -232,11 +317,11 @@ export default {
       console.log(lastInput)
     }
 	},
-  props: {
-    value: {
-      type: Object
-    }
-  }
+  // props: {
+  //   value: {
+  //     type: Object
+  //   }
+  // }
 }
 </script>
 
@@ -256,7 +341,7 @@ form {
 	display: flex;
 	align-items: center;
 	flex-direction: column;
-	border-radius: .5rem;
+	border-radius: $radius;
 	
 	padding-top: .1rem;
 	height: 3rem;
@@ -445,33 +530,18 @@ button.btn-active {
 }
 
 .tags {
-	flex-wrap: wrap;
-	& .new-tag {
-		width: 100%;
-		height: 2rem;
-    padding-right: .5rem;
-		display: grid;
-		grid-template-columns: 1fr max-content 1rem;
-		grid-gap: 1.5rem;
-		justify-content: center;
-		align-items: center;
-		border-bottom: 1px solid $line;
+  display: flex;
+  align-items: center;
 
-		& input {
-			width: auto;
-      border: none;
-    }
-    
-    & .tag-color {
-      & input[type="color"] {
-        display: none;
-      }
-    }
-
-		& svg {
-			width: 100%;
-		}
-	}
+  & button.create-tag {
+    width: 9rem;
+    height: 1.3rem;
+    font-size: .75rem;
+    font-family: $niramit;
+    color: $black;
+    background: $gray;
+    border-radius: .5rem;
+  }
 }
 
 .task-actions {
