@@ -31,7 +31,6 @@ export default {
   methods: {
     loadUserData() {
       let url = `${this.url}/user/${localStorage.getItem('id')}`
-      console.log(url)
       this.$store.dispatch('user/profileData', url)
     },
     loadTasksList() {

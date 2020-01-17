@@ -18,6 +18,7 @@ const authenticate = (req, res, next) => {
         err
       })
     }
+    
     // console.log(decoded)
     req.user = decoded.user
   })

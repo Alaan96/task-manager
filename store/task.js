@@ -1,111 +1,5 @@
 export const state = () => ({
-  list: [
-    // Ordenar los mails
-    // {
-    //   title: 'Ordenar los mails',
-    //   description: '',
-    //   list: {
-    //     title: '',
-    //     items: [],
-    //   },
-    //   important: false,
-    //   urgent: false,
-    //   time: {
-    //     initial: {
-    //       hour: '09:00',
-    //       active: false
-    //     },
-    //     final: {
-    //       hour: '13:00',
-    //       active: false
-    //     }
-    //   },
-    //   date: {
-    //     string: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-    //     active: false
-    //   },
-    //   tag: {
-    //     text: 'Tarea',
-    //     color: '#66BBD1'
-    //   }
-    // },
-    // Pagar facturas
-    // {
-    //   title: 'Pagar facturas',
-    //   description: '',
-    //   list: {
-    //     title: '',
-    //     items: [
-    //       {
-    //         text: 'Obra social',
-    //         complete: false
-    //       },
-    //       {
-    //         text: 'Celular',
-    //         complete: true
-    //       },
-    //       {
-    //         text: 'Internet',
-    //         complete: false
-    //       },
-    //       {
-    //         text: 'Alquiler',
-    //         complete: false
-    //       },
-    //     ],
-
-    //   },
-    //   important: true,
-    //   urgent: false,
-    //   time: {
-    //     initial: {
-    //       hour: '09:00',
-    //       active: false
-    //     },
-    //     final: {
-    //       hour: '13:00',
-    //       active: false
-    //     }
-    //   },
-    //   date: {
-    //     string: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-    //     active: false
-    //   },
-    //   tag: {
-    //     text: 'Servicios',
-    //     color: '#E9B786'
-    //   }
-    // },
-    // Festejar Navidad
-    // {
-    //   title: 'Festejar Navidad',
-    //   description: '',
-    //   list: {
-    //     title: '',
-    //     items: [],
-    //   },
-    //   important: false,
-    //   urgent: false,
-    //   time: {
-    //     initial: {
-    //       hour: '09:00',
-    //       active: false
-    //     },
-    //     final: {
-    //       hour: '13:00',
-    //       active: false
-    //     }
-    //   },
-    //   date: {
-    //     string: `25/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-    //     active: true
-    //   },
-    //   tag: {
-    //     text: 'Evento',
-    //     color: '#BC78D8'
-    //   }
-    // },
-  ]
+  list: []
 })
 
 export const mutations = {
@@ -120,6 +14,12 @@ export const mutations = {
 
   setList(state, list) {
     state.list = list
+  },
+  pushTask(state, task) {
+    state.list.push(task)
+  },
+  deleteOne(state, index) {
+    state.list.splice(index, 1)
   }
 }
 
@@ -137,6 +37,15 @@ export const actions = {
       context.commit('setList', data.tasks)
     } else {
       console.log('Unable to load task list.')
+    }
+  },
+  async lastSaved(context, url) {
+    const data = await this.$axios.$get(url)
+    if (data.status === 'success') {
+      context.commit('pushTask', data.task)
+      console.log('Last task added correctly.')
+    } else {
+      console.log('Task not found.')
     }
   }
 }

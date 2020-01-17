@@ -1,27 +1,177 @@
 <template>
-  <div class="tag-container">
-    <span>Tarea simple</span>
-    <span>Tarea compleja</span>
+  <div v-if="list"
+    class="tag-list" :class="{negative}">
+    <button v-for="tag in tags"
+      :key="tag.text"
+      :class="{'selected': selectedTag === tag.text}">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
+        <circle cx="4" cy="4" r="4" :fill="tag.color" />
+      </svg>
+      <label :for="tag.text">{{tag.text}}</label>
+      <input type="radio"
+        :id="tag.text"
+        :value="tag.text"
+        v-model="selectedTag"
+        @change="setTag(tag)">
+    </button>
   </div>
+
+  <modal v-else
+    title="Gestión de etiquetas">
+    <div class="create-new-tag">
+      <input type="text" placeholder="Nueva etiqueta" v-model="newTag">
+      <button>
+        Agregar
+      </button>
+    </div>
+    <section class="tags">
+      <div v-for="tag in tags"
+        :key="tag.text"
+        class="tag">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 80 80">
+          <circle cx="40" cy="24" r="12" :fill="tag.color" />
+          <text x="40" y="64" text-anchor="middle">{{tag.text}}</text>
+        </svg>
+      </div>
+    </section>
+  </modal>
 </template>
 
 <script>
+import modal from '@/components/modal'
+
 export default {
-  
+  data() {
+    return {
+      newTag: '',
+      selectedTag: 'Tarea'
+    }
+  },
+  created() {
+    const tag = this.tags[0]
+    this.setTag(tag)
+    // this.selectedTag = 'Tarea'
+  },
+  methods: {
+    setTag(tag) {
+      this.$emit('getTag', tag)
+    }
+  },
+  props: {
+    list: {
+      type: Boolean,
+      required: false,
+    },
+    negative: {
+      type: Boolean,
+      required: false,
+      default: false
+    }
+  },
+  computed: {
+    tags() {
+      return this.$store.getters['user/tags']
+    }
+  },
+  components: {
+    modal
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-.tag-container {
+.create-new-tag {
   width: 100%;
-  margin: 0;
-  padding: 0 1rem;
+  height: 2rem;
+  margin: 1rem 0;
   display: flex;
-  flex-wrap: wrap;
-
-  & * {
-    margin: .5rem 1rem 0 0;
-    font-size: .75rem;
+  justify-content: space-between;
+  & input {
+    width: 9rem;
+    padding: 0 1rem;
+    font-family: $niramit;
+    font-size: 1rem;
+    color: $black;
+    border: 1px solid $gray;
+    border-radius: 1rem;
   }
+  & button {
+    width: 6rem;
+    @include center;
+    font-family: $niramit;
+    font-size: 1rem;
+    color: $primary;
+    background: $secondary;
+    border-radius: 1rem;
+  }
+}
+
+section.tags {
+  max-height: 10.5rem;
+  width: 100%;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(5rem, 1fr));
+  grid-auto-rows: 5rem;
+  grid-gap: .5rem;
+  overflow-y: scroll;
+
+  & .tag {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: $silver;
+    border: 1px solid $gray;
+    border-radius: $radius;
+  }
+}
+
+
+
+
+
+.tag-list {
+  width: 100%;
+  display: flex;
+  overflow-x: scroll;
+  border-radius: 1rem;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+  & button {
+    // height: 1.3rem;
+    padding: .15rem .5rem;
+    margin: .25rem;
+    display: flex;
+    align-items: center;
+    font-size: .75rem;
+    font-family: $niramit;
+    color: $primary;
+    background: $black;
+    border-radius: 1rem;
+
+    transition: .2s ease;
+    opacity: .5;
+    &:first-child {
+      margin-left: 0;
+    }
+    & svg {
+      width: .5rem;
+    }
+    & label {
+      margin-left: .5rem;
+    }
+    & input {
+      display: none;
+    }
+  }
+}
+
+button.selected {
+  opacity: 1;
+}
+
+.negative {
+  color: $black;
 }
 </style>

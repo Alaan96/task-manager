@@ -31,6 +31,26 @@ let userSchema = new Schema({
     type: Boolean,
     default: true,
     required: false
+  },
+  tags: {
+    type: Array,
+    required: false
+  },
+  defaultPage: {
+    type: String,
+    required: false,
+  },
+  weekStart: {
+    type: String,
+    required: false,
+  },
+  workOffline: {
+    type: Boolean,
+    required: false,
+  },
+  darkMode: {
+    type: Boolean,
+    required: false,
   }
 })
 

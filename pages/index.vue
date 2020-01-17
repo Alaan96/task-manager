@@ -1,32 +1,18 @@
 <template>
   <div class="container">
     <date></date>
-
-    <task-form></task-form>
-
-    <task 
-      v-for="task in list"
-      :key="task.title"
-      :content="task">
-    </task>
-
-    <div v-if="list.length === 0"
-      class="no-tasks">
-      No se encuentran tareas o eventos. 
-    </div>
+    <task-list></task-list>
   </div>
 </template>
 
 <script>
 import date from '@/components/date'
-import task from '@/components/task/task'
-import taskForm from '@/components/task/task-form'
+import list from '@/components/task/list'
 
 export default {
   components: {
     date,
-    task,
-    'task-form': taskForm
+    'task-list': list
   },
   middleware: 'authenticated',
   beforeMount() {
@@ -47,10 +33,5 @@ export default {
 <style lang="scss" scoped>
 .container {
   padding: 0 1rem;
-}
-
-.no-tasks {
-  width: 100%;
-  @include center;
 }
 </style>

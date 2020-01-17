@@ -100,8 +100,6 @@ export default {
   computed: {
     headerText() {
       let text = 'Menú'
-      console.log(this)
-
       return text
     }
     // message() {
@@ -203,7 +201,7 @@ nav {
       width: inherit;
       height: 2rem;
       margin-top: .25rem;
-      background: $gray;
+      background: $silver;
 
       & a {
         display: block;

@@ -20,23 +20,22 @@ let taskSchema = new Schema({
     type: Boolean,
     required: false
   },
-  time: {
-    type: Object,
-    required: false
-  },
-  date: {
-    type: Date,
-    required: false,
-  },
   tag: {
-    type: String,
-    required: false,
-    default: 'Tarea'
-  },
-  list: {
     type: Object,
-    required: false
+    required: true
   },
+  // time: {
+  //   type: Object,
+  //   required: false
+  // },
+  // date: {
+  //   type: Date,
+  //   required: false,
+  // },
+  // list: {
+  //   type: Object,
+  //   required: false
+  // },
   active: {
     type: Boolean,
     required: false,
@@ -51,14 +50,6 @@ let taskSchema = new Schema({
     required: false
   }
 })
-
-// userSchema.methods.toJSON = function () {
-//   let user = this
-//   let userObject = user.toObject()
-//   delete userObject.password
-
-//   return userObject
-// }
 
 // taskSchema.plugin(uniqueValidator, { message: '{PATH} already exist in database.' })
 

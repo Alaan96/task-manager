@@ -4,7 +4,13 @@ export const state = () => ({
   // id: '',
   name: '',
   email: '',
-  birthday: ''
+  birthday: '',
+  tags: [
+    {text: 'Tarea', color: '#66BBD1'},
+    {text: 'Salud', color: '#F16D6D'},
+    {text: 'Estudios', color: '#72D9A2'},
+    { text: 'Eventos', color: '#E9B786'},
+  ]
 })
 
 export const mutations = {
@@ -31,7 +37,10 @@ export const mutations = {
 export const getters = {
   // id(state) {
   //   return state.id
-  // }
+  // },
+  tags(state) {
+    return state.tags
+  }
 }
 
 export const actions = {
