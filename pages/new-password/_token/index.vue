@@ -5,7 +5,7 @@
       :fields="fields"
       description='Si usted solicitó un cambio de contraseña llene el campo y haga click en "Cambiar".'
       button="Cambiar"
-      context="new-password"
+      ctx="new-password"
       :params="token">
       <nuxt-link to="/login">Volver a Login</nuxt-link>
     </password-change>

@@ -5,9 +5,17 @@
     </header>
 
     <section>
-      <user-data
-        :data="dataList">
-      </user-data>
+      <ul class="negative">
+        <li>
+          <span class="title">Email</span>
+          <div class="config"
+            @click="$store.commit('modal/showModal')">{{email}}</div>
+        </li>
+        <li>
+          <span class="title">Cumpleaños</span>
+          <div class="config">{{birthday}}</div>
+        </li>
+      </ul>
     </section>
 
     <section class="actions">
@@ -29,16 +37,16 @@ export default {
   },
   data() {
     return {
-      dataList: [
-        {
-          title: 'Email',
-          config: this.email
-        },
-        {
-          title: 'Cumpleaños',
-          config: this.birthday
-        }
-      ]
+      // dataList: [
+      //   {
+      //     title: 'Email',
+      //     config: this.email
+      //   },
+      //   {
+      //     title: 'Cumpleaños',
+      //     config: this.birthday
+      //   }
+      // ]
     }
   },
   computed: {
@@ -79,6 +87,28 @@ header {
   background: $primary;
   color: $secondary;
   border-radius: 1rem;
+}
+
+ul {
+  width: 100%;
+  padding: 2rem 1rem;
+  & li {
+    width: 100%;
+    height: 4rem;
+    padding: 0 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid $line;
+    & .title {
+      font-weight: 700;
+    }
+    & .config {
+      // color: $light;
+      color: $secondary;
+      cursor: pointer;
+    }
+  }
 }
 
 .actions {

@@ -229,45 +229,4 @@ nav {
   background: $secondary;
   color: $primary;
 }
-
-@keyframes fade-in {
-  0% {
-    transform: scale(.4);
-    opacity: 0;
-  }
-  50% {
-    transform: scale(1.2);
-  }
-  100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-}
-
-@keyframes slide-to-left {
-  0% {
-    transform: translateX(2rem);
-    opacity: 0;
-  }
-  // 50% {
-  //   transform: scale(1.2);
-  // }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-@keyframes slide-to-right {
-  0% {
-    transform: translateX(-2rem);
-    opacity: 0;
-  }
-  // 50% {
-  //   transform: scale(1.2);
-  // }
-  100% {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
 </style>

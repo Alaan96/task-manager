@@ -1,7 +1,7 @@
 export const state = () => ({
   logged: localStorage.getItem('keepSession') || false,
 
-  // id: '',
+  id: '',
   name: '',
   email: '',
   birthday: '',
@@ -9,7 +9,7 @@ export const state = () => ({
     {text: 'Tarea', color: '#66BBD1'},
     {text: 'Salud', color: '#F16D6D'},
     {text: 'Estudios', color: '#72D9A2'},
-    { text: 'Eventos', color: '#E9B786'},
+    {text: 'Eventos', color: '#E9B786'},
   ]
 })
 
@@ -20,24 +20,27 @@ export const mutations = {
   logout(state) {
     state.logged = false
   },
-
-  // setId(state, id) {
-  //   state.id = id
-  // },
   setUserData(state, user) {
     if (user) {
+      state.id = user._id
       state.name = user.name
       state.email = user.email
-      state.birthday = user.birthday
+      
+      // Format birthday
+      let bd = new Date(user.birthday)
+      state.birthday = `${bd.getDate()}/${bd.getMonth() + 1}/${bd.getFullYear()}`
       console.log('User data loaded correctly.')
     }
+  },
+  addNewTag(state, tag) {
+    state.tags.push(tag)
   }
 }
 
 export const getters = {
-  // id(state) {
-  //   return state.id
-  // },
+  id(state) {
+    return state.id
+  },
   tags(state) {
     return state.tags
   }

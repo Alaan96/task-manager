@@ -1,15 +1,15 @@
 <template>
   <modal>
-    <div class="password-reset">
-      <h3>Cambio de contraseña</h3>
+    <div class="set-birthday">
+      <h3>Fecha de nacimiento</h3>
       <modal-form
         :formFields="fields"
-        :context="ctx"
-        :info="description"
-        :btnText="button"
+        context="set-birthday"
+        info="Establezca su fecha de nacimiento en el formato solicitado."
+        btnText="Establecer"
         inputColor="secondary"
         :validate="false"
-        :params="params">
+        :params="id">
       </modal-form>
       <slot></slot>
     </div>
@@ -23,8 +23,19 @@ import modal from '@/components/modal'
 export default {
   data() {
     return {
-      
+      id: '',
+      fields: [
+        {
+          placeholder: "dd/mm/aa",
+          name: "birthday",
+          pattern:"^(?:3[01]|[12][0-9]|0?[1-9])([\-/.])(0?[1-9]|1[1-2])\\1\\d{4}$",
+          type: 'text'
+        },
+      ]
     }
+  },
+  beforeMount() {
+    this.id = '/' + localStorage.getItem('id')
   },
   components: {
     modal,
@@ -35,10 +46,6 @@ export default {
       type: String,
       required: false,
     },
-    fields: {
-      type: Array,
-      requried: true
-    },
     description: {
       type: String,
       requried: false
@@ -47,10 +54,6 @@ export default {
       type: String,
       required: false,
       default: 'Enviar'
-    },
-    ctx: {
-      type: String,
-      required: true
     },
     params: {
       type: String,

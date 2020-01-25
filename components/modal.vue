@@ -38,18 +38,20 @@ export default {
 
 <style lang="scss" scoped>
 .modal {
-  width: 18rem;
+  width: 80vw;
   padding: 1rem;
   display: flex;
   flex-direction: column;
   justify-content: center;
   text-align: center;
   position: fixed;
-  top: 30vh;
+  top: 35vh;
+  left: 10vw;
   background: $primary;
   color: $black;
   border-radius: .5rem;
   box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2);
+  z-index: 50;
 
   animation: fade-in .6s ease;
 }

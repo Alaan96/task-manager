@@ -102,6 +102,9 @@ export default {
 			console.log(res)
 			console.log('New password set.')
 		},
+		'set-birthday'(res) {
+			console.log(res)
+		},
 		login(res) {
 			console.log(res)
 			if (res.status === 'success') {
