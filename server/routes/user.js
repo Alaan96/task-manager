@@ -173,7 +173,7 @@ app.get('/user/:id', authenticate, (req, res) => {
 
 // 'Delete' an user
 app.delete('/user/disable/:id', authenticate, (req, res) => {
-  let id = req.params.id
+  const id = req.params.id
 
   if (!id) {
     return res.status(400).json({
@@ -182,7 +182,7 @@ app.delete('/user/disable/:id', authenticate, (req, res) => {
     })
   }
 
-  let disabled = { enabled: false }
+  const disabled = { enabled: false }
 
   User.findByIdAndUpdate(id, disabled, { new: true }, (err, userDeleted) => {
     if (err) {
@@ -344,8 +344,24 @@ app.post('/new-password/:token', authenticate, (req, res) => {
 })
 
 // Set user birthday date
-app.post('/set-birthday', authenticate, (req, res) => {
-  let birthday = req.body.birthday
+app.post('/set-birthday/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  let rawBd = req.body.birthday.split('/')
+  console.log(rawBd)
+
+  const birthday = new Date(
+    parseInt(rawBd[2]),
+    parseInt(rawBd[1] - 1),
+    parseInt(rawBd[0]))
+    .getTime()
 
   if (!birthday) {
     return res.status(400).json({
@@ -356,7 +372,8 @@ app.post('/set-birthday', authenticate, (req, res) => {
   let actualDate = new Date()
 
   let minDate = new Date(1900, 0).getTime()
-  let maxDate = new Date(actualDate.getFullYear(), actualDate.getMonth(), actualDate.getDate()).getTime()
+  // let maxDate = new Date(actualDate.getFullYear(), actualDate.getMonth(), actualDate.getDate()).getTime()
+  let maxDate = actualDate.getTime()
 
   if (birthday < minDate || birthday > maxDate) {
     return res.status(400).json({
@@ -364,10 +381,6 @@ app.post('/set-birthday', authenticate, (req, res) => {
       message: `Invalid birthday, only dates between 1900 - ${actualDate.getFullYear()}.`
     })
   }
-
-  // const test = /^(\d){1,2}\/(\d){1,2}\/(\d){4}$/.test(birthday)
-
-  let id = req.body.id
 
   User.findById(id)
       .exec( (err, userDB) => {
@@ -416,6 +429,14 @@ app.post('/set-birthday', authenticate, (req, res) => {
 // Update propery
 app.put('/user/:id', authenticate, (req, res) => {
   const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
   const body = _.pick(req.body, ['name', 'email'])
 
   User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
@@ -437,6 +458,69 @@ app.put('/user/:id', authenticate, (req, res) => {
       status: 'success',
       message: 'Property updated correctly.',
       user: userDB
+    })
+  })
+})
+
+// Add new custom tag
+app.post('/user/new-tag/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  const tag = req.body.tag
+
+  if (!tag) {
+    return res.status(404).json({
+      status: 'error',
+      message: 'Tag not found.'
+    })
+  }
+
+  User.findById(id).exec((err, userDB) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to save the tag.',
+        err
+      })
+    }
+
+    if (!userDB) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.'
+      })
+    }
+
+    userDB.tags.push(tag)
+
+    userDB.save((err, userUpdated) => {
+      if (err) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Unable to save data.',
+          err
+        })
+      }
+
+      if (!userUpdated) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'User not found.'
+        })
+      }
+
+      return res.json({
+        status: 'success',
+        message: 'Tag setted correctly.'
+      })
+
     })
   })
 })

@@ -27,7 +27,7 @@
     <section class="tags">
       <div class="create-tag">
         <span>Etiquetas</span>
-        <!-- <button @click="$store.commit('modal/showModal')">Crear etiqueta</button> -->
+        <button @click.prevent="$store.commit('modal/showModal')">Crear etiqueta</button>
       </div>
       <tags list
         @getTag="setTag($event)">
@@ -283,13 +283,14 @@ export default {
 
 
     editContent() {
-      if ( this.contentEditable !== {} ) {
+      if ( this.contentEditable ) {
+        console.log(this.contentEditable)
         this.task = this.contentEditable
       }
     }
   },
   beforeMount() {
-    this.editContent()
+    // this.editContent()
   },
   props: {
     contentEditable: {
@@ -309,7 +310,7 @@ form {
   width: 100%;
   min-height: 3rem;
   padding: 0 1rem;
-	margin: .5rem auto 1.5rem auto;
+	margin: .5rem auto;
 	background: $line;
 	// border-left: .5rem solid transparent;
 	color: $primary;
