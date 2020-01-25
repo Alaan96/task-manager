@@ -1,11 +1,12 @@
 export const helpers = {
   data() {
     return {
-      url: 'http://localhost:3000',
-
-      // headers: {
-      //   token: localStorage.getItem('token') || null
-      // }
+      url: 'http://localhost:3000'
+    }
+  },
+  computed: {
+    id() {
+      return this.$store.getters['user/id']
     }
   },
   methods: {
