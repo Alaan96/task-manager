@@ -33,9 +33,10 @@
       <div class="container">
         <div
           class="dates"
+          ref="calendary"
           :style="{transform: `translateY(-${calendaryPosition}px)`}"
           @touchstart="calendaryTouched"
-          @touchmove="calendaryLoad"
+          @touchmove.prevent="calendaryLoad"
           @touchend="calendaryChange">
           <number
             v-for="(date, index) in datesList"
@@ -45,9 +46,8 @@
             :index="index"
             :monthNumber="date.monthNumber"
             :data-date="date.fullDate"
-            >
+            :points="date.tags">
           </number>
-  
         </div>
       </div>
     </section>
@@ -59,6 +59,9 @@ import { mapState } from 'vuex'
 
 import number from '@/components/number'
 import monthPicker from '@/components/month-picker'
+
+// Mixins
+import { numberFunctions } from '@/assets/mixins/number-format'
 
 // Icons
 import arrow from '@/components/icons/arrow'
@@ -93,6 +96,7 @@ export default {
     'month-picker': monthPicker,
     arrow // Icon
   },
+  mixins: [numberFunctions],
   methods: {
     loadDatesList(year) {
       // Reset datesList
@@ -119,11 +123,14 @@ export default {
       this.months.forEach( (month, index) => {
         // Load dates of the year
         for(let date = 1; date <= new Date(this.year, index + 1, 0).getDate(); date++) {
+          let tags = this.tasks.filter( task => task.date.length > 0 )
+
           this.datesList.push({
-            number: date,
+            number: this.formatNumber(date, true),
             month: `${this.months[index]}`,
             monthNumber: index + 1,
-            fullDate: `${date}/${index + 1}/${this.year}`
+            fullDate: `${this.formatNumber(date)}/${this.formatNumber(index + 1)}/${this.year}`,
+            tags: tags
           })
         }
       })
@@ -131,10 +138,12 @@ export default {
 
     saveEveryFirstDay(year) {
       let savedYear = localStorage.getItem(`${year}`)
+      let calendaryTop = this.$refs.calendary.getBoundingClientRect().top
+      console.log(calendaryTop)
       if (!savedYear) {
         this.months.forEach( (month, index) => {
           this.firstDays.push({
-            top: document.querySelector(`svg[data-date="1/${index + 1}/${this.year}"]`).getBoundingClientRect().top - 99,
+            top: document.querySelector(`svg[data-date="1/${index + 1}/${this.year}"]`).getBoundingClientRect().top - calendaryTop,
             month: this.months[index]
           })
         })
@@ -190,15 +199,13 @@ export default {
   },
   mounted() {
     this.saveEveryFirstDay(this.year)
-    this.saveCalendaryPosition()
+    this.saveCalendaryPosition() // Testing
   },
   beforeUpdate() {
     if (this.year !== this.calendaryYear) {
-      // console.log('Años distintos')
       this.loadDatesList(this.year)
       this.calendaryYear = this.year
     } else {
-      // console.log('Años iguales')
     }
   },
   computed: {
@@ -218,6 +225,9 @@ export default {
       } else if (this.days[0] === 'Domingo') {
         return new Date(this.year, this.month, 1).getDay()
       }
+    },
+    tasks() {
+      return this.$store.getters['task/getFullList']
     },
     ...mapState('calendary', {
       year: 'year',
@@ -270,7 +280,7 @@ section {
     width: 100%;
     text-align: center;
     display: grid;
-    grid-template-columns: repeat(7, 3rem);
+    grid-template-columns: repeat(7, 1fr);
     border-bottom: 1px solid $line;
 
     & * {
@@ -279,8 +289,8 @@ section {
   }
 
   & .container {
-    $date-size: 3rem;
-    max-height: $date-size * 6;
+    $date-size: 1fr;
+    max-height: 3rem * 6;
     width: 100%;
     overflow-y: hidden;
 
