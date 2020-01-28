@@ -29,7 +29,8 @@
         <span>Etiquetas</span>
         <button @click.prevent="$store.commit('modal/showModal')">Crear etiqueta</button>
       </div>
-      <tags list
+      <tags
+        list
         @getTag="setTag($event)">
       </tags>
 
@@ -54,6 +55,25 @@
           id="task-urgent"
           v-model="task.urgent">
       </button>
+    </section>
+
+    <section class="date">
+      <div>
+        <span>Fecha</span>
+        <button :class="{'desactived': !activeDate}">
+          <label for="date-active">{{activeDate ? 'Activado' : 'Desactivado'}}</label>
+          <input type="checkbox" id="date-active" v-model="activeDate">
+        </button>
+      </div>
+      <div class="date-input">
+        <input type="text"
+          placeholder="dd/mm/aaaa"
+          name="date"
+          pattern="^(?:3[01]|[12][0-9]|0?[1-9])([\-/.])(0?[1-9]|1[1-2])\1\d{4}$"
+          :disabled="!activeDate"
+          v-model="task.date"
+          @keyup="autocompleteDividers()">
+      </div>
     </section>
 
     <!-- <section>
@@ -181,6 +201,8 @@ export default {
   data() {
 		return {
       active: false,
+
+      activeDate: true,
       
       task: {
 				title: '',
@@ -188,6 +210,7 @@ export default {
         tag: {},
 				important: false,
 				urgent: false,
+        date: '',
 				// time: {
         //   initial: {
         //     hour: '09:00',
@@ -198,21 +221,19 @@ export default {
 				// 		active: false
 				// 	}
 				// },
-				// date: {
-        //   text: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-				// 	active: false
-				// },
         // list: {
         //   title: '',
         //   items: [],
         // },
 			},
-
-			// newTag: {
-			// 	tag: '',
-			// 	color: '#66BBD1'
-			// }
 		}
+  },
+  computed: {
+    // dateSelected() {
+    //   let date = this.$store.getters['date/selected']
+    //   this.date.text = date
+    //   return date
+    // }
   },
   methods: {
     setTag($event) {
@@ -230,7 +251,7 @@ export default {
       } else {
         this.active = !this.active
       }
-      console.log('action', this.active)
+      // console.log('action', this.active)
     },
 		saveTask() {
       let title = this.task.title
@@ -265,10 +286,11 @@ export default {
     },
 
     resetForm() {
-      this.task.title = '',
-      this.task.description = '',
-      this.task.important = false,
+      this.task.title = ''
+      this.task.description = ''
+      this.task.important = false
       this.task.urgent = false
+      this.task.date = ''
     },
 
     // addNewItem() {
@@ -281,6 +303,12 @@ export default {
     //   console.log(lastInput)
     // },
 
+    autocompleteDividers() {
+      if (this.task.date.length === 2 || this.task.date.length === 5) {
+        let formattedDate = this.task.date.concat('/')
+        this.task.date = formattedDate
+      }
+    },
 
     editContent() {
       if ( this.contentEditable ) {
@@ -345,10 +373,6 @@ input {
 	border-bottom: 1px solid $line;
 	
 
-	&[name="title"] {
-		height: 3rem;
-		font-size: 1rem;
-	}
 
   &:focus {
     color: $primary;
@@ -357,11 +381,19 @@ input {
     color: $primary;
   }
   &:invalid {
-    border-color: $light;
+    border-color: $cancel;
   }
   &[disabled] {
     text-decoration: line-through;
+    opacity: .5;
   }
+	&[name="title"] {
+		height: 3rem;
+		font-size: 1rem;
+    &:invalid {
+      border-color: $light;
+    }
+	}
 }
 
 ::-webkit-input-placeholder {
@@ -471,6 +503,40 @@ button.btn-active {
 	opacity: 1;
 }
 
+.date {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  & span {
+    margin: 0 1rem;
+    font-size: .75rem;
+  }
+  & button {
+    width: 6rem;
+    height: 1.3rem;
+    font-size: .75rem;
+    font-family: $niramit;
+    color: $primary;
+    background: $secondary;
+    border-radius: 1rem;
+    & input {
+      display: none;
+    }
+  }
+  & .date-input {
+    width: 50%;
+    & input {
+      width: 100%;
+    }
+
+  }
+}
+
+button.desactived {
+  background: $gray;
+  color: $black;
+}
+
 
 // Time
 // .time {
@@ -539,9 +605,11 @@ button.btn-active {
 }
 
 .active {
-  min-height: 18rem;
+  min-height: 22.5rem;
   // border-left-color: $line;
 }
+
+
 
 .field-required {
 	animation: flicker .6s linear;

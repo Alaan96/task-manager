@@ -34,9 +34,9 @@ app.post('/save-task/:id', authenticate, (req, res) => {
     tag: body.tag,
     important: body.important,
     urgent: body.urgent,
-    author: id
+    author: id,
+    date: body.date,
     // time: body.time,
-    // date: body.date,
     // list: body.list,
   })
 

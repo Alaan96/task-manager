@@ -24,13 +24,13 @@ let taskSchema = new Schema({
     type: Object,
     required: true
   },
+  date: {
+    type: String,
+    required: false,
+  },
   // time: {
   //   type: Object,
   //   required: false
-  // },
-  // date: {
-  //   type: Date,
-  //   required: false,
   // },
   // list: {
   //   type: Object,
@@ -44,6 +44,11 @@ let taskSchema = new Schema({
   author: {
     type: String,
     required: true
+  },
+  creationDate: {
+    type: Date,
+    required: true,
+    default: Date.now()
   },
   sharedWith: {
     type: Array,

@@ -8,32 +8,38 @@
 
   <div v-else-if="list"
     class="tag-list" :class="{negative}">
-    <button v-for="tag in tags"
-      :key="tag.text"
-      :class="{'selected': selections.includes(tag.text)}">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
-        <circle cx="4" cy="4" r="4" :fill="tag.color" />
-      </svg>
-      <label :for="tag.text">{{tag.text}}</label>
-      <input type="checkbox"
-        :id="tag.text"
-        :value="tag.text"
-        v-model="selections"
-        @change="setTags()">
-    </button>
-    <!-- <button v-for="tag in tags"
-      :key="tag.text"
-      :class="{'selected': selectedTag === tag.text}">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
-        <circle cx="4" cy="4" r="4" :fill="tag.color" />
-      </svg>
-      <label :for="tag.text">{{tag.text}}</label>
-      <input type="radio"
-        :id="tag.text"
-        :value="tag.text"
-        v-model="selectedTag"
-        @change="setTag(tag)">
-    </button> -->
+
+    <template v-if="multiple">
+      <button v-for="tag in tags"
+        :key="tag.text"
+        :class="{'selected': selections.includes(tag.text)}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
+          <circle cx="4" cy="4" r="4" :fill="tag.color" />
+        </svg>
+        <label :for="tag.text">{{tag.text}}</label>
+        <input type="checkbox"
+          :id="tag.text"
+          :value="tag.text"
+          v-model="selections"
+          @change="setTags()">
+      </button>
+    </template>
+
+    <template v-else>
+      <button v-for="tag in tags"
+        :key="tag.text"
+        :class="{'selected': selectedTag === tag.text}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
+          <circle cx="4" cy="4" r="4" :fill="tag.color" />
+        </svg>
+        <label :for="tag.text">{{tag.text}}</label>
+        <input type="radio"
+          :id="tag.text"
+          :value="tag.text"
+          v-model="selectedTag"
+          @change="setTag(tag)">
+      </button>
+    </template>
   </div>
 
   <modal v-else
@@ -161,6 +167,10 @@ export default {
       required: false,
     },
     preview: {
+      type: Boolean,
+      required: false
+    },
+    multiple: {
       type: Boolean,
       required: false
     },

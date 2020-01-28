@@ -8,6 +8,7 @@
         <tags v-if="!tagsOn" preview></tags>
         <tags v-else 
           list
+          multiple
           @getTags="filterByTag($event)">
         </tags>
         <cross v-if="tagsOn" @click.stop.native="hideTags"></cross>

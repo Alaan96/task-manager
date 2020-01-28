@@ -6,20 +6,27 @@
 
 	<article v-else
 		class="task"
-		:class="{'urgent': task.urgent}"
+		:class="[{'urgent': task.urgent}, {'showDate': task.date.length > 0}]"
 		:style="{'border-color': task.tag.color}"
 		
 		@touchstart="optionsStart"
-		@touchmove="swypeOptions">
+		@touchmove.prevent="swypeOptions">
 
 		<!-- Date -->
-		<!-- <div v-if="task.date.active"
+		<div v-if="task.date.length > 0"
+			class="date"
+			:style="{'backgroundColor': task.tag.color}">
+			<span>
+				{{ task.date }}
+			</span>
+		</div>
+		<!-- <div v-if="task.date.length > 0"
 			class="date"
 			:class="{'extend-date': showFullDate}"
 			:style="{'backgroundColor': task.tag.color}"
 			@click="showFullDate = !showFullDate">
 			<span>
-				{{ task.date.string }}
+				{{ task.date }}
 			</span>
 		</div> -->
 		
@@ -31,7 +38,8 @@
 		
 		<!-- Description -->
 		<div v-if="task.description" 
-			class="description">
+			class="description"
+			:class="{'withDate': task.date.length > 0}">
 			<p>{{task.description}}</p>
 		</div>
 
@@ -115,6 +123,7 @@ export default {
 				tag: {},
 				important: false,
 				urgent: false,
+				date: '',
 				// time: {
 				// 	initial: {
 				// 		hour: '09:00',
@@ -124,10 +133,6 @@ export default {
 				// 		hour: '13:00',
 				// 		active: false
 				// 	}
-				// },
-				// date: {
-				// 	string: `${new Date().getDate()}/${new Date().getMonth() + 1}/${new Date().getFullYear()}`,
-				// 	active: false
 				// },
 				// list: {
 				// 	title: '',
@@ -204,8 +209,7 @@ export default {
 	width: 100%;
 	min-height: 3rem;
 	margin: .5rem auto;
-	padding-left: 1rem;
-	padding-right: 1rem;
+	padding: 0 1rem;
 	background: $line;
 	border-left: .5rem solid $secondary;
 	color: $primary;
@@ -287,23 +291,23 @@ export default {
 	// 	font-size: .75rem;
 	// }
 
-	// & .date {
-	// 	width: 3rem;
-	// 	height: 3rem;
-	// 	@include center;
-	// 	position: absolute;
-	// 	top: 0;
-	// 	left: -.5rem;
-	// 	font-size: 1.25rem;
-	// 	font-family: $lato;
-	// 	font-weight: 700;
-	// 	border-radius: $radius;
-	// 	transition: .2s ease;
-	// 	& span {
-	// 		width: 47%;
-	// 		overflow: hidden;
-	// 	}
-	// }
+	& .date {
+		width: 3rem;
+		height: 3rem;
+		@include center;
+		position: absolute;
+		top: 0;
+		left: -.5rem;
+		font-size: 1.25rem;
+		font-family: $lato;
+		font-weight: 700;
+		border-radius: $radius;
+		transition: .2s ease;
+		& span {
+			width: 47%;
+			overflow: hidden;
+		}
+	}
 
 }
 
@@ -314,9 +318,9 @@ export default {
 // 	}
 // }
 
-// .fixTitle {
-// 	padding-left: 2.5rem;
-// }
+article.showDate {
+	padding-left: 3.5rem;
+}
 
 // .complete {
 // 	text-decoration: line-through;
