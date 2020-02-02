@@ -6,7 +6,7 @@
 </template>
 
 <script>
-import calendary from '@/components/calendary'
+import calendary from '@/components/calendar/calendary'
 import list from '@/components/task/list'
 
 export default {

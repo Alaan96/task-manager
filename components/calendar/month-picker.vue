@@ -46,7 +46,7 @@ export default {
 
   section {
     width: 100%;
-    padding: 0 .5rem;
+    // padding: 0 .5rem;
     display: grid;
     grid-template-columns: repeat(3, minmax(6.5rem, 1fr));
     grid-auto-rows: 5rem;
@@ -56,6 +56,7 @@ export default {
       // width: 100%;
       // height: 100%;
       @include center;
+      font-family: $niramit;
       font-size: 1rem;
       background: $line;
       color: $primary;
