@@ -3,14 +3,14 @@
     <g class="date" :data-full-date="fullDate"
       :class="[{isToday}, {visible}]"
       :transform="`translate(${x}, ${y})`">
-      <circle class="today" cx="24" cy="58" r="14" v-if="isToday" />
-      <circle class="selected" cx="24" cy="58" r="21" v-show="selected" />
-      <text x="24" y="64"
+      <circle class="today" cx="24" cy="24" r="14" v-if="isToday" />
+      <circle class="selected" cx="24" cy="24" r="21" v-show="selected" />
+      <text x="24" y="30"
         text-anchor="middle">
         <slot><!-- Number --></slot>
       </text>
       <g class="points" v-if="false">
-        <circle class="point" cx="36" cy="76" r="4" fill="#F16D6D" />
+        <circle class="point" cx="36" cy="42" r="4" fill="#F16D6D" />
       </g>
     </g>
   <!-- </g> -->
@@ -154,7 +154,7 @@ export default {
     stroke-width: 2px;
 
     animation: new-selection .2s ease;
-    transform-origin: 8% 16%; // idk
+    transform-origin: 8% 8%; // idk
   }
 }
 

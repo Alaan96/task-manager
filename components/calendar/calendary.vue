@@ -10,10 +10,10 @@
 
       <div class="controls">
         <button>
-          <arrow></arrow>
+          <arrow @click.native="calendaryTo('up')"></arrow>
         </button>
         <button>
-          <arrow direction="down"></arrow>
+          <arrow direction="down" @click.native="calendaryTo('down')"></arrow>
         </button>
       </div>
 
@@ -31,16 +31,17 @@
       @touchmove.prevent="calendarLoad"
       @touchend="calendarChange">
 
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 320" v-if="calendar === 'default'">
-
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 38" v-if="calendar === 'default'">
         <g class="week">
           <text v-for="(dayWeek, index) in days" :key="dayWeek"
             :x="48 * index + 24" y="24" text-anchor="middle">
             {{ dayWeek.slice(0, 1) }}
           </text>
-          <line x1="0" x2="336" y1="32" y2="32" stroke-width="2" />
+          <line x1="0" x2="336" y1="36" y2="36" stroke-width="2" />
         </g>
+      </svg>
 
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 288" v-if="calendar === 'default'">
         <g class="container">
           <g class="dates"
             :style="{transform: `translateY(-${positions[calendarMonth]}px)`}"
@@ -56,16 +57,6 @@
             </date>
           </g>
         </g>
-
-
-
-          <!-- <circle cx="24" cy="24" r="21" class="border"/>
-          <circle cx="24" cy="24" r="16" class="fill" v-if="today"/>
-          <text x="24" y="30" text-anchor="middle">{{number}}</text> -->
-
-          <!-- <circle v-for="(point, index) in points" :key="index" v-show="point.date === fullDate"
-            :cx="pointPosition[index].x" :cy="pointPosition[index].y" r="4" :fill="point.tag.color"
-            class="point"/> -->
       </svg>
 
 
@@ -223,6 +214,22 @@ export default {
       this.$store.commit('date/changeSelected', today)
     },
 
+    calendaryTo(direction) {
+      if (this.calendar === 'default') {
+        this.changeMonth(direction)
+      }
+    },
+
+    changeMonth(direction) {
+      if (direction === 'up') {
+        this.calendarMonth++
+      } else if (direction === 'down') {
+        this.calendarMonth--
+
+      }
+      // this.$store.commit('calendary/changeMonth', orientation)
+      // this.adjustCalendar(this.month)
+    },
 
 
     saveEveryFirstDay(year) {
@@ -249,17 +256,13 @@ export default {
       }
     },
 
-    adjustCalendar(month) {
-      let position = this.firstDays[month].top
-      if (this.calendarPosition !== position) {
-        this.calendarPosition = position
-      }
-    },
+    // adjustCalendar(month) {
+    //   let position = this.firstDays[month].top
+    //   if (this.calendarPosition !== position) {
+    //     this.calendarPosition = position
+    //   }
+    // },
 
-    changeMonth(orientation) {
-      this.$store.commit('calendary/changeMonth', orientation)
-      this.adjustCalendar(this.month)
-    },
 
     // Change the calendar mode between normal, months, years
     changeCalendarTo(mode) {
@@ -276,9 +279,9 @@ export default {
     },
     calendarChange() {
       if (this.touch.swype <= -this.touch.threshold) {
-        this.changeMonth('previous')
+        this.calendaryTo('up')
       } else if(this.touch.swype >= this.touch.threshold) {
-        this.changeMonth('next')
+        this.calendaryTo('down')
       }
       this.touch.swype = 0
     }
@@ -364,10 +367,6 @@ header {
 
 .calendar {
   width: 100%;
-  & .container {
-    max-height: 3rem * 6;
-    overflow-y: hidden;
-  }
   & line {
     stroke: $line;
     // stroke-width: 2px;
