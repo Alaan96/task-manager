@@ -15,7 +15,7 @@ export const mutations = {
   setList(state, list) {
     state.list = list
   },
-  pushTask(state, task) {
+  addLast(state, task) {
     state.list.push(task)
   },
   deleteOne(state, index) {
@@ -42,7 +42,7 @@ export const actions = {
   async lastSaved(context, url) {
     const data = await this.$axios.$get(url)
     if (data.status === 'success') {
-      context.commit('pushTask', data.task)
+      context.commit('addLast', data.task)
       console.log('Last task added correctly.')
     } else {
       console.log('Task not found.')

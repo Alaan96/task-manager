@@ -1,7 +1,8 @@
 <template>
 	<task-form v-if="editable"
 		:contentEditable="task"
-		v-model="task">
+		v-model="task"
+		@discardChanges="cancelEdition($event)">
 	</task-form>
 
 	<article v-else
@@ -74,11 +75,11 @@
 
 		<div class="options"
 			:class="{'show-options': options}">
-			<button @click="edit">
+			<button @click="edit()">
 				<!-- <edit-icon></edit-icon> -->
 				<span>Editar</span>
 			</button>
-			<button @click="removeTask">
+			<button @click="removeTask()">
 				<!-- <cross></cross> -->
 				<span>Borrar</span>
 			</button>
@@ -174,6 +175,13 @@ export default {
 		edit() {
 			this.editable = true
 		},
+		cancelEdition($event) {
+			console.log($event)
+			this.task = $event
+			this.editable = false
+			this.options = false
+		},
+
 		removeTask() {
 			this.$store.commit('task/deleteOne', this.index)
 			this.$axios.$delete(`${this.url}/remove-task/${this.task._id}`)
@@ -227,6 +235,7 @@ export default {
 	& .title {
 		width: 100%;
 		// min-height: 3rem;
+		// height: 2rem;
 		margin: 0;
 		padding: .5rem 0;
 		display: flex;

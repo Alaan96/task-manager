@@ -1,4 +1,5 @@
 const express = require('express')
+const _ = require('underscore')
 
 const Task = require('../models/task')
 const { authenticate } = require('../middlewares/authentication')
@@ -221,6 +222,122 @@ app.delete('/remove-task/:taskId', authenticate, (req, res) => {
       task: disabledTask
     })
   })
+})
+
+app.put('/update-task/:taskId', authenticate, (req, res) => {
+  const id = req.params.taskId
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  const fields = ['title', 'description', 'tag', 'important', 'urgent', 'date']
+
+  const data = _.pick(req.body, fields)
+
+  Task.findById(id, (err, taskDB) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to get the task.',
+        err
+      })
+    }
+
+    if (!taskDB) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Task not found.',
+      })
+    }
+
+    console.log(data)
+    
+    const dataContent = Object.keys(data)
+    console.log(dataContent)
+
+    if (dataContent.length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'The data provided is empty.',
+        changes: data,
+        task: taskDB
+      })
+    }
+
+    let propertiesForUpdate = []
+
+    dataContent.forEach(property => {
+      if (taskDB[property] !== data[property]) {
+        console.log(`${property} has a different value.`)
+        propertiesForUpdate.push(property)
+      } else {
+        console.log(`${property} has the same value.`)
+      }
+    })
+
+    if (propertiesForUpdate.length === 0) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'No changes detected.',
+        data: data,
+        task: taskDB
+      })
+    }
+
+    propertiesForUpdate.forEach(newProperty => {
+      taskDB[newProperty] = data[newProperty]
+    })
+    
+    taskDB.save((err, taskDB) => {
+      if (err) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Error updating task.',
+          err
+        })
+      }
+
+      if (!taskDB) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'Task not found.',
+        })
+      }
+
+      return res.json({
+        status: 'success',
+        message: 'Task updated correctly.',
+        changes: data,
+        task: taskDB
+      })
+    })
+  })
+
+  // Task.findByIdAndUpdate(id, data, { new: true, runValidators: true, context: 'query' }, (err, taskDB) => {
+  //   if (err) {
+  //     return res.status(500).json({
+  //       status: 'error',
+  //       message: 'Unable to update the properties.',
+  //       err
+  //     })
+  //   }
+  //   if (!taskDB) {
+  //     return res.status(404).json({
+  //       status: 'error',
+  //       message: 'Task not found.',
+  //     })
+  //   }
+
+  //   return res.json({
+  //     status: 'success',
+  //     message: 'Task updated correctly.',
+  //     task: taskDB
+  //   })
+  // })
 })
 
 

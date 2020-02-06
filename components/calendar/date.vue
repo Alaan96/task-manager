@@ -9,8 +9,11 @@
         text-anchor="middle">
         <slot><!-- Number --></slot>
       </text>
-      <g class="points" v-if="false">
-        <circle class="point" cx="36" cy="42" r="4" fill="#F16D6D" />
+      <g class="points" :data-full-date="fullDate" v-if="points.length > 0">
+        <circle class="orbit" cx="24" cy="24" r="21" />
+        <!-- <circle class="point" cx="36" cy="42" r="4" fill="#F16D6D" /> -->
+        <circle class="point" v-for="(point, index) in points" :key="point._id"
+          :cx="pointPosition[index].x" :cy="pointPosition[index].y" r="4" :fill="point.tag.color" />
       </g>
     </g>
   <!-- </g> -->
@@ -38,7 +41,7 @@ export default {
   data() {
     return {
       pointPosition: [
-        {x: 38, y: 40},
+        {x: 36, y: 42},
         {x: 44, y: 25},
         {x: 39, y: 10},
       ]
@@ -51,15 +54,6 @@ export default {
     },
   },
   computed: {
-    positionDates() {
-      let week = 0
-      if ((this.index + 1) % week * 7 !== 0) {
-        return 48 * week
-      } else {
-        week++
-        return 48 * week
-      }
-    },
     selected() {
       let dateSelected = this.$store.getters['date/selected']
       if (dateSelected === this.fullDate) {
@@ -67,21 +61,6 @@ export default {
       } else {
         return false
       }
-      // get() {
-      //   let dividedDate = this.$store.getters['date/selected'].split('/')
-      //   let selected = `${this.formatNumber(dividedDate[0])}/${this.formatNumber(dividedDate[1])}/${dividedDate[2]}`
-      //   console.log(dividedDate, selected)
-      //   if (selected === this.fullDate) {
-      //     return true
-      //   } else {
-      //     return false
-      //   }
-      // },
-      // set(fullDate) {
-      //   if (fullDate) {
-      //     this.$store.commit('date/changeSelected', fullDate)
-      //   }
-      // }
     },
     isToday() {
       if (this.fullDate === this.$store.getters['date/todayFullDate']) {
@@ -91,7 +70,7 @@ export default {
       }
     },
     visible() {
-      let currentMonth = this.$store.getters['date/today'].getMonth() + 1
+      let currentMonth = this.calendarMonth + 1
       let dateMonth = this.fullDate.slice(3, -5)
       if (dateMonth == currentMonth) {
         return true
@@ -104,6 +83,12 @@ export default {
       month: 'month',
       date: 'date'
     })
+  },
+  mounted() {
+    // this.$on('selectDate', console.log('Captó el evento.'))
+  },
+  beforeUpdate() {
+    // this.$once('selectDate', console.log('Captó el evento.'))
   },
   props: {
     index: {
@@ -121,18 +106,12 @@ export default {
     fullDate: {
       type: String
     },
-    // number: {
-    //   type: [String, Number]
-    // },
-    // index: {
-    //   type: Number
-    // },
-    // monthNumber: {
-    //   type: Number
-    // },
-    // points: {
-    //   type: Array
-    // }
+    calendarMonth: {
+      type: Number
+    },
+    points: {
+      type: Array
+    }
   }
 }
 </script>
@@ -162,6 +141,7 @@ export default {
   & text {
     font-family: $lato;
     fill: $tertiary;
+    font-weight: 700;
   }
   & circle.selected {
     fill: transparent;
@@ -195,18 +175,26 @@ export default {
 }
 
 @keyframes create-point {
-  from {
-    transform: scale(.5);
+  0% {
     opacity: 0;
+    r: 0;
   }
-  to {
-    transform: scale(1);
+  50% {
+    r: 6;
+  }
+  100% {
     opacity: 1;
+    r: 4;
   }
 }
+
+.orbit {
+  fill: transparent;
+  stroke-width: 1px;
+  stroke: $line;
+}
 .point {
-  animation: create-point 1s ease-out;
-  transform-origin: right;
+  animation: create-point .4s ease-out;
   box-shadow: 0 0 .5rem rgba(0, 0, 0, 0.2);
 }
 </style>

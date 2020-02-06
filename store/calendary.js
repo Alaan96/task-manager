@@ -7,42 +7,57 @@ export const state = () => ({
   year: new Date().getFullYear(),
   month: new Date().getMonth(),
   date: new Date().getDate(),
+
+  reload: false
 })
 
 export const mutations = {
-  changeMonth(state, orientation) {
-    if (orientation) {
-      if (orientation === 'previous') {
-        state.month -= 1
-        if (state.month < 0) {
-          state.month = 11
-          state.year -= 1
-        }
-      } else if (orientation === 'next') {
-        state.month += 1
-        if (state.month > 11) {
-          state.month = 0
-          state.year += 1
-        }
+  // changeMonth(state, orientation) {
+  //   if (orientation) {
+  //     if (orientation === 'previous') {
+  //       state.month -= 1
+  //       if (state.month < 0) {
+  //         state.month = 11
+  //         state.year -= 1
+  //       }
+  //     } else if (orientation === 'next') {
+  //       state.month += 1
+  //       if (state.month > 11) {
+  //         state.month = 0
+  //         state.year += 1
+  //       }
+  //     }
+  //     // console.log(`Go to ${orientation} month`)
+  //   } else {
+  //     console.log('Orientation undefined')
+  //   }
+  // },
+  // setMonth(state, month) {
+  //   if (month && typeof month === 'number') {
+  //     state.month = month
+  //   }
+  // },
+    changeWeekStart(state, firstDay) {
+  		if (firstDay === 'Lunes') {
+        state.days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
       }
-      // console.log(`Go to ${orientation} month`)
-    } else {
-      console.log('Orientation undefined')
+      if (firstDay === 'Domingo') {
+        state.days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
+      }
+      
+      state.reload = true
+    },
+    updated(state) {
+      state.reload = false
     }
-  },
-  setMonth(state, month) {
-    if (month && typeof month === 'number') {
-      state.month = month
-    }
-  },
-  //	chageWeekOrder(state) {
-  //		
-  //	}
 }
 
 export const getters = {
   dates(state) {
     return new Date(state.year, state.month + 1, 0).getDate()
+  },
+  reload(state) {
+    return state.reload
   }
 }
 

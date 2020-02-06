@@ -3,7 +3,9 @@
     :class="{active}"
     ref="task-form"
     @click="toggleForm('open')"
-    @keyup.enter="saveTask()">
+    @keyup="toggleForm('open')"
+    @keyup.enter="saveTask()"
+    @keyup.esc="discardTask()">
     
     <div class="task-field">
       <input type="text"
@@ -71,8 +73,8 @@
           name="date"
           pattern="^(?:3[01]|[12][0-9]|0?[1-9])([\-/.])(0?[1-9]|1[1-2])\1\d{4}$"
           :disabled="!activeDate"
-          v-model="task.date"
-          @keyup="autocompleteDividers()">
+          v-model="dateSelected"
+          @keyup="autocompleteDate()">
       </div>
     </section>
 
@@ -203,6 +205,8 @@ export default {
       active: false,
 
       activeDate: true,
+
+      onEdit: false,
       
       task: {
 				title: '',
@@ -229,11 +233,16 @@ export default {
 		}
   },
   computed: {
-    // dateSelected() {
-    //   let date = this.$store.getters['date/selected']
-    //   this.date.text = date
-    //   return date
-    // }
+    dateSelected: {
+      set(date) {
+        this.$store.commit('date/changeSelected', date)
+      },
+      get() {
+        const date = this.$store.getters['date/selected']
+        this.task.date = date
+        return date
+      }
+    }
   },
   methods: {
     setTag($event) {
@@ -256,32 +265,68 @@ export default {
 		saveTask() {
       let title = this.task.title
 
-      if (typeof title === 'string' && title !== '') {
-        this.$axios.$post(`${this.url}/save-task/${localStorage.getItem('id')}`, this.task)
-          .then( res => {
-            console.log(res)
-            this.resetForm()
-          })
-          .catch( err => {
-            console.log(err)
-            this.resetForm()
-          })
-        // this.$emit('saveTask')
-        this.toggleForm('close')
-        this.$store.dispatch('task/lastSaved', `${this.url}/last-saved/${localStorage.getItem('id')}`)
-
-      } else if (title.length === 0) {
+      if (title.length === 0) {
         this.$refs['task-form-title'].classList.add('field-required')
         setTimeout( () => {
           this.$refs['task-form-title'].classList.remove('field-required')
           this.$refs['task-form-title'].focus()
         }, 600 );
+      }
 
+      if (!this.activeDate) {
+        this.task.date = ''
+      } else {
+        this.dateSelected
+      }
+
+      if (typeof title === 'string' && title.length > 0) {
+
+        if (this.onEdit === true) {
+          // On edition
+
+          const original = this.contentEditable
+          if (this.task === original) {
+            this.toggleForm('close')
+            return null
+          } else {
+            this.$axios.$put(`${this.url}/update-task/${this.task._id}`, this.task)
+              .then( res => {
+                console.log(res)
+                // this.resetForm()
+              })
+              .catch( err => {
+                console.log(err)
+                // this.resetForm()
+              })
+            this.toggleForm('close')
+            // this.$store.dispatch('task/lastSaved', `${this.url}/last-saved/${this.id}`)
+          }
+
+        } else if (this.onEdit === false) {
+          // On new task
+          this.$axios.$post(`${this.url}/save-task/${this.id}`, this.task)
+            .then( res => {
+              console.log(res)
+              this.resetForm()
+            })
+            .catch( err => {
+              console.log(err)
+              this.resetForm()
+            })
+          // this.$emit('saveTask')
+          this.toggleForm('close')
+          this.$store.dispatch('task/lastSaved', `${this.url}/last-saved/${this.id}`)
+        }
       }
     },
     discardTask() {
       // this.$refs['task-form'].reset()
-      this.resetForm()
+      if (this.contentEditable) {
+        const original = this.contentEditable
+        this.$emit('discardChanges', original)
+      } else {
+        this.resetForm()
+      }
       this.toggleForm('close')
     },
 
@@ -290,7 +335,7 @@ export default {
       this.task.description = ''
       this.task.important = false
       this.task.urgent = false
-      this.task.date = ''
+      // this.task.date = ''
     },
 
     // addNewItem() {
@@ -303,23 +348,44 @@ export default {
     //   console.log(lastInput)
     // },
 
-    autocompleteDividers() {
-      if (this.task.date.length === 2 || this.task.date.length === 5) {
-        let formattedDate = this.task.date.concat('/')
-        this.task.date = formattedDate
+    autocompleteDate() {
+      let dateLength = this.dateSelected.length
+      let keyCode = event.keyCode
+
+      if (keyCode === 8 || keyCode === 46) {
+        return null
+      } else if (dateLength === 2 || dateLength === 5) {
+        let formattedDate = this.dateSelected
+        formattedDate = this.dateSelected.concat('/')
+        this.dateSelected = formattedDate
       }
     },
 
+    // setSelectedDate() {
+    //   this.task.date = this.dateSelected
+    // },
+
     editContent() {
-      if ( this.contentEditable ) {
+      if (this.contentEditable) {
         console.log(this.contentEditable)
-        this.task = this.contentEditable
+        Object.assign(this.task, this.contentEditable)
+        if (this.contentEditable.date === '') {
+          this.activeDate = false
+          this.task.date = ''
+        }
+        this.onEdit = true
+        this.toggleForm('open')
       }
     }
   },
   beforeMount() {
-    // this.editContent()
+    // this.setSelectedDate()
+    this.editContent()
+    this.dateSelected
   },
+  // mounted() {
+  //   this.dateSelected
+  // },
   props: {
     contentEditable: {
       type: Object,

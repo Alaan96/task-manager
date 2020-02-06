@@ -10,7 +10,9 @@ export const state = () => ({
     {text: 'Salud', color: '#F16D6D'},
     {text: 'Estudios', color: '#72D9A2'},
     {text: 'Eventos', color: '#E9B786'},
-  ]
+  ],
+  defaultPage: 0,
+  weekStart: 0
 })
 
 export const mutations = {

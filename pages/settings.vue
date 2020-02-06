@@ -12,8 +12,8 @@
       <li>
         <span class="title">Vista al iniciar</span>
         <div class="config">
-          <select name="defaultPage" id="defaultPage">
-            <option v-for="page in defaultPage"
+          <select name="defaultPage" v-model="defaultPage">
+            <option v-for="page in defaultPageOptions"
               :key="page.text"
               :value="page.value">
               {{page.text}}
@@ -24,8 +24,9 @@
       <li>
         <span class="title">Inicio de semana</span>
         <div class="config">
-          <select name="defaultPage">
-            <option v-for="day in weekStart"
+          <select name="weekStart" v-model="weekStart"
+            @change="changeWeekStart(weekStart)">
+            <option v-for="day in weekStartOptions"
               :key="day.text"
               :value="day.value">
               {{day.text}}
@@ -72,14 +73,17 @@ export default {
   },
   data() {
     return {
-      defaultPage: [
+      defaultPageOptions: [
         {text: 'Diaria', value: '/'},
         {text: 'Calendario', value: '/calendar'},
       ],
-      weekStart: [
+      defaultPage: '/calendar',
+      weekStartOptions: [
         {text: 'Lunes', value: 'Lunes'},
         {text: 'Domingo', value: 'Domingo'},
       ],
+      weekStart: 'Lunes',
+
       workOffline: false,
       darkMode: false
 
@@ -104,6 +108,12 @@ export default {
       // ]
     }
   },
+  methods: {
+    changeWeekStart(firstDay) {
+      console.log('Change week start')
+      this.$store.commit('calendary/changeWeekStart', firstDay)
+    }
+  }
 }
 </script>
 

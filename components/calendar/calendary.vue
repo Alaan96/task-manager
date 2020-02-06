@@ -3,7 +3,7 @@
 
     <header>
       <button class="month-handler">
-        <label for="month-input">{{months[month]}}</label>
+        <label for="month-input">{{months[calendarMonth]}}</label>
         <input type="radio" id="month-input" v-show="false"
           value="month" v-model="calendar">
       </button>
@@ -18,7 +18,7 @@
       </div>
 
       <button class="year-handler">
-        <label for="year-input">{{year}}</label>
+        <label for="year-input">{{calendarYear}}</label>
         <input type="radio" id="year-input" v-show="false"
           value="month" v-model="calendar">
       </button>
@@ -42,20 +42,20 @@
       </svg>
 
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 288" v-if="calendar === 'default'">
-        <g class="container">
-          <g class="dates"
-            :style="{transform: `translateY(-${positions[calendarMonth]}px)`}"
-            @click="selectDate()">
-            <date 
-              v-for="(date, index) of yearDates" :key="index"
-              :index="index"
-              :x="date.x"
-              :y="date.y"
-              :day="date.day"
-              :fullDate="date.fullDate">
-              {{date.number}}
-            </date>
-          </g>
+        <g class="dates"
+          :style="{transform: `translateY(-${positions[calendarMonth]}px)`}"
+          @click="selectDate()">
+          <date 
+            v-for="(date, index) of yearDates" :key="index"
+            :index="index"
+            :x="date.x"
+            :y="date.y"
+            :day="date.day"
+            :fullDate="date.fullDate"
+            :calendarMonth="calendarMonth"
+            :points="date.points">
+            {{date.number}}
+          </date>
         </g>
       </svg>
 
@@ -100,7 +100,7 @@ export default {
       firstDays: [],
 
       // Number that defines which month the user is in
-      calendarPosition: 48 * 4, //parseInt(localStorage.getItem('calendar-position')) || 0
+      // calendarPosition: 48 * 4, //parseInt(localStorage.getItem('calendar-position')) || 0
 
 
       // Initialization vars for touch events
@@ -120,15 +120,19 @@ export default {
   mixins: [datesFunctions],
   methods: {
     selectDate() {
-      let dateSelected = event.target.parentElement.attributes[2].value
+      let dateSelected = event.target.parentElement.attributes['data-full-date'].value
       this.$store.commit('date/changeSelected', dateSelected)
     },
 
 
     loadYearDates(year) {
-      // Reset datesList
+      // Reset yearDates
       this.yearDates = []
 
+      // Get tasks with date
+      let tasks = this.tasks
+
+      // Get first day of the year
       let firstDay
       if (this.days[0] === 'Lunes') {
         firstDay = new Date(year, 0, 1).getDay() - 1
@@ -156,16 +160,18 @@ export default {
           x: x,
           y: y,
           day: day,
-          fullDate: ''
-          // month: undefined,
-          // monthNumber: undefined,
+          fullDate: '',
+          points: []
         })
 
         day++
       }
 
-      this.months.forEach( (month, monthIndex) => {
+      // Reset positions
+      this.positions = []
 
+      // Load yearDates
+      this.months.forEach( (month, monthIndex) => {
         this.positions.push(y)
 
         for(let date = 1; date <= new Date(year, monthIndex + 1, 0).getDate(); date++) {
@@ -176,43 +182,44 @@ export default {
           x = size * day
           y = size * (week - 1)
 
+          let fullDate = `${this.formatDate(date)}/${this.formatDate(monthIndex + 1)}/${this.calendarYear}`
+          // let points = tasks.filter( task => task.date === fullDate)
+
           this.yearDates.push({
             number: date,
             x: x,
             y: y,
             day: day,
-            fullDate: `${this.formatDate(date)}/${this.formatDate(monthIndex + 1)}/${this.calendarYear}`
+            fullDate: fullDate,
+            points: []
+            // points: points ? points : []
           })
 
           day++
         }
       })
 
-      // this.months.forEach( (month, index) => {
-        // Load dates of the year
-        // for(let date = 1; date <= 30; date++) {
-        // for(let date = 1; date <= new Date(this.year, index + 1, 0).getDate(); date++) {
-          // let tags = this.tasks.filter( task => task.date.length > 0 )
-          // x = size * (date - 1) + 24
-
-          // this.yearDates.push({
-          //   number: date,
-          //   x: x,
-          //   y: undefined
-            // number: this.formatNumber(date, true),
-            // month: `${this.months[index]}`,
-            // monthNumber: index + 1,
-            // fullDate: `${this.formatNumber(date)}/${this.formatNumber(index + 1)}/${this.year}`,
-            // tags: tags
-          // })
-        // }
-      // })
+      // this.loadTasks()
     },
 
     setTodayAsSelected() {
       let today = this.$store.getters['date/todayFullDate']
       this.$store.commit('date/changeSelected', today)
     },
+
+    // loadTasks() {
+    //   console.log('Load tasks')
+    //   let tasks = this.tasks
+
+    //   tasks.forEach( task => {
+    //     let taskDate = task.date
+    //     this.yearDates.filter( date => {
+    //       if (date.fullDate === taskDate) {
+    //         date.points.push(task)
+    //       }
+    //     })
+    //   })
+    // },
 
     calendaryTo(direction) {
       if (this.calendar === 'default') {
@@ -222,47 +229,28 @@ export default {
 
     changeMonth(direction) {
       if (direction === 'up') {
-        this.calendarMonth++
-      } else if (direction === 'down') {
         this.calendarMonth--
-
-      }
-      // this.$store.commit('calendary/changeMonth', orientation)
-      // this.adjustCalendar(this.month)
-    },
-
-
-    saveEveryFirstDay(year) {
-      let savedYear = localStorage.getItem(`${year}`)
-      console.log(this.$refs.calendar)
-      let calendarTop = this.$refs.calendar.getBoundingClientRect().top
-      console.log(calendarTop)
-      if (!savedYear) {
-        this.months.forEach( (month, index) => {
-          this.firstDays.push({
-            top: document.querySelector(`svg[data-date="1/${index + 1}/${this.year}"]`).getBoundingClientRect().top - calendarTop,
-            month: this.months[index]
-          })
-        })
-        localStorage.setItem(`${year}`, JSON.stringify(this.firstDays))
-      }
-      this.firstDays = JSON.parse(savedYear)
-    },
-
-    saveCalendarPosition() {
-      let savedPosition = localStorage.getItem('calendar-position')
-      if (!savedPosition) {
-        localStorage.setItem('calendar-position', this.firstDays[this.month].top)
+        if (this.calendarMonth < 0) {
+          this.calendarMonth = 11
+          this.calendarYear -= 1
+          this.loadYearDates(this.calendarYear)
+        }
+      } else if (direction === 'down') {
+        this.calendarMonth++
+        if (this.calendarMonth > 11) {
+          this.calendarMonth = 0
+          this.calendarYear += 1
+          this.loadYearDates(this.calendarYear)
+        }
       }
     },
 
-    // adjustCalendar(month) {
-    //   let position = this.firstDays[month].top
-    //   if (this.calendarPosition !== position) {
-    //     this.calendarPosition = position
+    // saveCalendarPosition() {
+    //   let savedPosition = localStorage.getItem('calendar-position')
+    //   if (!savedPosition) {
+    //     localStorage.setItem('calendar-position', this.firstDays[this.month].top)
     //   }
     // },
-
 
     // Change the calendar mode between normal, months, years
     changeCalendarTo(mode) {
@@ -290,37 +278,49 @@ export default {
     this.loadYearDates(this.calendarYear)
 
     this.setTodayAsSelected()
-    // this.loadDatesList(this.year)
-    // this.calendarYear = this.year
+    this.setTasks
   },
   mounted() {
-    // this.saveEveryFirstDay(this.year)
     // this.saveCalendarPosition()
   },
-  // beforeUpdate() {
-  //   if (this.year !== this.calendarYear) {
-  //     this.loadDatesList(this.year)
-  //     this.calendarYear = this.year
-  //   } else {
-  //   }
-  // },
   computed: {
+    reloadCalendar() {
+      let reload = this.$store.getters['calendary/reload']
+      console.log(reload)
+      if (reload === true) {
+        console.log('ASdasd')
+        this.loadYearDates(this.calendarYear)
+        this.$store.commit('calendary/updated')
+        return 'Reload calendar.'
+      } else {
+        return 'Calendar updated.'
+      }
+    },
     dates() {
       return this.$store.getters['calendary/dates']
     },
-    day() {
-      if (this.days[0] === 'Lunes') {
-        let day = new Date(this.year, this.month, 1).getDay() - 1
-        if (day < 0) {
-          day = 6
-        }
-        return day
-      } else if (this.days[0] === 'Domingo') {
-        return new Date(this.year, this.month, 1).getDay()
-      }
-    },
-    tasks() {
-      return this.$store.getters['task/getFullList']
+    // day() {
+    //   if (this.days[0] === 'Lunes') {
+    //     let day = new Date(this.year, this.month, 1).getDay() - 1
+    //     if (day < 0) {
+    //       day = 6
+    //     }
+    //     return day
+    //   } else if (this.days[0] === 'Domingo') {
+    //     return new Date(this.year, this.month, 1).getDay()
+    //   }
+    // },
+    setTasks() {
+      let tasks = this.$store.getters['task/getFullList'].filter( task => task.date !== '' )
+      tasks.forEach( task => {
+        let taskDate = task.date
+        this.yearDates.filter( date => {
+          if (date.fullDate === taskDate) {
+            date.points.push(task)
+          }
+        })
+      })
+      return tasks
     },
     ...mapState('calendary', {
       year: 'year',
@@ -341,6 +341,7 @@ header {
   display: flex;
   justify-content: space-between;
   align-items: center;
+  position: relative;
 
   & button {
     font-size: 1.5rem;
@@ -353,13 +354,11 @@ header {
   }
 
   & .controls {
-    padding: 0 1rem;
-    display: flex;
-    flex-direction: row;
-    flex: 0 1 1rem;
+    position: absolute;
+    left: 42%;
     & button {
       width: 1.5rem;
-      margin: 0 .5rem;
+      margin: 0 .25rem;
     }
   }
 
@@ -378,6 +377,10 @@ g.week {
     fill: $primary;
     font-weight: 700;
   }
+}
+
+g.dates {
+  transition: .2s ease;
 }
 
 
