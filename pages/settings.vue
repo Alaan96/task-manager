@@ -64,6 +64,8 @@ import tags from '@/components/tags'
 import modal from '@/components/modal'
 import btnCheckbox from '@/components/inputs/button-checkbox'
 
+import { helpers } from '@/assets/mixins/api-helpers'
+
 export default {
   components: {
     // 'settings-data': data,
@@ -82,36 +84,44 @@ export default {
         {text: 'Lunes', value: 'Lunes'},
         {text: 'Domingo', value: 'Domingo'},
       ],
-      weekStart: 'Lunes',
+      weekStart: '',
 
       workOffline: false,
-      darkMode: false
+      darkMode: false,
 
-
-      // configs: [
-      //   {
-      //     title: 'Etiquetas',
-      //     config: ''
-      //   },
-      //   {
-      //     title: 'Vista al iniciar'
-      //   },
-      //   {
-      //     title: 'Inicio de semana'
-      //   },
-      //   {
-      //     title: 'Funcionar sin conexión'
-      //   },
-      //   {
-      //     title: 'Modo oscuro'
-      //   }
-      // ]
+      options: {}
     }
   },
+  mixins: [helpers],
   methods: {
     changeWeekStart(firstDay) {
       console.log('Change week start')
+      this.options.weekStart = this.weekStart
       this.$store.commit('calendary/changeWeekStart', firstDay)
+      this.sendChanges()
+    },
+    sendChanges() {
+      let options = this.options
+      console.log(options)
+      this.$axios.$put(`${this.url}/user/${this.id}`, options)
+        .then( res => {
+          console.log(res)
+        })
+        .catch( err => {
+          console.log(err)
+        })
+
+      this.options = {}
+    },
+  },
+  beforeMount() {
+    this.optionsFromStore
+  },
+  computed: {
+    optionsFromStore() {
+      let firstDay = this.$store.state.user.weekStart
+      this.weekStart = firstDay
+      return 'Options loaded from store.'
     }
   }
 }

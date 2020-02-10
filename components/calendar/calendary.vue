@@ -52,8 +52,7 @@
             :y="date.y"
             :day="date.day"
             :fullDate="date.fullDate"
-            :calendarMonth="calendarMonth"
-            :points="date.points">
+            :calendarMonth="calendarMonth">
             {{date.number}}
           </date>
         </g>
@@ -92,6 +91,7 @@ export default {
 
       calendarYear: new Date().getFullYear(),
       calendarMonth: new Date().getMonth(),
+      days: [],
 
       // Y position to change between months
       positions: [],
@@ -102,6 +102,8 @@ export default {
       // Number that defines which month the user is in
       // calendarPosition: 48 * 4, //parseInt(localStorage.getItem('calendar-position')) || 0
 
+      // Calendary state
+      loaded: false,
 
       // Initialization vars for touch events
       touch: {
@@ -119,6 +121,10 @@ export default {
   },
   mixins: [datesFunctions],
   methods: {
+    loadAlgo() {
+      console.log('Cargó la cosa con éxito.')
+    },
+
     selectDate() {
       let dateSelected = event.target.parentElement.attributes['data-full-date'].value
       this.$store.commit('date/changeSelected', dateSelected)
@@ -126,55 +132,36 @@ export default {
 
 
     loadYearDates(year) {
-      // Reset yearDates
-      this.yearDates = []
+      if (this.loaded === false) {
+        console.log('Iniciando carga de fechas.')
+        // Reset yearDates
+        this.yearDates = []
 
-      // Get tasks with date
-      let tasks = this.tasks
+        // Get tasks with date
+        let tasks = this.tasks
 
-      // Get first day of the year
-      let firstDay
-      if (this.days[0] === 'Lunes') {
-        firstDay = new Date(year, 0, 1).getDay() - 1
-      } else if (this.days[0] === 'Domingo') {
-        firstDay = new Date(year, 0, 1).getDay()
-      }
-
-      let week = 1
-      let day = 0
-      let x = 0
-      let y = 0
-      let size = 48
-
-      // Load previous dates
-      for(let date = 1; date <= firstDay; date++) {
-        if (day === 7) {
-          week++
-          day = 0
+        // Get first day of the year
+        let days = this.$store.getters['calendary/days']
+        this.days = days
+        
+        let firstDay
+        if (this.days[0] === 'Lunes') {
+          firstDay = new Date(year, 0, 1).getDay() - 1
+        } else if (this.days[0] === 'Domingo') {
+          firstDay = new Date(year, 0, 1).getDay()
+        } else {
+          console.log('First day undefined.');
         }
-        x = size * day
-        y = size * (week - 1)
 
-        this.yearDates.push({
-          number: '',
-          x: x,
-          y: y,
-          day: day,
-          fullDate: '',
-          points: []
-        })
+        let week = 1
+        let day = 0
+        let x = 0
+        let y = 0
+        let size = 48
+        let newMonth = 0
 
-        day++
-      }
-
-      // Reset positions
-      this.positions = []
-
-      // Load yearDates
-      this.months.forEach( (month, monthIndex) => {
-        this.positions.push(y)
-
-        for(let date = 1; date <= new Date(year, monthIndex + 1, 0).getDate(); date++) {
+        // Load previous dates
+        for(let date = 1; date <= firstDay; date++) {
           if (day === 7) {
             week++
             day = 0
@@ -182,24 +169,53 @@ export default {
           x = size * day
           y = size * (week - 1)
 
-          let fullDate = `${this.formatDate(date)}/${this.formatDate(monthIndex + 1)}/${this.calendarYear}`
-          // let points = tasks.filter( task => task.date === fullDate)
-
           this.yearDates.push({
-            number: date,
+            number: '',
             x: x,
             y: y,
             day: day,
-            fullDate: fullDate,
+            fullDate: '',
             points: []
-            // points: points ? points : []
           })
 
           day++
         }
-      })
 
-      // this.loadTasks()
+        // Reset positions
+        this.positions = []
+
+        // Load yearDates
+        this.months.forEach( (month, monthIndex) => {
+          this.positions.push(newMonth)
+          for(let date = 1; date <= new Date(year, monthIndex + 1, 0).getDate(); date++) {
+            if (day === 7) {
+              week++
+              day = 0
+            }
+            x = size * day
+            y = size * (week - 1)
+
+            let fullDate = `${this.formatDate(date)}/${this.formatDate(monthIndex + 1)}/${this.calendarYear}`
+            // let points = tasks.filter( task => task.date === fullDate)
+
+            this.yearDates.push({
+              number: date,
+              x: x,
+              y: y,
+              day: day,
+              fullDate: fullDate,
+            })
+
+            day++
+          }
+          // Fix positions
+          if (day === 7) {
+              newMonth = size * week
+          } else {
+            newMonth = size * (week - 1)
+          }
+        })
+      }
     },
 
     setTodayAsSelected() {
@@ -275,41 +291,23 @@ export default {
     }
   },
   beforeMount() {
-    this.loadYearDates(this.calendarYear)
+    // this.loadYearDates(this.calendarYear)
 
-    this.setTodayAsSelected()
-    this.setTasks
+    // this.setTodayAsSelected()
+    
   },
   mounted() {
+    this.loadYearDates(this.calendarYear)
+    this.setTodayAsSelected()
     // this.saveCalendarPosition()
   },
+  beforeUpdate() {
+    // this.loadYearDates(this.calendarYear)
+  },
   computed: {
-    reloadCalendar() {
-      let reload = this.$store.getters['calendary/reload']
-      console.log(reload)
-      if (reload === true) {
-        console.log('ASdasd')
-        this.loadYearDates(this.calendarYear)
-        this.$store.commit('calendary/updated')
-        return 'Reload calendar.'
-      } else {
-        return 'Calendar updated.'
-      }
-    },
     dates() {
       return this.$store.getters['calendary/dates']
     },
-    // day() {
-    //   if (this.days[0] === 'Lunes') {
-    //     let day = new Date(this.year, this.month, 1).getDay() - 1
-    //     if (day < 0) {
-    //       day = 6
-    //     }
-    //     return day
-    //   } else if (this.days[0] === 'Domingo') {
-    //     return new Date(this.year, this.month, 1).getDay()
-    //   }
-    // },
     setTasks() {
       let tasks = this.$store.getters['task/getFullList'].filter( task => task.date !== '' )
       tasks.forEach( task => {
@@ -326,7 +324,7 @@ export default {
       year: 'year',
       months: 'months',
       month: 'month',
-      days: 'days',
+      // days: 'days',
       date: 'date',
     })
   }

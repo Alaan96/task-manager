@@ -21,21 +21,29 @@ export default {
     notify
   },
   mixins: [helpers],
-  beforeMount() {
+  created() {
     this.setTokenInHeaders()
 
     this.loadTasksList()
     this.loadUserData()
 
+    // this.setUserSettings()
+
   },
   methods: {
-    loadUserData() {
+    async loadUserData() {
       let url = `${this.url}/user/${localStorage.getItem('id')}`
-      this.$store.dispatch('user/profileData', url)
+      await this.$store.dispatch('user/profileData', url)
+
+      this.setUserSettings()
     },
     loadTasksList() {
       let url = `${this.url}/tasks/${localStorage.getItem('id')}`
       this.$store.dispatch('task/tasksDB', url)
+    },
+    setUserSettings() {
+      let firstDay = this.$store.state.user.weekStart
+      this.$store.commit('calendary/changeWeekStart', firstDay)
     }
   }
 }

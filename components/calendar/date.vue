@@ -42,8 +42,8 @@ export default {
     return {
       pointPosition: [
         {x: 36, y: 42},
-        {x: 44, y: 25},
-        {x: 39, y: 10},
+        {x: 44, y: 24},
+        {x: 36, y: 8},
       ]
     }
   },
@@ -78,6 +78,12 @@ export default {
         return false
       }
     },
+    points() {
+      let points = this.$store.getters['task/getFullList']
+          .filter( task => task.date === this.fullDate)
+
+      return points
+    },
     ...mapState('calendary', {
       year: 'year',
       month: 'month',
@@ -109,9 +115,9 @@ export default {
     calendarMonth: {
       type: Number
     },
-    points: {
-      type: Array
-    }
+    // points: {
+    //   type: Array
+    // }
   }
 }
 </script>
@@ -119,7 +125,7 @@ export default {
 <style lang="scss" scoped>
 
 .date {
-  opacity: .6;
+  opacity: .3;
   & text {
     font-family: $lato;
     fill: $primary;

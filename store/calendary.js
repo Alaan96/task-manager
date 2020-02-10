@@ -1,6 +1,7 @@
 export const state = () => ({
   // Order of the week
-  days: ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo'],
+  days: '',
+  // days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
   months: [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
   ],
@@ -8,7 +9,7 @@ export const state = () => ({
   month: new Date().getMonth(),
   date: new Date().getDate(),
 
-  reload: false
+  // reload: false
 })
 
 export const mutations = {
@@ -45,16 +46,19 @@ export const mutations = {
         state.days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
       }
       
-      state.reload = true
+      // state.reload = true
     },
-    updated(state) {
-      state.reload = false
-    }
+    // updated(state) {
+    //   state.reload = false
+    // }
 }
 
 export const getters = {
   dates(state) {
     return new Date(state.year, state.month + 1, 0).getDate()
+  },
+  days(state) {
+    return state.days
   },
   reload(state) {
     return state.reload

@@ -437,7 +437,9 @@ app.put('/user/:id', authenticate, (req, res) => {
     })
   }
 
-  const body = _.pick(req.body, ['name', 'email'])
+  let fields = ['name', 'email', 'weekStart']
+
+  const body = _.pick(req.body, fields)
 
   User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
     if (err) {

@@ -36,22 +36,22 @@ let userSchema = new Schema({
     type: Array,
     required: false
   },
-  defaultPage: {
-    type: String,
-    required: false,
-  },
+  // defaultPage: {
+  //   type: String,
+  //   required: false,
+  // },
   weekStart: {
     type: String,
     required: false,
   },
-  workOffline: {
-    type: Boolean,
-    required: false,
-  },
-  darkMode: {
-    type: Boolean,
-    required: false,
-  }
+  // workOffline: {
+  //   type: Boolean,
+  //   required: false,
+  // },
+  // darkMode: {
+  //   type: Boolean,
+  //   required: false,
+  // }
 })
 
 userSchema.methods.toJSON = function () {

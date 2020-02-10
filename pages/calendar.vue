@@ -15,10 +15,17 @@ export default {
     'task-list': list
   },
   middleware: 'authenticated',
+  methods: {
+    // setWeekStart() {
+
+    // }
+  },
   beforeMount() {
     if (!this.$store.state.user.logged) {
       this.$router.push('/login')
     }
+
+    
   },
 }
 </script>

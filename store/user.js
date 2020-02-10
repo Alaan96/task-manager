@@ -11,8 +11,9 @@ export const state = () => ({
     {text: 'Estudios', color: '#72D9A2'},
     {text: 'Eventos', color: '#E9B786'},
   ],
-  defaultPage: 0,
-  weekStart: 0
+
+  defaultPage: '/calendar',
+  weekStart: ''
 })
 
 export const mutations = {
@@ -27,6 +28,8 @@ export const mutations = {
       state.id = user._id
       state.name = user.name
       state.email = user.email
+
+      state.weekStart = user.weekStart || 'Lunes'
       
       // Format birthday
       let bd = new Date(user.birthday)

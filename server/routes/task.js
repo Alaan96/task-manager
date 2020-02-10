@@ -106,47 +106,6 @@ app.get('/last-saved/:id', authenticate, (req, res) => {
   })
 })
 
-
-/*app.get('/task/:id', authenticate, (req, res) => {
-  let id = req.params.id
-
-  if (!id) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'ID is required.'
-    })
-  }
-  
-  // Define active task property
-  let activeTask = {active: true}
-  
-  const user = { id }
-
-  Task.find({activeTask, user})
-      .exec( (err, tasks) => {
-    if (err) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Unable to access tasks.',
-        err
-      })
-    }
-    if (!task) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'No tasks found.',
-        err: 'No tasks found.'
-      })
-    }
-
-    return res.json({
-      status: 'success',
-      message: 'Tasks loaded correctly',
-      tasks
-    })
-  })
-})*/
-
 // Get all task of a profile
 app.get('/tasks/:id', authenticate, (req, res) => {
   const id = req.params.id
@@ -224,6 +183,7 @@ app.delete('/remove-task/:taskId', authenticate, (req, res) => {
   })
 })
 
+// Update task properties
 app.put('/update-task/:taskId', authenticate, (req, res) => {
   const id = req.params.taskId
 
@@ -253,8 +213,6 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
         message: 'Task not found.',
       })
     }
-
-    console.log(data)
     
     const dataContent = Object.keys(data)
     console.log(dataContent)
