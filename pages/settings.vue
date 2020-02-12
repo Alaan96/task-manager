@@ -12,11 +12,12 @@
       <li>
         <span class="title">Vista al iniciar</span>
         <div class="config">
-          <select name="defaultPage" v-model="defaultPage">
-            <option v-for="page in defaultPageOptions"
-              :key="page.text"
-              :value="page.value">
-              {{page.text}}
+          <select name="defaultView" v-model="defaultView"
+            @change="changeDefaultView(defaultView)">
+            <option v-for="view in defaultViewOptions"
+              :key="view.text"
+              :value="view.value">
+              {{view.text}}
             </option>
           </select>
         </div>
@@ -75,11 +76,12 @@ export default {
   },
   data() {
     return {
-      defaultPageOptions: [
-        {text: 'Diaria', value: '/'},
-        {text: 'Calendario', value: '/calendar'},
+      defaultViewOptions: [
+        {text: 'Diaria', value: 'date'},
+        {text: 'Calendario', value: 'calendar'},
       ],
-      defaultPage: '/calendar',
+      defaultView: '',
+
       weekStartOptions: [
         {text: 'Lunes', value: 'Lunes'},
         {text: 'Domingo', value: 'Domingo'},
@@ -96,10 +98,16 @@ export default {
   methods: {
     changeWeekStart(firstDay) {
       console.log('Change week start')
-      this.options.weekStart = this.weekStart
-      this.$store.commit('calendary/changeWeekStart', firstDay)
+      this.options.weekStart = firstDay
       this.sendChanges()
     },
+    changeDefaultView(view) {
+      console.log('Change view')
+      this.options.defaultView = view
+      // this.$store.commit('calendary/changeWeekStart', firstDay)
+      this.sendChanges()
+    },
+
     sendChanges() {
       let options = this.options
       console.log(options)
@@ -121,6 +129,9 @@ export default {
     optionsFromStore() {
       let firstDay = this.$store.state.user.weekStart
       this.weekStart = firstDay
+
+      let view = this.$store.state.user.defaultView
+      this.defaultView = view
       return 'Options loaded from store.'
     }
   }
@@ -164,9 +175,6 @@ ul {
   }
   & .title {
     color: $black;
-  }
-  & .config {
-    // color: $black;
   }
 }
 

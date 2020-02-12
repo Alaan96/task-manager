@@ -437,7 +437,7 @@ app.put('/user/:id', authenticate, (req, res) => {
     })
   }
 
-  let fields = ['name', 'email', 'weekStart']
+  let fields = ['name', 'email', 'weekStart', 'defaultView']
 
   const body = _.pick(req.body, fields)
 

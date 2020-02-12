@@ -20,7 +20,7 @@
       <nav>
         <ul v-for="section in sections"
           :key="section.title">
-          <span>{{section.title}}</span>
+          <span v-if="section.title">{{section.title}}</span>
           <li v-for="link in section.links"
             :key="link.text">
             <nuxt-link :to="link.route"
@@ -55,16 +55,16 @@ export default {
 
       sections: [
         {
-          title: 'Vistas',
+          // title: 'Vistas',
           links: [
             {
-              text: 'Diaria',
+              text: 'Inicio',
               route: '/'
             },
-            {
-              text: 'Calendario',
-              route: '/calendar'
-            }
+            // {
+            //   text: 'Calendario',
+            //   route: '/calendar'
+            // }
           ]
         },
         {

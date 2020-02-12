@@ -1,17 +1,17 @@
 <template>
   <div class="container">
-    <calendary></calendary>
+    <calendar></calendar>
     <task-list></task-list>
   </div>
 </template>
 
 <script>
-import calendary from '@/components/calendar/calendary'
+import calendar from '@/components/calendar/calendar'
 import list from '@/components/task/list'
 
 export default {
   components: {
-    calendary,
+    calendar,
     'task-list': list
   },
   middleware: 'authenticated',

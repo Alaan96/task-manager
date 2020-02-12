@@ -84,7 +84,7 @@ export default {
 
       return points
     },
-    ...mapState('calendary', {
+    ...mapState('calendar', {
       year: 'year',
       month: 'month',
       date: 'date'

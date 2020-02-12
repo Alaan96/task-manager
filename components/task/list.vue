@@ -2,7 +2,8 @@
   <div>
     <task-form v-if="context === 'new-task'"></task-form>
 
-    <form class="filter-form" @submit.prevent v-else-if="context === 'filter'">
+    <form class="filter-form" @submit.prevent
+      v-else-if="context === 'filter'">
       <input type="text" placeholder="Buscar tarea" v-model="filters.text">
       <button class="tag-selection" @click.stop="showTags" :class="{tagsOn}">
         <tags v-if="!tagsOn" preview></tags>
@@ -19,12 +20,13 @@
 
     <div class="set-context">
       <button :class="{'active': context === 'new-task'}">
+        <cross :size="16" rotate></cross>
         <input type="radio" id="new-task" value="new-task" v-model="context">
         <label for="new-task">Nueva tarea</label>
       </button>
 
       <button :class="{'active': context === 'filter'}">
-        <!-- v-if="filtersOff"> -->
+        <filter-icon></filter-icon>
         <input type="radio" id="filter" value="filter" v-model="context">
         <label for="filter">Filtrar</label>
       </button>
@@ -56,6 +58,7 @@ import tags from '@/components/tags'
 
 // Icons
 import cross from '@/components/icons/cross'
+import filter from '@/components/icons/filter'
 
 export default {
   components: {
@@ -64,7 +67,8 @@ export default {
     tags,
 
     // Icons
-    cross
+    cross,
+    'filter-icon': filter
   },
   data() {
     return {
@@ -216,8 +220,9 @@ input {
     font-size: .75rem;
     font-family: $niramit;
     background: transparent;
-    color: $line;
+    color: $primary;
     border-radius: $radius;
+    opacity: .4;
     & label {
       width: 100%;
       height: 100%;
@@ -226,11 +231,15 @@ input {
     & input {
       display: none;
     }
+    & svg {
+      width: 1.25rem;
+      margin-right: .25rem;
+    }
   }
 }
 
 button.active {
-  color: $primary;
+  opacity: 1;
 }
 
 

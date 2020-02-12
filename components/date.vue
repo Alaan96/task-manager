@@ -38,7 +38,7 @@ export default {
         return new Date(this.year, this.month, this.date).getDay()
       }
     },
-    ...mapState('calendary', {
+    ...mapState('calendar', {
       year: 'year',
       month: 'month',
       days: 'days',

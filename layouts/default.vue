@@ -26,9 +26,6 @@ export default {
 
     this.loadTasksList()
     this.loadUserData()
-
-    // this.setUserSettings()
-
   },
   methods: {
     async loadUserData() {
@@ -43,7 +40,7 @@ export default {
     },
     setUserSettings() {
       let firstDay = this.$store.state.user.weekStart
-      this.$store.commit('calendary/changeWeekStart', firstDay)
+      this.$store.commit('calendar/changeWeekStart', firstDay)
     }
   }
 }

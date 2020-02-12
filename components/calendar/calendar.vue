@@ -10,10 +10,10 @@
 
       <div class="controls">
         <button>
-          <arrow @click.native="calendaryTo('up')"></arrow>
+          <arrow @click.native="calendarTo('up')"></arrow>
         </button>
         <button>
-          <arrow direction="down" @click.native="calendaryTo('down')"></arrow>
+          <arrow direction="down" @click.native="calendarTo('down')"></arrow>
         </button>
       </div>
 
@@ -91,7 +91,7 @@ export default {
 
       calendarYear: new Date().getFullYear(),
       calendarMonth: new Date().getMonth(),
-      days: [],
+      // days: [],
 
       // Y position to change between months
       positions: [],
@@ -137,13 +137,8 @@ export default {
         // Reset yearDates
         this.yearDates = []
 
-        // Get tasks with date
-        let tasks = this.tasks
 
         // Get first day of the year
-        let days = this.$store.getters['calendary/days']
-        this.days = days
-        
         let firstDay
         if (this.days[0] === 'Lunes') {
           firstDay = new Date(year, 0, 1).getDay() - 1
@@ -152,6 +147,7 @@ export default {
         } else {
           console.log('First day undefined.');
         }
+        console.log(firstDay);
 
         let week = 1
         let day = 0
@@ -175,7 +171,6 @@ export default {
             y: y,
             day: day,
             fullDate: '',
-            points: []
           })
 
           day++
@@ -237,7 +232,7 @@ export default {
     //   })
     // },
 
-    calendaryTo(direction) {
+    calendarTo(direction) {
       if (this.calendar === 'default') {
         this.changeMonth(direction)
       }
@@ -283,9 +278,9 @@ export default {
     },
     calendarChange() {
       if (this.touch.swype <= -this.touch.threshold) {
-        this.calendaryTo('up')
+        this.calendarTo('up')
       } else if(this.touch.swype >= this.touch.threshold) {
-        this.calendaryTo('down')
+        this.calendarTo('down')
       }
       this.touch.swype = 0
     }
@@ -306,7 +301,7 @@ export default {
   },
   computed: {
     dates() {
-      return this.$store.getters['calendary/dates']
+      return this.$store.getters['calendar/dates']
     },
     setTasks() {
       let tasks = this.$store.getters['task/getFullList'].filter( task => task.date !== '' )
@@ -320,11 +315,11 @@ export default {
       })
       return tasks
     },
-    ...mapState('calendary', {
+    ...mapState('calendar', {
       year: 'year',
       months: 'months',
       month: 'month',
-      // days: 'days',
+      days: 'days',
       date: 'date',
     })
   }

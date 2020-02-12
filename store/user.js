@@ -12,8 +12,11 @@ export const state = () => ({
     {text: 'Eventos', color: '#E9B786'},
   ],
 
-  defaultPage: '/calendar',
-  weekStart: ''
+  // Settings
+  defaultView: '',
+  weekStart: '',
+
+  loaded: false
 })
 
 export const mutations = {
@@ -30,11 +33,21 @@ export const mutations = {
       state.email = user.email
 
       state.weekStart = user.weekStart || 'Lunes'
+      state.defaultView = user.defaultView || 'date'
       
       // Format birthday
       let bd = new Date(user.birthday)
       state.birthday = `${bd.getDate()}/${bd.getMonth() + 1}/${bd.getFullYear()}`
+
+      state.loaded = true
       console.log('User data loaded correctly.')
+    }
+  },
+  changeView(state) {
+    if (state.defaultView === 'calendar') {
+      state.defaultView = 'date'
+    } else if (state.defaultView === 'date') {
+      state.defaultView = 'calendar'
     }
   },
   addNewTag(state, tag) {
@@ -45,6 +58,9 @@ export const mutations = {
 export const getters = {
   id(state) {
     return state.id
+  },
+  loaded(state) {
+    return state.loaded
   },
   tags(state) {
     return state.tags

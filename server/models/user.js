@@ -36,10 +36,10 @@ let userSchema = new Schema({
     type: Array,
     required: false
   },
-  // defaultPage: {
-  //   type: String,
-  //   required: false,
-  // },
+  defaultView: {
+    type: String,
+    required: false,
+  },
   weekStart: {
     type: String,
     required: false,

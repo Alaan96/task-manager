@@ -361,10 +361,6 @@ export default {
       }
     },
 
-    // setSelectedDate() {
-    //   this.task.date = this.dateSelected
-    // },
-
     editContent() {
       if (this.contentEditable) {
         console.log(this.contentEditable)
@@ -379,13 +375,9 @@ export default {
     }
   },
   beforeMount() {
-    // this.setSelectedDate()
     this.editContent()
     this.dateSelected
   },
-  // mounted() {
-  //   this.dateSelected
-  // },
   props: {
     contentEditable: {
       type: Object,

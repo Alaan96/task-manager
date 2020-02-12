@@ -45,12 +45,7 @@ export const mutations = {
       if (firstDay === 'Domingo') {
         state.days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
       }
-      
-      // state.reload = true
     },
-    // updated(state) {
-    //   state.reload = false
-    // }
 }
 
 export const getters = {
