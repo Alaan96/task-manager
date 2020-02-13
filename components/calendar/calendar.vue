@@ -96,15 +96,6 @@ export default {
       // Y position to change between months
       positions: [],
 
-      // Every first day of the year (used to move the calendar)
-      firstDays: [],
-
-      // Number that defines which month the user is in
-      // calendarPosition: 48 * 4, //parseInt(localStorage.getItem('calendar-position')) || 0
-
-      // Calendary state
-      loaded: false,
-
       // Initialization vars for touch events
       touch: {
         start: 0,
@@ -121,33 +112,14 @@ export default {
   },
   mixins: [datesFunctions],
   methods: {
-    loadAlgo() {
-      console.log('Cargó la cosa con éxito.')
-    },
-
     selectDate() {
       let dateSelected = event.target.parentElement.attributes['data-full-date'].value
       this.$store.commit('date/changeSelected', dateSelected)
     },
 
-
     loadYearDates(year) {
-      if (this.loaded === false) {
-        console.log('Iniciando carga de fechas.')
         // Reset yearDates
         this.yearDates = []
-
-
-        // Get first day of the year
-        let firstDay
-        if (this.days[0] === 'Lunes') {
-          firstDay = new Date(year, 0, 1).getDay() - 1
-        } else if (this.days[0] === 'Domingo') {
-          firstDay = new Date(year, 0, 1).getDay()
-        } else {
-          console.log('First day undefined.');
-        }
-        console.log(firstDay);
 
         let week = 1
         let day = 0
@@ -157,7 +129,7 @@ export default {
         let newMonth = 0
 
         // Load previous dates
-        for(let date = 1; date <= firstDay; date++) {
+        for(let date = 1; date <= this.firstDay; date++) {
           if (day === 7) {
             week++
             day = 0
@@ -191,7 +163,6 @@ export default {
             y = size * (week - 1)
 
             let fullDate = `${this.formatDate(date)}/${this.formatDate(monthIndex + 1)}/${this.calendarYear}`
-            // let points = tasks.filter( task => task.date === fullDate)
 
             this.yearDates.push({
               number: date,
@@ -210,27 +181,12 @@ export default {
             newMonth = size * (week - 1)
           }
         })
-      }
     },
 
     setTodayAsSelected() {
       let today = this.$store.getters['date/todayFullDate']
       this.$store.commit('date/changeSelected', today)
     },
-
-    // loadTasks() {
-    //   console.log('Load tasks')
-    //   let tasks = this.tasks
-
-    //   tasks.forEach( task => {
-    //     let taskDate = task.date
-    //     this.yearDates.filter( date => {
-    //       if (date.fullDate === taskDate) {
-    //         date.points.push(task)
-    //       }
-    //     })
-    //   })
-    // },
 
     calendarTo(direction) {
       if (this.calendar === 'default') {
@@ -256,13 +212,6 @@ export default {
       }
     },
 
-    // saveCalendarPosition() {
-    //   let savedPosition = localStorage.getItem('calendar-position')
-    //   if (!savedPosition) {
-    //     localStorage.setItem('calendar-position', this.firstDays[this.month].top)
-    //   }
-    // },
-
     // Change the calendar mode between normal, months, years
     changeCalendarTo(mode) {
       this.calendar = mode
@@ -286,34 +235,22 @@ export default {
     }
   },
   beforeMount() {
-    // this.loadYearDates(this.calendarYear)
-
-    // this.setTodayAsSelected()
-    
-  },
-  mounted() {
     this.loadYearDates(this.calendarYear)
     this.setTodayAsSelected()
-    // this.saveCalendarPosition()
-  },
-  beforeUpdate() {
-    // this.loadYearDates(this.calendarYear)
   },
   computed: {
     dates() {
       return this.$store.getters['calendar/dates']
     },
-    setTasks() {
-      let tasks = this.$store.getters['task/getFullList'].filter( task => task.date !== '' )
-      tasks.forEach( task => {
-        let taskDate = task.date
-        this.yearDates.filter( date => {
-          if (date.fullDate === taskDate) {
-            date.points.push(task)
-          }
-        })
-      })
-      return tasks
+    firstDay() {
+      const firstDay = this.days[0]
+      if (firstDay == 'Lunes') {
+        return new Date(this.year, 0, 1).getDay() - 1
+      } else if (firstDay == 'Domingo') {
+        return new Date(this.year, 0, 1).getDay()
+      } else {
+        return 'First day undefined.'
+      }
     },
     ...mapState('calendar', {
       year: 'year',

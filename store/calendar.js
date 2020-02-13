@@ -1,6 +1,6 @@
 export const state = () => ({
   // Order of the week
-  days: '',
+  days: [],
   // days: ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'],
   months: [
     'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
@@ -55,9 +55,12 @@ export const getters = {
   days(state) {
     return state.days
   },
-  reload(state) {
-    return state.reload
+  firstDay(state) {
+    return state.days[0]
   }
+  // reload(state) {
+  //   return state.reload
+  // }
 }
 
 export const actions = {

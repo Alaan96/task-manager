@@ -21,11 +21,6 @@ import setBirthday from '@/components/set-birthday'
 import { mapState } from 'vuex'
 
 export default {
-  data() {
-    return {
-      // view: ''
-    }
-  },
   components: {
     date,
     calendar,
@@ -33,8 +28,32 @@ export default {
     'set-birthday': setBirthday
   },
   middleware: 'authenticated',
+  async asyncData({ $axios, store }) {
+  // async asyncData({isDev, route, store, env, params, query, req, res, redirect, error}) {
+    $axios.defaults.headers.common.token = localStorage.getItem('token')
+    try {
+      let loaded = store.getters['user/loaded']
+      if (loaded === false) {
+        // Load user data
+        const userUrl = `${window.location.origin}/user/${localStorage.getItem('id')}`
+        await store.dispatch('user/profileData', userUrl)
+
+        // Load tasks
+        const taskUrl = `${window.location.origin}/tasks/${localStorage.getItem('id')}`
+        await store.dispatch('task/tasksDB', taskUrl)
+
+        return {fetchMsg: 'Content loaded.'}
+      } else {
+        return {fetchMsg: 'Content was already loaded.'}
+      }
+    } catch(err) {
+      console.warn(err)
+      return {fetchMsg: `Error loading the content. Error: ${err}`}
+    }
+  },
   created() {
-    
+    const firstDay = this.$store.state.user.weekStart
+    this.$store.commit('calendar/changeWeekStart', firstDay)
   },
   beforeMount() {
     this.userLogged()

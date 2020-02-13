@@ -13,36 +13,11 @@
 import menu from '@/components/menu'
 import notify from '@/components/notify'
 
-import { helpers } from '@/assets/mixins/api-helpers' // Mixin
-
 export default {
   components: {
     'nav-menu': menu,
     notify
   },
-  mixins: [helpers],
-  created() {
-    this.setTokenInHeaders()
-
-    this.loadTasksList()
-    this.loadUserData()
-  },
-  methods: {
-    async loadUserData() {
-      let url = `${this.url}/user/${localStorage.getItem('id')}`
-      await this.$store.dispatch('user/profileData', url)
-
-      this.setUserSettings()
-    },
-    loadTasksList() {
-      let url = `${this.url}/tasks/${localStorage.getItem('id')}`
-      this.$store.dispatch('task/tasksDB', url)
-    },
-    setUserSettings() {
-      let firstDay = this.$store.state.user.weekStart
-      this.$store.commit('calendar/changeWeekStart', firstDay)
-    }
-  }
 }
 </script>
 
