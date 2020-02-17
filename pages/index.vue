@@ -28,7 +28,7 @@ export default {
     'set-birthday': setBirthday
   },
   middleware: 'authenticated',
-  async asyncData({ $axios, store }) {
+  async fetch({ $axios, store }) {
   // async asyncData({isDev, route, store, env, params, query, req, res, redirect, error}) {
     $axios.defaults.headers.common.token = localStorage.getItem('token')
     try {
@@ -42,13 +42,13 @@ export default {
         const taskUrl = `${window.location.origin}/tasks/${localStorage.getItem('id')}`
         await store.dispatch('task/tasksDB', taskUrl)
 
-        return {fetchMsg: 'Content loaded.'}
+        // return {fetchMsg: 'Content loaded.'}
       } else {
-        return {fetchMsg: 'Content was already loaded.'}
+        // return {fetchMsg: 'Content was already loaded.'}
       }
     } catch(err) {
       console.warn(err)
-      return {fetchMsg: `Error loading the content. Error: ${err}`}
+      // return {fetchMsg: `Error loading the content. Error: ${err}`}
     }
   },
   created() {
@@ -57,19 +57,28 @@ export default {
   },
   beforeMount() {
     this.userLogged()
+    // this.view = this.$store.state.user.defaultView
     // this.openBirthdayModal()
+  },
+  data() {
+    return {
+      view: this.$store.state.user.defaultView
+    }
   },
   methods: {
     userLogged() {
       if (!this.$store.state.user.logged) {
         this.$router.push('/login')
-      } else {
-        console.log('The user is logged.')
       }
     },
 
     changeView() {
-      this.$store.commit('user/changeView')
+      if (this.view === 'calendar') {
+        this.view = 'date'
+      } else if (this.view === 'date') {
+        this.view = 'calendar'
+      }
+      // this.$store.commit('user/changeView')
     },
     // openBirthdayModal() {
     //   if (!this.$store.state.user.birthday || this.$store.state.user.birthday === '') {
@@ -92,10 +101,7 @@ export default {
       if (view === 'date') {
         return 'diaria'
       }
-    },
-    ...mapState('user', {
-      view: 'defaultView'
-    })
+    }
 	}
 }
 </script>
@@ -112,7 +118,7 @@ button.toggle-view {
   position: absolute;
   top: .5rem;
   right: .5rem;
-  font-size: .75rem;
+  font-size: .875rem;
   font-family: $niramit;
   color: $light;
   border-radius: $radius;
