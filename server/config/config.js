@@ -2,19 +2,15 @@
 process.env.PORT = process.env.PORT || 3000
 
 // DATABASE
-let urlDB
-
-let online = false
-
-if (!online) {
-  urlDB = 'mongodb://localhost:27017/task_manager'
-  console.log('Conectando a la base de datos local.')
+if (process.env.NODE_ENV === 'cloudDevelopment') {
+  process.env.URLDB = process.env.CLOUD_DB
+  // console.log(`Conectando a la base de datos en la nube${loadingEfect()}`)
+  console.log(`Conectando a la base de datos en la nube.`)
 } else {
-  urlDB = 'mongodb+srv://alaan-96_9878:ui9H3pB1lUskGkDb@clouddb-ljqcr.gcp.mongodb.net/test?retryWrites=true&w=majority'
-  console.log('Conectando a la base de datos en la nube.')
+  process.env.URLDB = process.env.LOCAL_DB
+  // console.log(`Conectando a la base de datos local${loadingEfect()}`)
+  console.log(`Conectando a la base de datos local.`)
 }
-
-process.env.URLDB = urlDB
 
 // TOKEN EXPIRES
 process.env.TOKEN_EXPIRES_IN =  60 * 60 * 24 * 30

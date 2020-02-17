@@ -1,10 +1,11 @@
+require('dotenv').config()
 require('./config/config')
 
 const express = require('express')
 const consola = require('consola')
 const { Nuxt, Builder } = require('nuxt')
 
-const mongoose = require('mongoose')
+// const mongoose = require('mongoose')
 const bodyParser = require('body-parser')
 const app = express()
 
