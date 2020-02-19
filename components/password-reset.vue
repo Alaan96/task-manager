@@ -1,5 +1,6 @@
 <template>
-  <modal>
+  <modal
+    close="Cancelar">
     <div class="password-reset">
       <h3>Cambio de contraseña</h3>
       <modal-form

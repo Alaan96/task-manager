@@ -275,12 +275,13 @@ header {
 
   & button {
     font-size: 1.5rem;
-    font-family: $niramit;
+    // font-family: $niramit;
+    font-family: $quicksand;
     font-weight: 700;
     color: $primary;
-    &.year-handler {
-      font-family: $lato;
-    }
+    // &.year-handler {
+      // font-family: $lato;
+    // }
   }
 
   & .controls {

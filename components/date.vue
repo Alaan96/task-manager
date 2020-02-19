@@ -66,7 +66,7 @@ export default {
   justify-content: center;
   font-size: 6rem;
   font-weight: 400;
-  font-family: $lato;
+  // font-family: $lato;
 }
 
 span.today {

@@ -6,10 +6,10 @@ export const state = () => ({
   email: '',
   birthday: '',
   tags: [
-    {text: 'Tarea', color: '#66BBD1'},
-    {text: 'Salud', color: '#F16D6D'},
-    {text: 'Estudios', color: '#72D9A2'},
-    {text: 'Eventos', color: '#E9B786'},
+    // {text: 'Tarea', color: '#66BBD1'},
+    // {text: 'Salud', color: '#F16D6D'},
+    // {text: 'Estudios', color: '#72D9A2'},
+    // {text: 'Eventos', color: '#E9B786'},
   ],
 
   // Settings
@@ -31,25 +31,29 @@ export const mutations = {
       state.id = user._id
       state.name = user.name
       state.email = user.email
+      state.tags = user.tags
 
-      state.weekStart = user.weekStart || 'Lunes'
-      state.defaultView = user.defaultView || 'date'
+      state.weekStart = user.weekStart
+      state.defaultView = user.defaultView
+
+      if (user.birthday) {
+        // Format birthday
+        let bd = new Date(user.birthday)
+        state.birthday = `${bd.getDate()}/${bd.getMonth() + 1}/${bd.getFullYear()}`
+      }
       
-      // Format birthday
-      let bd = new Date(user.birthday)
-      state.birthday = `${bd.getDate()}/${bd.getMonth() + 1}/${bd.getFullYear()}`
 
       state.loaded = true
       console.log('User data loaded correctly.')
     }
   },
-  changeView(state) {
-    if (state.defaultView === 'calendar') {
-      state.defaultView = 'date'
-    } else if (state.defaultView === 'date') {
-      state.defaultView = 'calendar'
-    }
-  },
+  // changeView(state) {
+  //   if (state.defaultView === 'calendar') {
+  //     state.defaultView = 'date'
+  //   } else if (state.defaultView === 'date') {
+  //     state.defaultView = 'calendar'
+  //   }
+  // },
   addNewTag(state, tag) {
     state.tags.push(tag)
   }

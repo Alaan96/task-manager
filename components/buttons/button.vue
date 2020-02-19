@@ -1,5 +1,10 @@
 <template>
-  <button :class="{cancel}">
+  <button :class="[{cancel}, {color: color}]" v-if="to">
+    <nuxt-link :to="to">
+      {{text}}
+    </nuxt-link>
+  </button>
+  <button :class="[{cancel}, {color: color}]" v-else>
     {{text}}
   </button>
 </template>
@@ -17,6 +22,9 @@ export default {
     cancel: {
       type: Boolean,
       required: false
+    },
+    to: {
+      type: String
     }
   }
 }
@@ -28,7 +36,8 @@ export default {
     height: 2rem;
     @include center;
     font-size: .75rem;
-    font-family: $niramit;
+    font-weight: 700;
+    // font-family: $niramit;
     color: $primary;
     background: $secondary;
     border-radius: $radius;

@@ -56,7 +56,7 @@ export default {
       // width: 100%;
       // height: 100%;
       @include center;
-      font-family: $niramit;
+      // font-family: $niramit;
       font-size: 1rem;
       background: $line;
       color: $primary;

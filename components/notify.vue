@@ -21,12 +21,13 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-$notification-size: 14rem;
+$notification-size: 16rem;
 
 .notification {
   width: $notification-size;
-  height: 2em;
+  // height: 2em;
   padding: 0 .5rem;
+  padding: .5rem;
   @include center;
   font-size: 1rem;
   background: $line;

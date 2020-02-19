@@ -30,24 +30,27 @@ export default {
   middleware: 'authenticated',
   async fetch({ $axios, store }) {
   // async asyncData({isDev, route, store, env, params, query, req, res, redirect, error}) {
-    $axios.defaults.headers.common.token = localStorage.getItem('token')
     try {
+      $axios.defaults.headers.common.token = localStorage.getItem('token')
       let loaded = store.getters['user/loaded']
       if (loaded === false) {
+        const id = localStorage.getItem('id')
         // Load user data
-        const userUrl = `${window.location.origin}/user/${localStorage.getItem('id')}`
-        await store.dispatch('user/profileData', userUrl)
+        await store.dispatch('user/profileData', `${location.origin}/user/${id}`)
 
         // Load tasks
-        const taskUrl = `${window.location.origin}/tasks/${localStorage.getItem('id')}`
-        await store.dispatch('task/tasksDB', taskUrl)
+        await store.dispatch('task/tasksDB', `${location.origin}/tasks/${id}`)
 
         // return {fetchMsg: 'Content loaded.'}
       } else {
         // return {fetchMsg: 'Content was already loaded.'}
       }
     } catch(err) {
-      console.warn(err)
+      if (err.response.data.message) {
+        console.warn(err.response.data.message)
+      } else {
+        console.log(err)
+      }
       // return {fetchMsg: `Error loading the content. Error: ${err}`}
     }
   },
@@ -57,7 +60,6 @@ export default {
   },
   beforeMount() {
     this.userLogged()
-    // this.view = this.$store.state.user.defaultView
     // this.openBirthdayModal()
   },
   data() {
@@ -78,7 +80,6 @@ export default {
       } else if (this.view === 'date') {
         this.view = 'calendar'
       }
-      // this.$store.commit('user/changeView')
     },
     // openBirthdayModal() {
     //   if (!this.$store.state.user.birthday || this.$store.state.user.birthday === '') {

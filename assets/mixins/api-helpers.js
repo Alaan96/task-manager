@@ -1,7 +1,7 @@
 export const helpers = {
   data() {
     return {
-      url: 'http://localhost:3000'
+      url: window.location.origin
     }
   },
   computed: {
@@ -9,11 +9,11 @@ export const helpers = {
       return this.$store.getters['user/id']
     }
   },
-  methods: {
-    setTokenInHeaders() {
-      if (!this.$axios.defaults.headers.common.token) {
-        this.$axios.defaults.headers.common.token = localStorage.getItem('token')
-      }
-    }
-  }
+  // methods: {
+  //   setTokenInHeaders() {
+  //     if (!this.$axios.defaults.headers.common.token) {
+  //       this.$axios.defaults.headers.common.token = localStorage.getItem('token')
+  //     }
+  //   }
+  // }
 }

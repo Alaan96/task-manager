@@ -11,19 +11,67 @@ const { setToken, getDecodedToken } = require('../config/token-methods')
 
 const app = express()
 
+
+// Signin
+app.post('/signin', (req, res) => {
+  const body = req.body
+
+  if (!body.name || !body.email || !body.password) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'All fields are required.'
+    })
+  }
+
+  if (body.password.length < 8) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Password min length is 8 characters.'
+    })
+  }
+
+  let user = new User({
+    name: body.name,
+    email: body.email,
+    password: bcrypt.hashSync(body.password, 10)
+  })
+
+  user.save( (err, userDB) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: err.errors.email.message || err.errors.password.message || 'Problems creating the user.',
+      })
+    }
+
+    if (!userDB) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.'
+      })
+    }
+
+    return res.status(201).json({
+      status: 'success',
+      message: 'User created correctly.',
+      user: userDB
+    })
+  })
+})
+
 // Login
 app.post('/login', (req, res) => {
-  let body = req.body
+  const body = req.body
 
   if (!body.email) {
-    return res.status(404).json({
+    return res.status(400).json({
       status: 'error',
       message: 'Email is required.',
     })
   }
 
   if (!body.password) {
-    return res.status(404).json({
+    return res.status(400).json({
       status: 'error',
       message: 'Password is required.',
     })
@@ -42,8 +90,7 @@ app.post('/login', (req, res) => {
     if (!userDB) {
       return res.status(404).json({
         status: 'error',
-        message: 'Incorrect email.',
-        err: 'Incorrect email.'
+        message: 'The emails does not exist in the database.',
       })
     }
 
@@ -51,52 +98,16 @@ app.post('/login', (req, res) => {
       return res.status(404).json({
         status: 'error',
         message: 'Incorrect password.',
-        err: 'Incorrect password.',
       })
     }
 
-    let token = jwt.sign({user: userDB}, process.env.SEED)
-      // { expiresIn: process.env.TOKEN_EXPIRES_IN })
+    let token = jwt.sign({ user: userDB }, process.env.AUTHENTICATION_SEED)
+    // { expiresIn: process.env.TOKEN_EXPIRES_IN })
 
     return res.json({
       status: 'success',
       user: userDB,
       token
-    })
-  })
-})
-
-// Signin
-app.post('/signin', (req, res) => {
-  let body = req.body
-
-  if ( !body.name || !body.email || !body.password) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'All fields are required.',
-      err: 'Missing fields.'
-    })
-  }
-
-  let user = new User({
-    name: body.name,
-    email: body.email,
-    password: bcrypt.hashSync(body.password, 10)
-  })
-
-  user.save( (err, userDB) => {
-    if (err || !userDB) {
-      return res.status(400).json({
-        status: 'error',
-        message: err.errors.email.message || err.errors.password.message || 'Invalid request.',
-        err: err || 'Invalid request.'
-      })
-    }
-
-    return res.status(201).json({
-      status: 'success',
-      message: 'User created correctly.',
-      user: userDB
     })
   })
 })
@@ -129,7 +140,8 @@ app.get('/users', authenticate, (req, res) => {
         return res.json({
           status: 'success',
           message: users.length === 0 ? 'There are no users yet.' : 'Users loaded correctly.',
-          users
+          users,
+          totalUsers: users.length
         })
       })
 })
@@ -171,8 +183,8 @@ app.get('/user/:id', authenticate, (req, res) => {
       })
 })
 
-// 'Delete' an user
-app.delete('/user/disable/:id', authenticate, (req, res) => {
+// Disable an user
+app.put('/user/disable/:id', authenticate, (req, res) => {
   const id = req.params.id
 
   if (!id) {
@@ -184,16 +196,86 @@ app.delete('/user/disable/:id', authenticate, (req, res) => {
 
   const disabled = { enabled: false }
 
-  User.findByIdAndUpdate(id, disabled, { new: true }, (err, userDeleted) => {
+  User.findByIdAndUpdate(id, disabled, { new: true }, (err, user) => {
     if (err) {
       return res.status(500).json({
         status: 'error',
-        message: 'Unable to access users.',
+        message: 'Unable to access.',
         err
       })
     }
 
-    if (!userDeleted) {
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.'
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'User disabled correctly.'
+    })
+  })
+})
+
+// Enable an user
+app.put('/user/enable/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'ID is required.'
+    })
+  }
+
+  const enabled = { enabled: true }
+
+  User.findByIdAndUpdate(id, enabled, { new: true }, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to access.',
+        err
+      })
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.'
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'User enabled correctly.'
+    })
+  })
+})
+
+// Delete
+app.delete('/user/delete/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'ID is required.'
+    })
+  }
+
+  User.findByIdAndRemove(id, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to access.',
+        err
+      })
+    }
+
+    if (!user) {
       return res.status(404).json({
         status: 'error',
         message: 'User not found.'
@@ -207,9 +289,56 @@ app.delete('/user/disable/:id', authenticate, (req, res) => {
   })
 })
 
+// Update propery
+app.put('/user/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  const fields = ['name', 'email', 'weekStart', 'defaultView']
+
+  const body = _.pick(req.body, fields)
+
+  const props = Object.keys(body)
+
+  if (props.length === 0) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'The fields sent are empty.'
+    })
+  }
+
+  User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to update the property.',
+        err
+      })
+    }
+    if (!userDB) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.',
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'Property updated correctly.',
+      user: userDB
+    })
+  })
+})
+
 // Reset password
-app.post('/password-reset', authenticate, (req, res) => {
-  let email = req.body.email
+app.post('/password-reset', (req, res) => {
+  const email = req.body.email
 
   if (!email) {
     return res.status(400).json({
@@ -227,7 +356,7 @@ app.post('/password-reset', authenticate, (req, res) => {
         if (err) {
           return res.status(500).json({
             status: 'error',
-            message: 'Unable to access users.',
+            message: 'Unable to access.',
             err
           })
         }
@@ -235,12 +364,12 @@ app.post('/password-reset', authenticate, (req, res) => {
         if (!userDB) {
           return res.status(404).json({
             status: 'error',
-            message: 'User not found with that email.'
+            message: 'User not found.'
           })
         }
 
-        let token = setToken(userDB.id, userDB.password)
-        console.log('Token: ' + token)
+        let passToken = setToken(userDB.id, userDB.password)
+        console.log('Password-token: ' + passToken)
 
 
         let transporter = nodemailer.createTransport({
@@ -265,8 +394,8 @@ app.post('/password-reset', authenticate, (req, res) => {
           html: `
           <b>Hello world?</b>
           <h1>Link de cambio de contraseña</h1>
-          <a href="http://localhost:3000/new-password/${token}">
-            http://localhost:3000/new-password/${token}
+          <a href="http://localhost:3000/new-password/${passToken}">
+            http://localhost:3000/new-password/${passToken}
           </a>`
         }
 
@@ -286,7 +415,7 @@ app.post('/password-reset', authenticate, (req, res) => {
               status: 'success',
               message: 'Email sent.',
               info,
-              token
+              passToken
             })
           }
         })
@@ -294,35 +423,50 @@ app.post('/password-reset', authenticate, (req, res) => {
 })
 
 // Set a new password
-app.post('/new-password/:token', authenticate, (req, res) => {
-  const token = req.params.token
+app.post('/new-password/:passToken', (req, res) => {
+  const passToken = req.params.passToken
   const password = req.body.password
+  const repeatPassword = req.body.repeatPassword
   
-  if (!token) {
+  if (!passToken) {
     return res.status(401).json({
       status: 'error',
       message: 'Unauthorized URL.'
     })
   }
 
-  if (!password) {
-    return res.status(404).json({
+  if (!password || !repeatPassword) {
+    return res.status(400).json({
       status: 'error',
-      message: 'New password is required.'
+      message: 'All fields are required.'
+    })
+  }
+
+  if (password.length < 8 || repeatPassword < 8) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Password min length is 8 characters.'
+    })
+  }
+
+  if (password !== repeatPassword) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Password don\'t match.'
     })
   }
   
-  const decoded = getDecodedToken(token)
+  const decoded = getDecodedToken(passToken)
 
   const newPassword = {
-    password
+    password: bcrypt.hashSync(password, 10)
   }
 
   User.findByIdAndUpdate(decoded.id, newPassword, { new: true }, (err, userDB) => {
     if (err) {
       return res.status(500).json({
         status: 'error',
-        message: 'Unable to access users.',
+        message: 'Unable to access.',
         err
       })
     }
@@ -335,10 +479,10 @@ app.post('/new-password/:token', authenticate, (req, res) => {
     }
 
     return res.json({
-      status: 'test',
-      message: 'Testing decoded token.',
+      status: 'success',
+      message: 'New password updated.',
       decoded,
-      newPass
+      newPassword
     })
   })
 })
@@ -355,7 +499,6 @@ app.post('/set-birthday/:id', authenticate, (req, res) => {
   }
 
   let rawBd = req.body.birthday.split('/')
-  console.log(rawBd)
 
   const birthday = new Date(
     parseInt(rawBd[2]),
@@ -426,8 +569,8 @@ app.post('/set-birthday/:id', authenticate, (req, res) => {
       })
 })
 
-// Update propery
-app.put('/user/:id', authenticate, (req, res) => {
+// Add new tag
+app.post('/tag/:id', authenticate, (req, res) => {
   const id = req.params.id
 
   if (!id) {
@@ -437,58 +580,30 @@ app.put('/user/:id', authenticate, (req, res) => {
     })
   }
 
-  let fields = ['name', 'email', 'weekStart', 'defaultView']
+  const text = req.body.text
+  const color = req.body.color
 
-  const body = _.pick(req.body, fields)
-
-  User.findByIdAndUpdate(id, body, { new: true, runValidators: true, context: 'query' }, (err, userDB) => {
-    if (err) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Unable to update the property.',
-        err
-      })
-    }
-    if (!userDB) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'User not found.',
-      })
-    }
-
-    return res.json({
-      status: 'success',
-      message: 'Property updated correctly.',
-      user: userDB
-    })
-  })
-})
-
-// Add new custom tag
-app.post('/user/new-tag/:id', authenticate, (req, res) => {
-  const id = req.params.id
-
-  if (!id) {
+  if (!text || !color) {
     return res.status(400).json({
       status: 'error',
-      message: 'Id is required.'
+      message: 'All fields are required.'
     })
   }
 
-  const tag = req.body.tag
-
-  if (!tag) {
-    return res.status(404).json({
+  if (!color.includes('#') && !color.includes('hsl') && !color.includes('rgb')) {
+    return res.status(400).json({
       status: 'error',
-      message: 'Tag not found.'
+      message: 'The color isn\'t valid.'
     })
   }
+
+  const tag = {text: text, color: color}
 
   User.findById(id).exec((err, userDB) => {
     if (err) {
       return res.status(500).json({
         status: 'error',
-        message: 'Unable to save the tag.',
+        message: 'Unable to access.',
         err
       })
     }
@@ -500,13 +615,25 @@ app.post('/user/new-tag/:id', authenticate, (req, res) => {
       })
     }
 
-    userDB.tags.push(tag)
+    const tags = userDB.tags
+
+    const repeatedTag = tags.find(tag => tag.text === text)
+
+    if (repeatedTag) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'The tag was already created.',
+        details: `The tag ${text} already exist in database.`
+      })
+    }
+
+    tags.push(tag)
 
     userDB.save((err, userUpdated) => {
       if (err) {
         return res.status(500).json({
           status: 'error',
-          message: 'Unable to save data.',
+          message: 'Unable to save the tag.',
           err
         })
       }
@@ -520,9 +647,85 @@ app.post('/user/new-tag/:id', authenticate, (req, res) => {
 
       return res.json({
         status: 'success',
-        message: 'Tag setted correctly.'
+        message: 'Tag saved correctly.',
+        tag
       })
 
+    })
+  })
+})
+
+// Delete tag
+app.delete('/tag/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  const text = req.body.text
+
+  if (!text) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'No tag selected.'
+    })
+  }
+
+  User.findById(id, (err, user) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to access.',
+        err
+      })
+    }
+
+    if (!user) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.'
+      })
+    }
+
+    const tags = user.tags
+
+    const selectedTag = tags.find(tag => tag.text === text)
+
+    const position = tags.indexOf(selectedTag)
+
+    if (position < 0) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Tag not found.'
+      })
+    }
+
+    // Delete the tag
+    tags.splice(position, 1)
+
+    user.save( (err, updatedUser) => {
+      if (err) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Unable to access.',
+          err
+        })
+      }
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'User not found.'
+        })
+      }
+      return res.json({
+        status: 'success',
+        message: 'Tag deleted correctly.'
+      })
     })
   })
 })

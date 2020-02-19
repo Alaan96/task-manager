@@ -33,6 +33,8 @@
       </div>
       <tags
         list
+        :context="`ID: ${task._id}`"
+        :selected="task.tag.text"
         @getTag="setTag($event)">
       </tags>
 
@@ -292,6 +294,7 @@ export default {
             this.$axios.$put(`${this.url}/update-task/${this.task._id}`, this.task)
               .then( res => {
                 console.log(res)
+                this.$emit('updateChanges', this.task)
                 // this.resetForm()
               })
               .catch( err => {
@@ -302,20 +305,21 @@ export default {
             // this.$store.dispatch('task/lastSaved', `${this.url}/last-saved/${this.id}`)
           }
 
+
         } else if (this.onEdit === false) {
           // On new task
+
           this.$axios.$post(`${this.url}/save-task/${this.id}`, this.task)
             .then( res => {
               console.log(res)
               this.resetForm()
+              this.toggleForm('close')
+              this.$store.dispatch('task/lastSaved', `${this.url}/last-saved/${this.id}`)
             })
             .catch( err => {
               console.log(err)
               this.resetForm()
             })
-          // this.$emit('saveTask')
-          this.toggleForm('close')
-          this.$store.dispatch('task/lastSaved', `${this.url}/last-saved/${this.id}`)
         }
       }
     },
@@ -424,7 +428,7 @@ input {
 	padding: 0 1rem;
 
 	font-size: .75rem;
-	font-family: $niramit;
+	// font-family: $niramit;
 	background: transparent;
 	color: $light;
 	border: none;
@@ -529,7 +533,7 @@ header {
     height: 2rem;
     @include center;
     font-size: .75rem;
-    font-family: $niramit;
+    // font-family: $niramit;
     background: transparent;
     color: $primary;
     border: 1px solid $primary;
@@ -573,7 +577,7 @@ button.btn-active {
     width: 6rem;
     height: 1.3rem;
     font-size: .75rem;
-    font-family: $niramit;
+    // font-family: $niramit;
     color: $primary;
     background: $secondary;
     border-radius: 1rem;
@@ -645,7 +649,7 @@ button.desactived {
       width: 6rem;
       height: 1.3rem;
       font-size: .75rem;
-      font-family: $niramit;
+      // font-family: $niramit;
       color: $primary;
       background: $secondary;
       border-radius: 1rem;

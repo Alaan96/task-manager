@@ -6,6 +6,54 @@ const { authenticate } = require('../middlewares/authentication')
 
 const app = express()
 
+
+// Get all task of a profile
+app.get('/tasks/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  let query = { author: id }
+
+  const all = req.query.all || false
+
+  if (!all) {
+    const active = req.query.active || true
+    // const shared = { sharedWith: id }
+  
+    query = { author: id, active }
+  }
+
+  Task.find(query).exec((err, tasksDB) => {
+    // Task.find( {$and: [author, shared]} ).exec( (err, tasksDB) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to access.',
+        err
+      })
+    }
+
+    if (!tasksDB) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Task list not found.'
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'Task list found correctly.',
+      tasks: tasksDB
+    })
+  })
+})
+
 // Save new task
 app.post('/save-task/:id', authenticate, (req, res) => {
   const id  = req.params.id
@@ -21,7 +69,6 @@ app.post('/save-task/:id', authenticate, (req, res) => {
 
   console.log(body)
 
-
   if (!body.title) {
     return res.status(400).json({
       status: 'error',
@@ -29,7 +76,7 @@ app.post('/save-task/:id', authenticate, (req, res) => {
     })
   }
 
-  let task = new Task({
+  const task = new Task({
     title: body.title,
     description: body.description,
     tag: body.tag,
@@ -106,83 +153,6 @@ app.get('/last-saved/:id', authenticate, (req, res) => {
   })
 })
 
-// Get all task of a profile
-app.get('/tasks/:id', authenticate, (req, res) => {
-  const id = req.params.id
-
-  if (!id) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Id is required.'
-    })
-  }
-
-  const author = { author: id, active: true }
-  // const shared = { sharedWith: id }
-
-
-  Task.find(author).exec( (err, tasksDB) => {
-  // Task.find( {$and: [author, shared]} ).exec( (err, tasksDB) => {
-    if (err) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Unable to access task list.',
-        err
-      })
-    }
-
-    if (!tasksDB) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Task list not found.'
-      })
-    }
-
-    return res.json({
-      status: 'success',
-      message: 'Task list found correctly.',
-      tasks: tasksDB
-    })
-  })
-})
-
-// Remove/disable a task
-app.delete('/remove-task/:taskId', authenticate, (req, res) => {
-  const id = req.params.taskId
-
-  if (!id) {
-    return res.status(400).json({
-      status: 'error',
-      message: 'Id is required.'
-    })
-  }
-
-  const disabled = { active: false }  
-
-  Task.findByIdAndUpdate(id, disabled, { new: true }, (err, disabledTask) => {
-    if (err) {
-      return res.status(500).json({
-        status: 'error',
-        message: 'Error removing the task.',
-        err
-      })
-    }
-
-    if (!disabledTask) {
-      return res.status(404).json({
-        status: 'error',
-        message: 'Task not found.'
-      })
-    }
-
-    return res.json({
-      status: 'success',
-      message: 'Task removed correctly.',
-      task: disabledTask
-    })
-  })
-})
-
 // Update task properties
 app.put('/update-task/:taskId', authenticate, (req, res) => {
   const id = req.params.taskId
@@ -202,7 +172,7 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
     if (err) {
       return res.status(500).json({
         status: 'error',
-        message: 'Unable to get the task.',
+        message: 'Unable to access.',
         err
       })
     }
@@ -213,14 +183,14 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
         message: 'Task not found.',
       })
     }
-    
+
     const dataContent = Object.keys(data)
-    console.log(dataContent)
+    // console.log(dataContent)
 
     if (dataContent.length === 0) {
       return res.status(400).json({
         status: 'error',
-        message: 'The data provided is empty.',
+        message: 'The fields are empty.',
         changes: data,
         task: taskDB
       })
@@ -230,10 +200,10 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
 
     dataContent.forEach(property => {
       if (taskDB[property] !== data[property]) {
-        console.log(`${property} has a different value.`)
+        // console.log(`${property} has a different value.`)
         propertiesForUpdate.push(property)
       } else {
-        console.log(`${property} has the same value.`)
+        // console.log(`${property} has the same value.`)
       }
     })
 
@@ -241,7 +211,7 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
       return res.status(400).json({
         status: 'error',
         message: 'No changes detected.',
-        data: data,
+        data,
         task: taskDB
       })
     }
@@ -249,7 +219,7 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
     propertiesForUpdate.forEach(newProperty => {
       taskDB[newProperty] = data[newProperty]
     })
-    
+
     taskDB.save((err, taskDB) => {
       if (err) {
         return res.status(500).json({
@@ -298,5 +268,113 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
   // })
 })
 
+// Disable a task
+app.put('/disable-task/:taskId', authenticate, (req, res) => {
+  const id = req.params.taskId
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  const status = { active: false }  
+
+  Task.findByIdAndUpdate(id, status, { new: true }, (err, disabledTask) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error on database.',
+        err
+      })
+    }
+
+    if (!disabledTask) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Task not found.'
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'Task disabled correctly.',
+      task: disabledTask
+    })
+  })
+})
+
+// Active a task
+app.put('/active-task/:taskId', authenticate, (req, res) => {
+  const id = req.params.taskId
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  const status = { active: true }
+
+  Task.findByIdAndUpdate(id, status, { new: true }, (err, disabledTask) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error on database.',
+        err
+      })
+    }
+
+    if (!disabledTask) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Task not found.'
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'Task active correctly.',
+      task: disabledTask
+    })
+  })
+})
+
+// Remove a task
+app.delete('/remove-task/:taskId', authenticate, (req, res) => {
+  const id = req.params.taskId
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  Task.findByIdAndRemove(id, (err, disabledTask) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error removing the task.',
+        err
+      })
+    }
+
+    if (!disabledTask) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Task not found.'
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'Task removed correctly.',
+      // task: disabledTask
+    })
+  })
+})
 
 module.exports = app

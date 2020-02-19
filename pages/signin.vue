@@ -29,4 +29,8 @@ export default {
 	min-height: 100vh;
 	width: 100%;
 }
+
+a {
+	font-weight: 600;
+}
 </style>

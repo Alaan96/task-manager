@@ -1,5 +1,5 @@
 <template>
-	<div class="login-form" v-if="fields">
+	<div class="form-container" v-if="fields">
 		<span v-if="title" class="label">{{title}}</span>
 
 		<form @submit.prevent>
@@ -37,7 +37,9 @@
 <script>
 import field from '@/components/field'
 
-import { notify } from '@/assets/mixins/notify' // Mixin
+ // Mixins
+import { notify } from '@/assets/mixins/notify'
+import { helpers } from '@/assets/mixins/api-helpers'
 
 export default {
 	data() {
@@ -46,6 +48,7 @@ export default {
 			keepSession: false
 		}
 	},
+	mixins: [notify, helpers],
 	methods: {
 	  submit() {
 	    if (this.validate) {
@@ -65,10 +68,11 @@ export default {
 	  validateFields(fields, validFields) {
 	    if (fields === validFields) {
 	      console.log('Validación correcta.')
+				this.notify('success', 'Validación correcta.')
 	      return true
 	    } else {
-	      // Alert
-	      console.log('Hay campos inválidos en el formulario.')
+	      console.warn('Hay campos inválidos.')
+				this.notify('error', 'Hay campos inválidos.')
 	      return false
 	    }
 	  },
@@ -76,31 +80,37 @@ export default {
 	  sendForm() {
 	    // Enviar formulario
 			console.log('Enviando el formulario')
-			this.$axios.$post(`http://localhost:3000/${this.context}${this.params}`, this.values)
+			// console.log(`${this.url}/${this.context}${this.params}`, this.values);
+			this.$axios.$post(`${this.url}/${this.context}${this.params}`, this.values)
 				.then( res => this[this.context](res))
 				.catch( err => {
 					let error = {}
+					error = err
+					console.warn(error)
+					console.warn(error.message)
+					this.notify(error.status, error.message)
 					if (err.response.data) {
 						error = err.response.data
-						console.log(error)
-						console.log(error.message)
+						console.warn(error)
+						console.warn(error.message)
 						this.notify(error.status, error.message)
 					} else {
 						error = err
-						console.log(error)
-						console.log(error.message)
+						console.warn(error)
+						console.warn(error.message)
 						this.notify(error.status, error.message)
 					}
 				})
 		},
 		'password-reset'(res) {
 			console.log(res)
-			localStorage.setItem('pass-token', res.token)
-			console.log(localStorage.getItem('pass-token'))
+			localStorage.setItem('pass-token', res.passToken)
 		},
 		'new-password'(res) {
 			console.log(res)
+			localStorage.removeItem('pass-token')
 			console.log('New password set.')
+			this.$router.push('/login')
 		},
 		'set-birthday'(res) {
 			console.log(res)
@@ -112,9 +122,8 @@ export default {
 				localStorage.setItem('id', res.user._id)
 				if (this.keepSession) {
 					localStorage.setItem('keepSession', this.keepSession)
-					this.$store.commit('user/login')
 				}
-				// this.$store.commit('user/setId', res.user._id)
+				this.$store.commit('user/login')
 				this.$router.push('/')
 			}
 		},
@@ -145,7 +154,6 @@ export default {
 		  })
 		})
 	},
-	mixins: [notify],
 	props: {
 		formFields: {
 			type: [Array, String]
@@ -192,7 +200,7 @@ export default {
 </script>
 
 <style lang="scss" scoped>
-.login-form {
+.form-container {
 	max-width: 14.5rem;
 	width: 100%;
 	margin: auto;
@@ -208,6 +216,7 @@ export default {
 
 		& .actions {
 			width: 100%;
+			// padding: 1rem 0;
 			display: flex;
 			justify-content: center;
 			align-items: center;
@@ -215,19 +224,32 @@ export default {
 
 			& p {
 				width: 100%;
-				font-size: .75rem;
+				font-size: .875rem;
 			}
 
 			& button {
 				width: 10rem;
 				height: 2rem;
-				margin: 1rem 0;
+				margin-top: 2rem;
+				margin-bottom: 1rem;
+				// margin: 2rem 0;
 				font-size: 1rem;
-				font-family: $niramit;
+				// font-family: $niramit;
+				font-weight: 600;
 				background: $tertiary;
 				color: $primary;
 				border-radius: 1rem;
 				box-shadow: $shadow;
+			}
+		}
+
+		.check-input {
+			padding: 0 .5rem;
+			display: flex;
+			align-items: center;
+			& label {
+				margin-left: .5rem;
+				font-size: .875rem;
 			}
 		}
 	}

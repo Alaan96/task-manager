@@ -16,9 +16,9 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
           <circle cx="4" cy="4" r="4" :fill="tag.color" />
         </svg>
-        <label :for="tag.text">{{tag.text}}</label>
+        <label :for="setId(tag.text)">{{tag.text}}</label>
         <input type="checkbox"
-          :id="tag.text"
+          :id="setId(tag.text)"
           :value="tag.text"
           v-model="selections"
           @change="setTags()">
@@ -32,9 +32,9 @@
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
           <circle cx="4" cy="4" r="4" :fill="tag.color" />
         </svg>
-        <label :for="tag.text">{{tag.text}}</label>
+        <label :for="setId(tag.text)">{{tag.text}}</label>
         <input type="radio"
-          :id="tag.text"
+          :id="setId(tag.text)"
           :value="tag.text"
           v-model="selectedTag"
           @change="setTag(tag)">
@@ -45,10 +45,12 @@
   <modal v-else
     title="Gestión de etiquetas">
     <div class="create-new-tag">
-      <input type="text" placeholder="Nueva etiqueta" v-model="newTag.text">
-      <button class="add-tag" @click="addNewTag">
-        Agregar
-      </button>
+      <div class="controls">
+        <input type="text" placeholder="Nueva etiqueta" v-model="newTag.text">
+        <button class="add-tag" @click="addNewTag">
+          Agregar
+        </button>
+      </div>
 
       <div class="color-list">
         <button class="color-preview"
@@ -107,7 +109,7 @@ export default {
         text: '',
         color: ''
       },
-      selectedTag: 'Tarea',
+      selectedTag: '',
       selections: [],
 
       dots: []
@@ -115,11 +117,13 @@ export default {
   },
   mixins: [helpers],
   created() {
-    const tag = this.tags[0]
+    this.selectedTag = this.selected
+
+    const tag = this.tags.find( tag => tag.text === this.selected)
     this.setTag(tag)
-    // this.selectedTag = 'Tarea'
 
     this.setColors()
+
   },
   methods: {
     setTag(tag) {
@@ -130,6 +134,14 @@ export default {
     },
     reset() {
       this.selectedTag = ''
+    },
+    setId(tag) {
+      let taskID = this.context
+      if (taskID.length > 0) {
+        return `${tag} - Task ${this.context}`
+      } else {
+        return `${tag}`
+      }
     },
 
     // Modal
@@ -166,6 +178,10 @@ export default {
       type: Boolean,
       required: false,
     },
+    selected: {
+      type: String,
+      default: 'Tarea'
+    },
     preview: {
       type: Boolean,
       required: false
@@ -178,6 +194,10 @@ export default {
       type: Boolean,
       required: false,
       default: false
+    },
+    context: {
+      type: String,
+      default: ''
     }
   },
   computed: {
@@ -207,12 +227,12 @@ export default {
   }
   & button {
     // height: 1.3rem;
-    padding: .15rem .5rem;
+    padding: .25rem .5rem;
     margin: .25rem;
     display: flex;
     align-items: center;
     font-size: .75rem;
-    font-family: $niramit;
+    // font-family: $niramit;
     color: $primary;
     background: $black;
     border-radius: 1rem;
@@ -247,20 +267,27 @@ button.selected {
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
+  & .controls {
+    width: 100%;
+    height: 1.75rem;
+    display: flex;
+    justify-content: space-between;
+  }
   & input {
     width: 9rem;
     padding: 0 1rem;
-    font-family: $niramit;
-    font-size: 1rem;
+    // font-family: $niramit;
+    font-size: .875rem;
     color: $black;
     border: 1px solid $gray;
     border-radius: 1rem;
   }
-  & .add-tag {
+  & button.add-tag {
     width: 6rem;
     @include center;
-    font-family: $niramit;
-    font-size: 1rem;
+    // font-family: $niramit;
+    font-size: .875rem;
+    font-weight: 600;
     color: $primary;
     background: $secondary;
     border-radius: 1rem;
@@ -284,7 +311,9 @@ button.selected {
       width: 1.5rem;
     }
     & button.colors-generate {
-      font-family: $niramit;
+      font-size: .875rem;
+      font-weight: 600;
+      // font-family: $niramit;
       color: $secondary;
     }
   }
@@ -308,6 +337,8 @@ section.tags {
     height: 100%;
     display: flex;
     flex-direction: column;
+    font-weight: 600;
+    fill: $black; // SVG
     background: $primary;
     border: 1px solid $gray;
     border-radius: .5rem;

@@ -6,8 +6,11 @@
     <ul class="negative">
       <li>
         <span class="title">Etiquetas</span>
-        <div class="config"
-          @click="$store.commit('modal/showModal')">Gestionar etiquetas</div>
+        <div class="config">
+          <span @click="$store.commit('modal/showModal')">
+            Gestionar etiquetas
+          </span>
+        </div>
       </li>
       <li>
         <span class="title">Vista al iniciar</span>
@@ -38,21 +41,23 @@
       <li>
         <span class="title">Funcionar sin conexión</span>
         <div class="config">
+          <span class="soon">Proximamente</span>
           <!-- <button-checkbox ></button-checkbox> -->
-          <button :class="{'active': workOffline}">
+          <!-- <button :class="{'active': workOffline}">
             <label for="work-offline">{{workOffline ? 'Activado' : 'Desactivado'}}</label>
             <input type="checkbox" id="work-offline" v-model="workOffline">
-          </button>
+          </button> -->
         </div>
       </li>
       <li>
         <span class="title">Modo oscuro</span>
         <div class="config">
+          <span class="soon">Proximamente</span>
           <!-- <button-checkbox ></button-checkbox> -->
-          <button :class="{'active': darkMode}">
+          <!-- <button :class="{'active': darkMode}">
             <label for="dark-mode">{{darkMode ? 'Activado' : 'Desactivado'}}</label>
             <input type="checkbox" id="dark-mode" v-model="darkMode">
-          </button>
+          </button> -->
         </div>
       </li>
     </ul>
@@ -73,6 +78,10 @@ export default {
     tags,
     modal,
     'button-checkbox': btnCheckbox
+  },
+  created() {
+    this.weekStart = this.$store.state.user.weekStart
+    this.defaultView = this.$store.state.user.defaultView
   },
   data() {
     return {
@@ -104,7 +113,6 @@ export default {
     changeDefaultView(view) {
       console.log('Change view')
       this.options.defaultView = view
-      // this.$store.commit('calendary/changeWeekStart', firstDay)
       this.sendChanges()
     },
 
@@ -121,19 +129,6 @@ export default {
 
       this.options = {}
     },
-  },
-  beforeMount() {
-    this.optionsFromStore
-  },
-  computed: {
-    optionsFromStore() {
-      let firstDay = this.$store.state.user.weekStart
-      this.weekStart = firstDay
-
-      let view = this.$store.state.user.defaultView
-      this.defaultView = view
-      return 'Options loaded from store.'
-    }
   }
 }
 </script>
@@ -162,9 +157,15 @@ ul {
       font-weight: 700;
     }
     & .config {
-      // color: $light;
-      color: $secondary;
-      cursor: pointer;
+      & span {
+        font-weight: 600;
+        color: $secondary;
+        cursor: pointer;
+      }
+      & span.soon {
+        color: $black;
+        opacity: .4;
+      }
     }
   }
 }

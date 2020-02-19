@@ -82,7 +82,7 @@ export default {
 		height: 2rem;
 		padding: 0 1rem;
 		font-size: 1rem;
-		font-family: $niramit;
+		// font-family: $niramit;
 		background: transparent;
 		color: $light;
 		border: 1px solid $line;

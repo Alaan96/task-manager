@@ -22,7 +22,8 @@ let taskSchema = new Schema({
   },
   tag: {
     type: Object,
-    required: true
+    required: true,
+    default: { text: 'Tarea', color: '#66BBD1' }
   },
   date: {
     type: String,

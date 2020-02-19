@@ -127,7 +127,7 @@ export default {
 .date {
   opacity: .3;
   & text {
-    font-family: $lato;
+    // font-family: $lato;
     fill: $primary;
   }
   & circle.today {
@@ -145,7 +145,7 @@ export default {
 
 .isToday {
   & text {
-    font-family: $lato;
+    // font-family: $lato;
     fill: $tertiary;
     font-weight: 700;
   }

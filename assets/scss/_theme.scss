@@ -10,10 +10,12 @@ button:focus, input:focus, textarea:focus {
 
 :root {
 	font-size: 16px;
-	font-family: $niramit;
+	// font-family: $niramit;
+	font-family: $quicksand;
 }
 
 button {
+	font-family: $quicksand;
 	background: transparent;
 	border: none;
 }
@@ -33,9 +35,11 @@ a {
 }
 
 input {
+	font-family: $quicksand;
 	background: inherit;
 	border: none;
 	color: inherit;
+	caret-color: $secondary;
 }
 
 body {
@@ -56,7 +60,7 @@ body {
 }
 
 .label {
-	font-family: $niramit;
+	// font-family: $niramit;
 	font-size: .75rem;
 	font-weight: 700;
 	color: $primary;

@@ -8,10 +8,9 @@
       <ul class="negative">
         <li>
           <span class="title">Email</span>
-          <div class="config"
-            @click="$store.commit('modal/showModal')">{{email}}</div>
+          <div class="config">{{email}}</div>
         </li>
-        <li>
+        <li v-if="birthday">
           <span class="title">Cumpleaños</span>
           <div class="config">{{birthday}}</div>
         </li>
@@ -35,20 +34,6 @@ export default {
   components: {
     'user-data': data
   },
-  data() {
-    return {
-      // dataList: [
-      //   {
-      //     title: 'Email',
-      //     config: this.email
-      //   },
-      //   {
-      //     title: 'Cumpleaños',
-      //     config: this.birthday
-      //   }
-      // ]
-    }
-  },
   computed: {
     ...mapState('user', {
       name: 'name',
@@ -59,6 +44,7 @@ export default {
   methods: {
     logout() {
       this.$store.commit('user/logout')
+      localStorage.removeItem('keepSession')
       this.$router.push('/')
     }
   }

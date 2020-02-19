@@ -1,6 +1,6 @@
 <template>
 	<main>
-		<h1 class="app-title">{{title}}</h1>
+		<logo></logo>
     <nuxt/>
     <!-- Notifications -->
     <notify></notify>
@@ -8,15 +8,12 @@
 </template>
 
 <script>
+import logo from '@/components/logo'
 import notify from '@/components/notify'
 
 export default {
-	data() {
-    return {
-      title: "Apepé",
-    }
-  },
   components: {
+    logo,
     notify
   }
 }
@@ -26,6 +23,8 @@ export default {
   main {
     width: 100vw;
     height: 100vh;
+    display: flex;
+    flex-direction: column;
     overflow-x: hidden;
     position: relative;
   }

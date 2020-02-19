@@ -4,13 +4,13 @@ const authenticate = (req, res, next) => {
   let token = req.get('token')
 
   if (!token) {
-    return res.status(404).json({
+    return res.status(401).json({
       status: 'error',
       message: 'Token is required.'
     })
   }
 
-  jwt.verify(token, process.env.SEED, (err, decoded) => {
+  jwt.verify(token, process.env.AUTHENTICATION_SEED, (err, decoded) => {
     if (err) {
       return res.status(401).json({
         status: 'error',

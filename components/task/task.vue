@@ -2,7 +2,8 @@
 	<task-form v-if="editable"
 		:contentEditable="task"
 		v-model="task"
-		@discardChanges="cancelEdition($event)">
+		@updateChanges="editionEnds($event)"
+		@discardChanges="editionEnds($event)">
 	</task-form>
 
 	<article v-else
@@ -18,7 +19,7 @@
 			class="date"
 			:style="{'backgroundColor': task.tag.color}">
 			<span>
-				{{ task.date }}
+				{{ task.date.slice(0, 2) }}
 			</span>
 		</div>
 		<!-- <div v-if="task.date.length > 0"
@@ -175,7 +176,7 @@ export default {
 		edit() {
 			this.editable = true
 		},
-		cancelEdition($event) {
+		editionEnds($event) {
 			console.log($event)
 			this.task = $event
 			this.editable = false
@@ -184,7 +185,7 @@ export default {
 
 		removeTask() {
 			this.$store.commit('task/deleteOne', this.index)
-			this.$axios.$delete(`${this.url}/remove-task/${this.task._id}`)
+			this.$axios.$put(`${this.url}/disable-task/${this.task._id}`)
 		}
 	},
 	mixins: [helpers],
@@ -234,7 +235,7 @@ export default {
 	
 	& .title {
 		width: 100%;
-		// min-height: 3rem;
+		min-height: 3rem;
 		// height: 2rem;
 		margin: 0;
 		padding: .5rem 0;
@@ -308,8 +309,9 @@ export default {
 		top: 0;
 		left: -.5rem;
 		font-size: 1.25rem;
-		font-family: $lato;
+		// font-family: $lato;
 		font-weight: 700;
+		text-align: center;
 		border-radius: $radius;
 		transition: .2s ease;
 		& span {
@@ -367,7 +369,7 @@ div.options {
 	// }
 	& span {
 		font-size: .75rem;
-		font-family: $niramit;
+		// font-family: $niramit;
 		color: $primary;
 	}
 }

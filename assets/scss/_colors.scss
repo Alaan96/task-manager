@@ -10,3 +10,16 @@ $light: transparentize($primary, .2);
 $line: transparentize($primary, .8);
 
 $cancel: #F16D6D;
+
+.primary {
+  background: $primary;
+  color: $black;
+}
+.secondary {
+  background: $secondary;
+  color: $primary;
+}
+.tertiary {
+  background: $tertiary;
+  color: $primary;
+}

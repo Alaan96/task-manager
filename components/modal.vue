@@ -6,7 +6,9 @@
     <slot></slot>
     <span class="close"
       @click="closeModal"
-      @keyup.esc="closeModal">{{close}}</span>
+      @keyup.esc="closeModal">
+      {{close}}
+    </span>
   </div>
 </template>
 
@@ -62,6 +64,7 @@ export default {
 
 .close {
   margin-top: 0.5rem;
+  font-weight: 600;
   color: $secondary;
 }
 

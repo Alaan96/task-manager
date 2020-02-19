@@ -17,7 +17,7 @@
       <section>
       </section>
 
-      <nav>
+      <nav @click="toggleMenu(active)">
         <ul v-for="section in sections"
           :key="section.title">
           <span v-if="section.title">{{section.title}}</span>
@@ -93,6 +93,18 @@ export default {
     }
   },
   methods: {
+    toggleMenu(state) {
+      const target = event.target.tagName
+      if (target === 'A') {
+        if (state === true) {
+          this.active = false
+        } else if (state === false) {
+          this.active = true
+        } else {
+          console.warn('Menu "active" undefined.')
+        }
+      }
+    }
     // changeHeaderText() {
     //   console.log('Cambiando texto de cabecera.')
     // }
@@ -204,7 +216,9 @@ nav {
       background: $silver;
 
       & a {
-        display: block;
+        height: 100%;
+        display: flex;
+        align-items: center;
         padding-left: 1rem;
         color: $black;
       }
@@ -215,7 +229,7 @@ nav {
 .copyright {
   padding: .75rem 1rem;
   @include center;
-  font-size: .75rem;
+  font-size: .875rem;
   border-top: 1px solid $secondary;
   color: $secondary;
 }
@@ -226,6 +240,7 @@ nav {
 }
 
 .selected {
+  font-weight: 700;
   background: $secondary;
   color: $primary;
 }

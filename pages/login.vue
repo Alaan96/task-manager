@@ -10,10 +10,10 @@
 		<password-reset
 			title="Cambio de contraseña"
 			:fields="fields"
-			description="Se le enviará un mail a este correo con el link para hacer el cambio de contraseña."
+			description="Se enviará un mail con el link para hacer el cambio de contraseña."
 			button="Enviar"
-			context="password-reset">
-			<span @click="$store.commit('modal/hideModal')">Cancelar cambio</span>
+			ctx="password-reset">
+			<!-- <span @click="$store.commit('modal/hideModal')">Cancelar cambio</span> -->
 		</password-reset>
 	</login-form>
 </template>
@@ -45,8 +45,14 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+a {
+	font-weight: 600;
+}
+
 span {
 	margin-top: 2rem;
+	// font-size: .875rem;
+	font-weight: 600;
 	color: $secondary;
 }
 </style>

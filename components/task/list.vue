@@ -176,7 +176,7 @@ input {
 	padding: 0 1rem;
 
 	font-size: 1rem;
-	font-family: $niramit;
+	// font-family: $niramit;
 	background: transparent;
 	color: $light;
 	border: none;
@@ -218,7 +218,7 @@ input {
     justify-content: space-around;
     align-items: center;
     font-size: .75rem;
-    font-family: $niramit;
+    // font-family: $niramit;
     background: transparent;
     color: $primary;
     border-radius: $radius;

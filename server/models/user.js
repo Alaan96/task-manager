@@ -34,15 +34,23 @@ let userSchema = new Schema({
   },
   tags: {
     type: Array,
-    required: false
+    required: false,
+    default: [
+      { text: 'Tarea', color: '#66BBD1' },
+      { text: 'Salud', color: '#F16D6D' },
+      { text: 'Estudios', color: '#72D9A2' },
+      { text: 'Eventos', color: '#E9B786' },
+    ]
   },
   defaultView: {
     type: String,
     required: false,
+    default: 'date'
   },
   weekStart: {
     type: String,
     required: false,
+    default: 'Lunes'
   },
   // workOffline: {
   //   type: Boolean,
