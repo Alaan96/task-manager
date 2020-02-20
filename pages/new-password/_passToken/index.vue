@@ -13,13 +13,11 @@
 </template>
 
 <script>
-import logo from '@/components/logo'
 // import passChange from '@/components/password-reset'
 import passwordChangeForm from '@/components/form'
 
 export default {
   components: {
-    logo,
     'password-change-form': passwordChangeForm
   },
   layout: 'session',

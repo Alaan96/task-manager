@@ -1,6 +1,6 @@
 <template>
 	<main>
-		<logo></logo>
+		<!-- <logo></logo> -->
     <nuxt/>
     <!-- Notifications -->
     <notify></notify>
@@ -8,12 +8,12 @@
 </template>
 
 <script>
-import logo from '@/components/logo'
+// import logo from '@/components/logo'
 import notify from '@/components/notify'
 
 export default {
   components: {
-    logo,
+    // logo,
     notify
   }
 }
