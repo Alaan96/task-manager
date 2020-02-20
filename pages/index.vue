@@ -27,41 +27,40 @@ export default {
     'task-list': list,
     'set-birthday': setBirthday
   },
-  middleware: 'authenticated',
-  async fetch({ $axios, store }) {
-  // async asyncData({isDev, route, store, env, params, query, req, res, redirect, error}) {
-    try {
-      $axios.defaults.headers.common.token = localStorage.getItem('token')
-      let loaded = store.getters['user/loaded']
-      if (loaded === false) {
-        const id = localStorage.getItem('id')
-        // Load user data
-        await store.dispatch('user/profileData', `${location.origin}/user/${id}`)
+  // middleware: 'authenticated',
+  // async fetch({ $axios, store }) {
+  //   try {
+  //     $axios.defaults.headers.common.token = localStorage.getItem('token')
+  //     let loaded = store.getters['user/loaded']
+  //     if (loaded === false) {
+  //       const id = localStorage.getItem('id')
+  //       // Load user data
+  //       await store.dispatch('user/profileData', `${location.origin}/user/${id}`)
 
-        // Load tasks
-        await store.dispatch('task/tasksDB', `${location.origin}/tasks/${id}`)
+  //       // Load tasks
+  //       await store.dispatch('task/tasksDB', `${location.origin}/tasks/${id}`)
 
-        // return {fetchMsg: 'Content loaded.'}
-      } else {
-        // return {fetchMsg: 'Content was already loaded.'}
-      }
-    } catch(err) {
-      if (err.response.data.message) {
-        console.warn(err.response.data.message)
-      } else {
-        console.log(err)
-      }
-      // return {fetchMsg: `Error loading the content. Error: ${err}`}
-    }
-  },
-  created() {
-    const firstDay = this.$store.state.user.weekStart
-    this.$store.commit('calendar/changeWeekStart', firstDay)
-  },
-  beforeMount() {
-    this.userLogged()
-    // this.openBirthdayModal()
-  },
+  //       // return {fetchMsg: 'Content loaded.'}
+  //     } else {
+  //       // return {fetchMsg: 'Content was already loaded.'}
+  //     }
+  //   } catch(err) {
+  //     if (err.response.data.message) {
+  //       console.warn(err.response.data.message)
+  //     } else {
+  //       console.log(err)
+  //     }
+  //     // return {fetchMsg: `Error loading the content. Error: ${err}`}
+  //   }
+  // },
+  // created() {
+  //   const firstDay = this.$store.state.user.weekStart
+  //   this.$store.commit('calendar/changeWeekStart', firstDay)
+  // },
+  // beforeMount() {
+  //   this.userLogged()
+  //   // this.openBirthdayModal()
+  // },
   data() {
     return {
       view: this.$store.state.user.defaultView
