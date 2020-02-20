@@ -165,7 +165,9 @@ export default {
         Object.assign(tag, this.newTag)
         this.$store.commit('user/addNewTag', tag)
         console.log(tag)
-        this.$axios.$post(`${this.url}/user/new-tag/${this.id}`, {tag})
+        this.$axios.$post(`${this.url}/tag/${this.id}`, {tag})
+          .then( res => console.log(res) )
+          .catch( err => console.log(err) )
 
         this.newTag.text = ''
         this.newTag.color = ''
