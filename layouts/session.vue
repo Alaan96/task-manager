@@ -8,7 +8,7 @@
 </template>
 
 <script>
-import logo from '@/components/logo'
+import logo from '@/components/app-logo'
 import notify from '@/components/notify'
 
 export default {
