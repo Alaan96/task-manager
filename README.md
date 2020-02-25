@@ -1,6 +1,6 @@
-# task-manager
+# Nout app
 
-> My beautiful Nuxt.js project
+> Task manager application with an integrated calendar. Fast, simple and reactive.
 
 ## Build Setup
 

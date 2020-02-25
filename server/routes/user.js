@@ -90,12 +90,12 @@ app.post('/login', (req, res) => {
     if (!userDB) {
       return res.status(404).json({
         status: 'error',
-        message: 'The emails does not exist in the database.',
+        message: 'The emails doesn\'t exist in the database.',
       })
     }
 
     if (!bcrypt.compareSync(body.password, userDB.password)) {
-      return res.status(404).json({
+      return res.status(400).json({
         status: 'error',
         message: 'Incorrect password.',
       })
@@ -386,17 +386,35 @@ app.post('/password-reset', (req, res) => {
           }
         });
 
+        let url = location.origin
+        // if (process.env.NODE_ENV !== 'production') {
+        //   url = ''
+        // }
+        const link = `${url}/new-password/${passToken}`
+
         const mailOptions = {
-          from: `"Alan Test" ${process.env.EMAIL}`,
+          from: `"Nout app" ${process.env.EMAIL}`,
           to: email,
-          subject: 'Password reset - APP',
-          text: "Hello world?",
+          subject: 'Cambio de contraseña',
+          text: `Cambio de contraseña - Nout app - Link: ${link}.`,
           html: `
-          <b>Hello world?</b>
-          <h1>Link de cambio de contraseña</h1>
-          <a href="http://localhost:3000/new-password/${passToken}">
-            http://localhost:3000/new-password/${passToken}
-          </a>`
+          <main>
+            <header>
+              <h1>Cambio de contraseña</h1>
+              <img src="" alt="Nout">
+            </header>
+            <div>
+              <p>
+                Si solicitaste un cambio de contraseña ingresá al link <a href="${link}">${link}</a> o hacé click en el botón.
+              </p>
+              <button>
+                <a href="${link}">Cambiar</a>
+              </button>
+              
+              <button>No fui yo</button>
+              <p>Envía informa de la situación.</p>
+            </div>
+          </main>`
         }
 
         transporter.sendMail(mailOptions, (err, info) => {

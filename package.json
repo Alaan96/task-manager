@@ -1,7 +1,7 @@
 {
-  "name": "task-manager",
+  "name": "nout",
   "version": "1.0.0",
-  "description": "Modern task manager project",
+  "description": "Modern task manager.",
   "author": "Alan Jimenez Cordoba <alaanjimenez03@gmail.com>",
   "private": true,
   "scripts": {

@@ -66,8 +66,7 @@ app.post('/save-task/:id', authenticate, (req, res) => {
   }
 
   const body = req.body
-
-  console.log(body)
+  // console.log(body)
 
   if (!body.title) {
     return res.status(400).json({

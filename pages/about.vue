@@ -16,20 +16,20 @@ export default {
       data: [
         {
           title: 'Nombre',
-          config: 'Apepé'
+          config: 'Nout'
         },
         {
           title: 'Versión de la aplicación',
-          config: '1.0.0'
+          config: '1.0.1'
         },
         {
           title: 'Autor',
           config: 'Alan Jiménez Córdoba'
         },
-        {
-          title: 'Repositorio en github',
-          config: 'github-link'
-        }
+        // {
+        //   title: 'Repositorio en github',
+        //   config: 'github-link'
+        // }
       ]
     }
   },

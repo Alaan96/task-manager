@@ -112,6 +112,11 @@ export default {
 //    color: $light;
 // }
 
+// input:-webkit-autofill {
+// 	background-color: red !important;
+// 	color: cyan !important;
+// }
+
 .secondary-color {
 	& input {
 		color: $secondary;
