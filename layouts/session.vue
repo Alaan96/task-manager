@@ -3,20 +3,22 @@
 		<logo></logo>
     <nuxt/>
     <!-- Notifications -->
-    <notify></notify>
+    <!-- <notify></notify> -->
 	</main>
 </template>
 
-<script>
-import logo from '@/components/app-logo'
-import notify from '@/components/notify'
+<script lang="ts">
+import Vue from 'vue'
 
-export default {
+import logo from '@/components/app-logo.vue'
+// import notify from '@/components/notify'
+
+export default Vue.extend({
   components: {
     logo,
-    notify
+    // notify
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

@@ -4,12 +4,14 @@
     <text :x="size" :y="size * .75" text-anchor="middle">
       {{name}}
     </text>
-    <circle :cx="size * .88" :cy="size * .54" r="20" />
+    <circle :cx="size * .88" :cy="size * .54" r="20" :fill="firstTagColor" />
   </svg>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue, { PropOptions } from 'vue'
+
+export default Vue.extend({
   props: {
     size: {
       type: Number,
@@ -17,14 +19,22 @@ export default {
     }
   },
   computed: {
-    width() {
+    width(): number {
       return this.size * 2
     },
-    name() {
+    name(): string {
       return this.$store.getters['app/name']
+    },
+    firstTagColor(): string {
+      const tags: any = this.$store.getters['user/tags']
+      let color: string = '#8BDDF2'
+      if (tags.length > 0) {
+        color = tags[0].color
+      }
+      return color
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
@@ -35,9 +45,6 @@ export default {
       font-size: 4rem;
       font-weight: 700;
       letter-spacing: .2rem
-    }
-    & circle {
-      fill: $cancel;
     }
   }
 </style>
