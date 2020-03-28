@@ -68,7 +68,7 @@
 import data from '@/components/data'
 import tags from '@/components/tags'
 import modal from '@/components/modal'
-import btnCheckbox from '@/components/inputs/button-checkbox'
+// import btnCheckbox from '@/components/inputs/button-checkbox'
 
 import { helpers } from '@/assets/mixins/api-helpers'
 
@@ -77,7 +77,7 @@ export default {
     // 'settings-data': data,
     tags,
     modal,
-    'button-checkbox': btnCheckbox
+    // 'button-checkbox': btnCheckbox
   },
   created() {
     this.weekStart = this.$store.state.user.weekStart

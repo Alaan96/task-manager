@@ -1,10 +1,5 @@
 <template>
-  <button :class="[{cancel}, {color: color}]" v-if="to">
-    <nuxt-link :to="to">
-      {{text}}
-    </nuxt-link>
-  </button>
-  <button :class="[{cancel}, {color: color}]" v-else>
+  <button :class="{simple}">
     {{text}}
   </button>
 </template>
@@ -16,34 +11,38 @@ export default {
       type: String,
       required: true
     },
-    color: {
-      type: String
-    },
-    cancel: {
-      type: Boolean,
-      required: false
-    },
     to: {
-      type: String
+      type: String,
+    },
+    simple: {
+      type: Boolean,
     }
+    // cancel: {
+    //   type: Boolean,
+    //   required: false
+    // },
   }
 }
 </script>
 
 <style lang="scss" scoped>
   button {
-    width: 8rem;
+    width: 10rem;
     height: 2rem;
+    margin: 0 auto 1.5rem auto;
     @include center;
-    font-size: .75rem;
-    font-weight: 700;
-    // font-family: $niramit;
+    font-size: 1rem;
+    font-weight: 600;
     color: $primary;
-    background: $secondary;
-    border-radius: $radius;
+    background: $tertiary;
+    border-radius: 1rem;
   }
 
-  .cancel {
-    background: $cancel;
+  .simple {
+    background: transparent;
   }
+
+  // .cancel {
+  //   background: $cancel;
+  // }
 </style>

@@ -12,8 +12,8 @@ const { setToken, getDecodedToken } = require('../config/token-methods')
 const app = express()
 
 
-// Signin
-app.post('/signin', (req, res) => {
+// Rgister
+app.post('/register', (req, res) => {
   const body = req.body
 
   if (!body.name || !body.email || !body.password) {
@@ -38,6 +38,7 @@ app.post('/signin', (req, res) => {
 
   user.save( (err, userDB) => {
     if (err) {
+      console.log(err);
       return res.status(500).json({
         status: 'error',
         message: err.errors.email.message || err.errors.password.message || 'Problems creating the user.',

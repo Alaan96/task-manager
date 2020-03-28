@@ -39,7 +39,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
   .logo {
-    margin: 6rem auto 2rem auto;
+    margin: 6rem auto;
     & text {
       fill: $primary;
       font-size: 4rem;

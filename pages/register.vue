@@ -1,18 +1,18 @@
 <template>
-	<login-form></login-form>
+	<register-form></register-form>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 
-import login from '@/components/login.vue'
+import registerForm from "@/components/register.vue";
 
-export default Vue.extend({
+export default {
 	layout: 'session',
 	components: {
-		"login-form": login,
-	},
-})
+		"register-form": registerForm
+	}
+};
 </script>
 
 <style lang="scss" scoped>

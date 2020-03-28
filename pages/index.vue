@@ -1,44 +1,44 @@
 <template>
   <div class="container">
-    <button class="toggle-view" @click="changeView()">
-      Vista: {{buttonText}}
-    </button>
+    <h1>Inicio</h1>
 
-    <date v-show="view === 'date'"></date>
+    <!-- <date v-show="view === 'date'"></date>
     <calendar v-show="view === 'calendar'"></calendar>
-    <task-list></task-list>
+    <task-list></task-list> -->
 
     <!-- <set-birthday></set-birthday> -->
   </div>
 </template>
 
-<script>
-import date from '@/components/date'
-import calendar from '@/components/calendar/calendar'
-import list from '@/components/task/list'
-import setBirthday from '@/components/set-birthday'
+<script lang="ts">
+import Vue from 'vue'
+
+import date from '@/components/date.vue'
+import calendar from '@/components/calendar/calendar.vue'
+import list from '@/components/task/list.vue'
+// import setBirthday from '@/components/set-birthday.vue'
 
 import { mapState } from 'vuex'
 
-export default {
+export default Vue.extend({
   components: {
     date,
     calendar,
     'task-list': list,
-    'set-birthday': setBirthday
+    // 'set-birthday': setBirthday
   },
   middleware: 'authenticated',
   async fetch({ $axios, store }) {
     try {
-      $axios.defaults.headers.common.token = localStorage.getItem('token')
+      // $axios.defaults.headers.common.token = localStorage.getItem('token')
       let loaded = store.getters['user/loaded']
       if (loaded === false) {
         const id = localStorage.getItem('id')
         // Load user data
-        await store.dispatch('user/profileData', `${location.origin}/user/${id}`)
+        // await store.dispatch('user/profileData', `${location.origin}/user/${id}`)
 
         // Load tasks
-        await store.dispatch('task/tasksDB', `${location.origin}/tasks/${id}`)
+        // await store.dispatch('task/tasksDB', `${location.origin}/tasks/${id}`)
 
         // return {fetchMsg: 'Content loaded.'}
       } else {
@@ -54,32 +54,20 @@ export default {
     }
   },
   created() {
-    const firstDay = this.$store.state.user.weekStart
-    this.$store.commit('calendar/changeWeekStart', firstDay)
+    // const firstDay = this.$store.state.user.weekStart
+    // this.$store.commit('calendar/changeWeekStart', firstDay)
   },
   beforeMount() {
-    this.userLogged()
+    // this.userLogged()
     // this.openBirthdayModal()
   },
-  data() {
-    return {
-      view: this.$store.state.user.defaultView
-    }
-  },
   methods: {
-    userLogged() {
-      if (!this.$store.state.user.logged) {
-        this.$router.push('/login')
-      }
-    },
+    // userLogged() {
+    //   if (!this.$store.state.user.logged) {
+    //     this.$router.push('/login')
+    //   }
+    // },
 
-    changeView() {
-      if (this.view === 'calendar') {
-        this.view = 'date'
-      } else if (this.view === 'date') {
-        this.view = 'calendar'
-      }
-    },
     // openBirthdayModal() {
     //   if (!this.$store.state.user.birthday || this.$store.state.user.birthday === '') {
     //     console.log('noo ai birdei', this.$store.state.user.birthday)
@@ -90,20 +78,11 @@ export default {
     // }
   },
   computed: {
-		list() {
+		list(): object[] {
 			return this.$store.getters['task/getFullList']
     },
-    buttonText() {
-      const view = this.view
-      if (view === 'calendar') {
-        return 'calendario'
-      }
-      if (view === 'date') {
-        return 'diaria'
-      }
-    }
 	}
-}
+})
 </script>
 
 <style lang="scss" scoped>
