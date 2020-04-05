@@ -1,18 +1,13 @@
 export const state = () => ({
-  active: false
+  date: false,
+  task: false
 })
 
 export const mutations = {
-  showModal(state) {
-    state.active = true
+  open(state, modal) {
+    state[modal] = true
   },
-  hideModal(state) {
-    state.active = false
-  }
-}
-
-export const getters = {
-  activeState(state) {
-    return state.active
+  close(state, modal) {
+    state[modal] = false
   }
 }

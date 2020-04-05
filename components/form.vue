@@ -78,10 +78,10 @@ export default Vue.extend({
 						writable: true,
 						value: ''
 					})
-					Object.defineProperty(form, field.name, {
+					Object.defineProperty(validated, field.name, {
 						enumerable: true,
 						writable: true,
-						value: ''
+						value: false
 					})
 				})
 			}

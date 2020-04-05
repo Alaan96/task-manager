@@ -1,247 +1,74 @@
 <template>
-  <header>
-    <div class="icon-section">
-      <cross v-if="active" :size="24"
-        @click.native="active = false">
-      </cross>
-      <menu-icon v-if="!active"
-        @click.native="active = true">
-      </menu-icon>
-      <span v-if="!active" class="nav-text">{{headerText}}</span>
-      <span v-if="active" class="menu-text">Menú</span>
-    </div>
-
-    <div class="nav-menu"
-    :class="{active}">
-
-      <section>
-      </section>
-
-      <nav @click="toggleMenu(active)">
-        <ul v-for="section in sections"
-          :key="section.title">
-          <span v-if="section.title">{{section.title}}</span>
-          <li v-for="link in section.links"
-            :key="link.text">
-            <nuxt-link :to="link.route"
-              exact-active-class="selected">
-              {{link.text}}
-            </nuxt-link>
-          </li>
-        </ul>
-      </nav>
-
-      <div class="copyright">
-        {{`Copyright - ${new Date().getFullYear()}`}}
-      </div>
-
-    </div>
-  </header>
+  <nav>
+    <!-- <div v-for="page in pages"
+      :key="page.text">
+      <nuxt-link :to="page.route"
+        exact-active-class="selected">
+        {{page.text}}
+      </nuxt-link>
+    </div> -->
+    <nuxt-link to="/settings"
+      exact-active-class="selected">
+      <img src="@/static/settings.svg" alt="settings">
+      <span>Config</span>
+    </nuxt-link>
+    <nuxt-link to="/"
+      exact-active-class="selected">
+      <img src="@/static/calendar.svg" alt="calendar">
+      <span>Calendario</span>
+    </nuxt-link>
+    <nuxt-link to="/tasks"
+      exact-active-class="selected">
+      <img src="@/static/tasks.svg" alt="tasks">
+      <span>Tareas</span>
+    </nuxt-link>
+  </nav>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
+
 // Icons
-import menu from '@/components/icons/menu'
-import cross from '@/components/icons/cross'
 
-export default {
+export default Vue.extend({
   components: {
-    'menu-icon': menu, // Icon
-    cross // Icon
+    // Icons
   },
-  data() {
-    return {
-      active: false,
-
-      sections: [
-        {
-          // title: 'Vistas',
-          links: [
-            {
-              text: 'Inicio',
-              route: '/'
-            },
-            // {
-            //   text: 'Calendario',
-            //   route: '/calendar'
-            // }
-          ]
-        },
-        {
-          title: 'Personal',
-          links: [
-            {
-              text: 'Perfil',
-              route: `/profile/${localStorage.getItem('id')}`
-            },
-            {
-              text: 'Configuración',
-              route: '/settings'
-            }
-          ]
-        },
-        {
-          title: 'Aplicación',
-          links: [
-            {
-              text: 'Acerca de',
-              route: '/about'
-            }
-          ]
-        }
-      ],
+  props: {
+    pages: {
+      type: Array,
+      required: true
     }
-  },
-  methods: {
-    toggleMenu(state) {
-      const target = event.target.tagName
-      if (target === 'A') {
-        if (state === true) {
-          this.active = false
-        } else if (state === false) {
-          this.active = true
-        } else {
-          console.warn('Menu "active" undefined.')
-        }
-      }
-    }
-    // changeHeaderText() {
-    //   console.log('Cambiando texto de cabecera.')
-    // }
-  },
-  computed: {
-    headerText() {
-      let text = 'Menú'
-      return text
-    }
-    // message() {
-    //   const hour = new Date().getHours()
-    //   console.log(hour)
-    //   if (hour > 5) {
-    //     return 'Buenos días'
-    //   } else if (hour > 16) {
-    //     return 'Buenas tardes'
-    //   } else {
-    //     return 'Buenas noches'
-    //   }
-    // }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
-$fade-in: fade-in .4s ease-in;
-
-header {
+nav {
   width: 100%;
-  height: 3rem;
-  padding: 0 1rem;
+  height: 4rem;
   display: flex;
+  justify-content: space-around;
   align-items: center;
   // position: fixed;
-  // top: 0;
   // left: 0;
-  color: $primary;
-  // z-index: 50;
-  // background: $cancel;
-  & svg {
-    width: 1.5rem;
-    animation: $fade-in;
-  }
+  // bottom: 0;
+  border-top: 1px solid $line;
+  // z-index: 100;
 }
 
-
-$menu-width: 10rem;
-.nav-menu {
-  width: $menu-width;
-  height: 100vh;
+a {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  position: fixed;
-  top: 0;
-  left: 0;
-  z-index: 50;
-  background: $primary;
-  color: $black;
-  box-shadow: .5rem 0 .5rem rgba(0, 0, 0, 0);
-
-  transform: translateX(-$menu-width);
-  transition: .4s ease;
-}
-
-.icon-section {
-  display: flex;
-  align-items: center;
-  position: absolute;
-  z-index: 100;
-  // & svg {
-  //   width: 2rem;
-  // }
+  justify-content: center;
+  font-size: .75rem;
+  opacity: .6;
   & span {
-    margin-left: .5rem;
-    font-weight: 700;
-    &.menu-text {
-      animation: slide-to-right .4s ease;
-    }
-    &.nav-text {
-      animation: slide-to-left .4s ease;
-    }
+    margin-top: .25em;
   }
-}
-
-section {
-  width: 100%;
-  height: 3rem;
-  background: $secondary;
-}
-
-nav {
-  flex: 1;
-  width: 100%;
-  margin: .5rem 0;
-
-  & ul {
-    width: inherit;
-    margin-bottom: 2rem;
-    & span {
-      margin-left: 1.25rem;
-      font-size: .75rem;
-    }
-
-    & li {
-      width: inherit;
-      height: 2rem;
-      margin-top: .25rem;
-      background: $silver;
-
-      & a {
-        height: 100%;
-        display: flex;
-        align-items: center;
-        padding-left: 1rem;
-        color: $black;
-      }
-    }
-  }
-}
-
-.copyright {
-  padding: .75rem 1rem;
-  @include center;
-  font-size: .875rem;
-  border-top: 1px solid $secondary;
-  color: $secondary;
-}
-
-.active {
-  box-shadow: .5rem 0 .5rem rgba(0, 0, 0, 0.2);
-  transform: translateX(0);
 }
 
 .selected {
-  font-weight: 700;
-  background: $secondary;
-  color: $primary;
+  opacity: 1;
 }
 </style>

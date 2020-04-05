@@ -1,29 +1,29 @@
 <template>
   <div>
-
     <header>
       <button class="month-handler">
-        <label for="month-input">{{months[calendarMonth]}}</label>
-        <input type="radio" id="month-input" v-show="false"
-          value="month" v-model="calendar">
+        <!-- @click="changeCalendarTo('months')" -->
+        {{months[month]}}
       </button>
 
-      <div class="controls">
+      <!-- <div class="controls">
         <button>
           <arrow @click.native="calendarTo('up')"></arrow>
         </button>
         <button>
           <arrow direction="down" @click.native="calendarTo('down')"></arrow>
         </button>
-      </div>
+      </div> -->
 
       <button class="year-handler">
-        <label for="year-input">{{calendarYear}}</label>
-        <input type="radio" id="year-input" v-show="false"
-          value="month" v-model="calendar">
+        <!-- @click="changeCalendarTo('years')" -->
+        {{year}}
       </button>
     </header>
 
+    <modal id="date">
+      <date-info></date-info>
+    </modal>
 
     <div class="calendar"
       ref="calendar"
@@ -31,70 +31,71 @@
       @touchmove.prevent="calendarLoad"
       @touchend="calendarChange">
 
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 38" v-if="calendar === 'default'">
-        <g class="week">
-          <text v-for="(dayWeek, index) in days" :key="dayWeek"
-            :x="48 * index + 24" y="24" text-anchor="middle">
-            {{ dayWeek.slice(0, 1) }}
-          </text>
-          <line x1="0" x2="336" y1="36" y2="36" stroke-width="2" />
-        </g>
-      </svg>
+      <template v-if="calendar === 'default'">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 326">
+          <rect :x="highlightDayColumn('Sábado', 336)" y="0"  width="48" height="100%" rx="2" />
+          <rect :x="highlightDayColumn('Domingo', 336)" y="0"  width="48" height="100%" rx="2" />
+          <g class="week">
+            <text v-for="(dayWeek, index) in days" :key="dayWeek"
+              :x="48 * index + 24" y="24" text-anchor="middle">
+              {{ dayWeek.slice(0, 1) }}
+            </text>
+            <line x1="0" x2="336" y1="36" y2="36" stroke-width="2" />
+          </g>
 
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 288" v-if="calendar === 'default'">
-        <g class="dates"
-          :style="{transform: `translateY(-${positions[calendarMonth]}px)`}"
-          @click="selectDate()">
-          <date 
-            v-for="(date, index) of yearDates" :key="index"
-            :index="index"
-            :x="date.x"
-            :y="date.y"
-            :day="date.day"
-            :fullDate="date.fullDate"
-            :calendarMonth="calendarMonth">
-            {{date.number}}
-          </date>
-        </g>
-      </svg>
+          <g class="dates"
+            :style="[{'transform': `translateY(-${positions[month]}px)`}, 
+                    {'clip-path': `inset(${positions[month] - 16}px -16px 0px -16px)`}]"
+            @click="selectDate()">
+            <date 
+              v-for="(date, index) of yearDates" :key="index"
+              :index="index"
+              :x="date.x"
+              :y="date.y"
+              :day="date.day"
+              :fullDate="date.fullDate"
+              :calendarMonth="month">
+              {{date.number}}
+            </date>
+          </g>
+        </svg>
+      </template>
 
-
-      <month-picker
-        v-else-if="calendar === 'month'">
-      </month-picker>
-
+      <template v-else-if="calendar === 'months'">
+        <month-picker></month-picker>
+      </template>
+      
+      <template v-else-if="calendar === 'years'">
+        <year-picker></year-picker>
+      </template>
     </div>
-    
   </div>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { mapState } from 'vuex'
 
-import date from './date'
-import monthPicker from './month-picker'
-
-// Mixins
-import { datesFunctions } from '@/assets/mixins/format-functions'
+import date from './date.vue'
+import modal from '@/components/modal.vue'
+import dateInfo from '@/components/task/date-info.vue'
+import monthPicker from './month-picker.vue'
+import yearPicker from './year-picker.vue'
 
 // Icons
-import arrow from '@/components/icons/arrow'
+// import arrow from '@/components/icons/arrow.vue'
 
-export default {
+export default Vue.extend({
   data() {
     return {
-      // Defines the calendar mode
-      calendar: 'default',
+      // Defines the calendar mode between default, months & years
+      calendar: 'default' as string,
 
       // Dates of the year
-      yearDates: [],
-
-      calendarYear: new Date().getFullYear(),
-      calendarMonth: new Date().getMonth(),
-      // days: [],
+      yearDates: [] as any[],
 
       // Y position to change between months
-      positions: [],
+      positions: [] as number[],
 
       // Initialization vars for touch events
       touch: {
@@ -102,40 +103,43 @@ export default {
         end: 0,
         threshold: 85,
         swype: 0
-      }
+      } as any
     }
   },
   components: {
     date,
+    'date-info': dateInfo,
     'month-picker': monthPicker,
-    arrow // Icon
+    'year-picker': yearPicker,
+    modal
   },
-  mixins: [datesFunctions],
   methods: {
-    selectDate() {
-      let dateSelected = event.target.parentElement.attributes['data-full-date'].value
-      this.$store.commit('date/changeSelected', dateSelected)
+    selectDate(): void {
+      const ev: any = event
+      const date: string = ev.target.parentElement.attributes['data-full-date'].value
+      this.$store.commit('date/changeSelected', date)
+      this.$store.commit('modal/open', 'date')
     },
 
-    loadYearDates(year) {
+    loadYearDates(year: number, months: string[]): void {
         // Reset yearDates
         this.yearDates = []
 
-        let week = 1
-        let day = 0
-        let x = 0
-        let y = 0
-        let size = 48
-        let newMonth = 0
+        let week: number = 1
+        let day: number = 0
+        let x: number = 0
+        let y: number = 0
+        let size: number = 48
+        let newMonth: number = 0
 
         // Load previous dates
-        for(let date = 1; date <= this.firstDay; date++) {
+        for(let date: number = 1; date <= this.firstDay(this.year); date++) {
           if (day === 7) {
             week++
             day = 0
           }
           x = size * day
-          y = size * (week - 1)
+          y = size * (week - 1) + 38
 
           this.yearDates.push({
             number: '',
@@ -152,17 +156,17 @@ export default {
         this.positions = []
 
         // Load yearDates
-        this.months.forEach( (month, monthIndex) => {
+        months.forEach( (month, monthIndex) => {
           this.positions.push(newMonth)
-          for(let date = 1; date <= new Date(year, monthIndex + 1, 0).getDate(); date++) {
+          for(let date: number = 1; date <= new Date(year, monthIndex + 1, 0).getDate(); date++) {
             if (day === 7) {
               week++
               day = 0
             }
             x = size * day
-            y = size * (week - 1)
+            y = size * (week - 1) + 38
 
-            let fullDate = `${this.formatDate(date)}/${this.formatDate(monthIndex + 1)}/${this.calendarYear}`
+            let fullDate: string = `${this.formatDate(date)}/${this.formatDate(monthIndex + 1)}/${this.year}`
 
             this.yearDates.push({
               number: date,
@@ -183,74 +187,90 @@ export default {
         })
     },
 
-    setTodayAsSelected() {
+    firstDay(year: number): any {
+      if (year) {
+        const firstDay: string = this.days[0]
+        if (firstDay == 'Lunes') {
+          return new Date(year, 0, 1).getDay() - 1
+        } else if (firstDay == 'Domingo') {
+          return new Date(year, 0, 1).getDay()
+        }
+      }
+    },
+
+    setTodayAsSelected(): void {
       let today = this.$store.getters['date/todayFullDate']
       this.$store.commit('date/changeSelected', today)
     },
 
-    calendarTo(direction) {
-      if (this.calendar === 'default') {
-        this.changeMonth(direction)
+    calendarGo(direction: string): void {
+      const mode: string = this.calendar
+      switch (mode) {
+        case 'default':
+          this.$store.commit('calendar/changeMonth', direction)
+          break;
+        case 'month':
+          this.$store.commit('calendar/changeYear', direction)
+          break;
+        case 'year':
+          this.$store.commit('calendar/changeYears', direction)
       }
     },
 
-    changeMonth(direction) {
-      if (direction === 'up') {
-        this.calendarMonth--
-        if (this.calendarMonth < 0) {
-          this.calendarMonth = 11
-          this.calendarYear -= 1
-          this.loadYearDates(this.calendarYear)
-        }
-      } else if (direction === 'down') {
-        this.calendarMonth++
-        if (this.calendarMonth > 11) {
-          this.calendarMonth = 0
-          this.calendarYear += 1
-          this.loadYearDates(this.calendarYear)
-        }
+    formatDate(number: number): string {
+      if (number && number < 10) {
+        return `0${number}`
+      } else {
+        return number.toString()
       }
     },
 
     // Change the calendar mode between normal, months, years
-    changeCalendarTo(mode) {
-      this.calendar = mode
+    changeCalendarTo(mode: string): void {
+      if (mode && this.calendar) {
+        if (mode !== this.calendar) {
+          this.calendar = mode
+        } else {
+          this.calendar = 'default'
+        }
+      }
     },
 
     // Touch functions
-    calendarTouched() {
-      this.touch.start = event.touches[0].screenY
+    calendarTouched(): void {
+      let ev: any = event
+      this.touch.start = ev.touches[0].screenY
     },
-    calendarLoad() {
-      this.touch.end = event.touches[0].screenY
+    calendarLoad(): void {
+      let ev: any = event
+      this.touch.end = ev.touches[0].screenY
       this.touch.swype = this.touch.start - this.touch.end
     },
-    calendarChange() {
+    calendarChange(): void {
       if (this.touch.swype <= -this.touch.threshold) {
-        this.calendarTo('up')
+        this.calendarGo('up')
       } else if(this.touch.swype >= this.touch.threshold) {
-        this.calendarTo('down')
+        this.calendarGo('down')
       }
       this.touch.swype = 0
+    },
+
+    // Details
+    highlightDayColumn(day: string, vbWidth: number): number {
+      const days: string[] = Array.from(this.days)
+      const firstDay: string = days[0]
+      const columnWidth: number = vbWidth / days.length
+      const dayIndex: number = days.reverse().indexOf(day) + 1
+      return vbWidth - columnWidth * dayIndex
     }
   },
   beforeMount() {
-    this.loadYearDates(this.calendarYear)
-    this.setTodayAsSelected()
+    this.loadYearDates(this.year, this.months)
+    // this.setTodayAsSelected()
   },
   computed: {
-    dates() {
+    dates(): number {
       return this.$store.getters['calendar/dates']
-    },
-    firstDay() {
-      const firstDay = this.days[0]
-      if (firstDay == 'Lunes') {
-        return new Date(this.year, 0, 1).getDay() - 1
-      } else if (firstDay == 'Domingo') {
-        return new Date(this.year, 0, 1).getDay()
-      } else {
-        return 'First day undefined.'
-      }
     },
     ...mapState('calendar', {
       year: 'year',
@@ -260,21 +280,20 @@ export default {
       date: 'date',
     })
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
 header {
   width: 100%;
-  // padding: 1rem;
-  padding-top: 0;
+  padding: 1rem 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   position: relative;
 
   & button {
-    font-size: 1.5rem;
+    font-size: 1.25rem;
     // font-family: $niramit;
     font-family: $quicksand;
     font-weight: 700;
@@ -312,6 +331,10 @@ g.week {
 
 g.dates {
   transition: .2s ease;
+}
+
+rect {
+  fill: $line;
 }
 
 

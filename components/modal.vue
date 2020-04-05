@@ -1,71 +1,87 @@
 <template>
-  <div
-    v-if="modalActive"
-    class="modal">
-    <span class="title">{{title}}</span>
-    <slot></slot>
-    <span class="close"
-      @click="closeModal"
-      @keyup.esc="closeModal">
-      {{close}}
-    </span>
+  <div class="container" v-show="active" @click.self="close()" @keyup.esc="close()">
+    <div class="modal">
+      <header class="title" v-if="title">{{title}}</header>
+
+      <div class="content">
+        <slot></slot>
+      </div>
+
+      <btn :text="button" v-if="button"/>
+      <btn :text="closeTxt" simple v-if="closeTxt" @click.native="close()" />
+    </div>
   </div>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue';
+
+import btn from '@/components/buttons/button.vue'
+
+export default Vue.extend({
   props: {
+    id: {
+      type: String,
+      required: true
+    },
     title: {
       type: String,
       required: false
     },
-    close: {
+    button: {
       type: String,
-      required: false,
-      default: 'Cerrar'
+      required: false
+    },
+    closeTxt: {
+      type: String,
+      required: false
     }
   },
+  components: {
+    btn
+  },
   methods: {
-    closeModal() {
-      this.$store.commit('modal/hideModal')
+    close(): void {
+      this.$store.commit('modal/close', this.id)
     }
   },
   computed: {
-    modalActive() {
-      return this.$store.getters['modal/activeState']
+    active(): boolean {
+      return this.$store.state.modal[this.id]
     }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
+.container {
+  width: 100vw;
+  height: 100vh;
+  @include center;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
 .modal {
-  width: 80vw;
-  padding: 1rem;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  text-align: center;
-  position: fixed;
-  top: 35vh;
-  left: 10vw;
-  background: $primary;
-  color: $black;
+  width: calc(100% - 2rem);
+  margin: 0 auto;
+  // padding: 1.5rem 1rem;
+  background: $black;
   border-radius: .5rem;
-  box-shadow: 0 .5rem 1rem rgba(0, 0, 0, 0.2);
-  z-index: 50;
-
-  animation: fade-in .6s ease;
 }
 
-.title {
+header.title {
+  width: 100%;
+  margin-top: 1rem;
+  text-align: center;
+  font-size: 1.25rem;
   font-weight: 700;
 }
 
-.close {
-  margin-top: 0.5rem;
-  font-weight: 600;
-  color: $secondary;
+.content {
+  width: 100%;
+  min-height: 2em;
+  @include center;
 }
 
 @keyframes fade-in {

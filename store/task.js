@@ -24,7 +24,7 @@ export const mutations = {
 }
 
 export const getters = {
-  getFullList(state) {
+  list(state) {
     return state.list
   }
 }

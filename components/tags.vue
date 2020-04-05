@@ -6,12 +6,14 @@
     </svg>
   </div>
 
+  <!-- Form -->
   <div v-else-if="list"
     class="tag-list" :class="{negative}">
 
     <template v-if="multiple">
       <button v-for="tag in tags"
         :key="tag.text"
+        class="tag"
         :class="{'selected': selections.includes(tag.text)}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
           <circle cx="4" cy="4" r="4" :fill="tag.color" />
@@ -28,6 +30,7 @@
     <template v-else>
       <button v-for="tag in tags"
         :key="tag.text"
+        class="tag"
         :class="{'selected': selectedTag === tag.text}">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
           <circle cx="4" cy="4" r="4" :fill="tag.color" />
@@ -42,6 +45,7 @@
     </template>
   </div>
 
+  <!-- Modal -->
   <modal v-else
     title="Gestión de etiquetas">
     <div class="create-new-tag">
@@ -227,7 +231,7 @@ export default {
   &::-webkit-scrollbar {
     display: none;
   }
-  & button {
+  & button.tag {
     // height: 1.3rem;
     padding: .25rem .5rem;
     margin: .25rem;
@@ -237,6 +241,7 @@ export default {
     // font-family: $niramit;
     color: $primary;
     background: $black;
+    border: 1px solid $line;
     border-radius: 1rem;
 
     transition: .2s ease;
@@ -256,7 +261,7 @@ export default {
   }
 }
 
-button.selected {
+button.tag.selected {
   opacity: 1;
 }
 

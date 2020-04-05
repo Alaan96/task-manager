@@ -1,87 +1,73 @@
 <template>
-  <!-- <g> -->
-    <g class="date" :data-full-date="fullDate"
-      :class="[{isToday}, {visible}]"
-      :transform="`translate(${x}, ${y})`">
-      <circle class="today" cx="24" cy="24" r="14" v-if="isToday" />
-      <circle class="selected" cx="24" cy="24" r="21" v-show="selected" />
-      <text x="24" y="30"
-        text-anchor="middle">
-        <slot><!-- Number --></slot>
-      </text>
-      <g class="points" :data-full-date="fullDate" v-if="points.length > 0">
-        <circle class="orbit" cx="24" cy="24" r="21" />
-        <!-- <circle class="point" cx="36" cy="42" r="4" fill="#F16D6D" /> -->
-        <circle class="point" v-for="(point, index) in points" :key="point._id"
-          :cx="pointPosition[index].x" :cy="pointPosition[index].y" r="4" :fill="point.tag.color" />
-      </g>
+  <g class="date" :data-full-date="fullDate"
+    :class="[{isToday}, {visible}]"
+    :transform="`translate(${x}, ${y})`">
+    <circle class="today" cx="24" cy="24" r="14" v-if="isToday" />
+    <circle class="selected" cx="24" cy="24" r="21" v-show="selected" />
+    <text x="24" y="30"
+      text-anchor="middle">
+      <slot><!-- Number --></slot>
+    </text>
+    <g class="points" :data-full-date="fullDate" v-if="points.length > 0">
+      <circle class="orbit" cx="24" cy="24" r="21" />
+      <!-- <circle class="point" cx="36" cy="42" r="4" fill="#F16D6D" /> -->
+      <circle class="point" v-for="(point, index) in points" :key="point._id"
+        :cx="pointPosition[index].x" :cy="pointPosition[index].y" r="4" :fill="point.tag.color" />
     </g>
-  <!-- </g> -->
-  <!-- <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48"
-    @click="selectDate(fullDate)">
-    <g :class="[{today}, {'visible': currentMonth}, {selected}]">
-      <circle cx="24" cy="24" r="21" class="border"/>
-      <circle cx="24" cy="24" r="16" class="fill" v-if="today"/>
-      <text x="24" y="30" text-anchor="middle">{{number}}</text>
-
-      <circle v-for="(point, index) in points" :key="index" v-show="point.date === fullDate"
-        :cx="pointPosition[index].x" :cy="pointPosition[index].y" r="4" :fill="point.tag.color"
-        class="point"/>
-    </g>
-  </svg> -->
+  </g>
 </template>
 
-<script>
+<script lang="ts">
+import Vue from 'vue'
 import { mapState } from 'vuex'
 
 // Mixins
 import { datesFunctions } from '@/assets/mixins/format-functions'
 
-export default {
+export default Vue.extend({
   data() {
     return {
       pointPosition: [
         {x: 36, y: 42},
         {x: 44, y: 24},
         {x: 36, y: 8},
-      ]
+      ] as object[]
     }
   },
   mixins: [datesFunctions],
   methods: {
-    selectDate(fullDate) {
-      this.selected = fullDate
-    },
+    // selectDate(fullDate) {
+    //   this.selected = fullDate
+    // },
   },
   computed: {
-    selected() {
-      let dateSelected = this.$store.getters['date/selected']
+    selected(): boolean {
+      const dateSelected: any = this.$store.getters['date/selected']
       if (dateSelected === this.fullDate) {
         return true
       } else {
         return false
       }
     },
-    isToday() {
+    isToday(): boolean {
       if (this.fullDate === this.$store.getters['date/todayFullDate']) {
         return true
       } else {
         return false
       }
     },
-    visible() {
-      let currentMonth = this.calendarMonth + 1
-      let dateMonth = this.fullDate.slice(3, -5)
-      if (dateMonth == currentMonth) {
+    visible(): boolean {
+      const currentMonth: number = this.calendarMonth + 1
+      const dateMonth: number = parseInt(this.fullDate.slice(3, -5))
+      if (dateMonth === currentMonth) {
         return true
       } else {
         return false
       }
     },
-    points() {
-      let points = this.$store.getters['task/getFullList']
-          .filter( task => task.date === this.fullDate)
-
+    points(): object[] {
+      const points: object[] = this.$store.getters['task/list']
+          .filter( (task: any) => task.date === this.fullDate)
       return points
     },
     ...mapState('calendar', {
@@ -89,12 +75,6 @@ export default {
       month: 'month',
       date: 'date'
     })
-  },
-  mounted() {
-    // this.$on('selectDate', console.log('Captó el evento.'))
-  },
-  beforeUpdate() {
-    // this.$once('selectDate', console.log('Captó el evento.'))
   },
   props: {
     index: {
@@ -115,11 +95,8 @@ export default {
     calendarMonth: {
       type: Number
     },
-    // points: {
-    //   type: Array
-    // }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>

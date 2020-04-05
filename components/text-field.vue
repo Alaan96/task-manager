@@ -3,7 +3,7 @@
 		:type="type"
 		:name="name"
 		:placeholder="placeholder"
-		:pattern="pattern"
+		:pattern="pattern ? pattern : undefined"
 		autocomplete="off"
 		v-model.trim="value[name]"/>
 </template>
@@ -15,8 +15,7 @@ export default Vue.extend({
 	props: {
 		name: {
 			type: String,
-			required: true,
-			default: 'Campo'
+			required: true
 		},
 		placeholder: {
 			type: String,
@@ -41,34 +40,34 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 
-input {
-	width: 100%;
-	height: 2rem;
-	padding: .5rem 1rem;
-	margin-bottom: 1.5rem;
-	font-size: 1rem;
-	background: transparent;
-	color: $primary;
-	border-bottom: 1px solid $line;
-	opacity: .8;
-	transition: .2s ease;
+// input {
+// 	width: 100%;
+// 	height: 2rem;
+// 	padding: .5rem 1rem;
+// 	margin-bottom: 1.5rem;
+// 	font-size: 1rem;
+// 	background: transparent;
+// 	color: $primary;
+// 	border-bottom: 1px solid $line;
+// 	opacity: .8;
+// 	transition: .2s ease;
 
-	&:last-child {
-		margin-bottom: 0;
-	}
+// 	&:last-child {
+// 		margin-bottom: 0;
+// 	}
 
-	&:focus {
-		border-color: $primary;
-		opacity: 1;
-	}
-	&:invalid {
-		border-color: $cancel;
-	}
-}
+// 	&:focus {
+// 		border-color: $primary;
+// 		opacity: 1;
+// 	}
+// 	&:invalid {
+// 		border-color: $cancel;
+// 	}
+// }
 
-::-webkit-input-placeholder {
-  color: $primary;
-}
+// ::-webkit-input-placeholder {
+//   color: $primary;
+// }
 // :-moz-placeholder {
 //    color: $light;
 //    opacity: 1 /* esto es porque Firefox le reduce la opacidad por defecto */;

@@ -28,6 +28,7 @@
     "mongoose-unique-validator": "^2.0.3",
     "nodemailer": "^6.4.2",
     "nuxt": "^2.10.2",
+    "nuxt-typed-vuex": "^0.1.17",
     "underscore": "^1.9.1"
   },
   "devDependencies": {

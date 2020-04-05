@@ -1,9 +1,11 @@
 import { Middleware } from '@nuxt/types'
 
-const authentication: Middleware = ({ store, redirect }) => {
-  if (!store.state.user.logged) {
+const authenticated: Middleware = ({ store, redirect }) => {
+  const logged: boolean = store.state.user.logged
+  console.log(logged)
+  if (!logged) {
     return redirect('/login')
   }
 }
 
-export default authentication
+export default authenticated

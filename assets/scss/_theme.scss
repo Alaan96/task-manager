@@ -1,0 +1,28 @@
+input {
+	width: 100%;
+	height: 2rem;
+	padding: .5rem 1rem;
+	// margin-bottom: 1.5rem;
+	font-size: 1rem;
+	background: transparent;
+	color: $primary;
+	border-bottom: 1px solid $line;
+	opacity: 1;
+	transition: .2s ease;
+
+	&:last-child {
+		margin-bottom: 0;
+	}
+
+	&:focus {
+		border-color: $primary;
+		opacity: 1;
+	}
+	&:invalid {
+		border-color: $cancel;
+	}
+}
+
+::-webkit-input-placeholder {
+	color: transparentize($primary, .5);
+}

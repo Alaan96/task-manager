@@ -1,35 +1,48 @@
 <template>
-  <button :class="{simple}">
+  <button :class="[{simple}, {small}]"
+    :style="[{display: inline ? 'inline' : ''},
+            {backgroundColor: color ? color : ''}]">
     {{text}}
   </button>
 </template>
 
-<script>
-export default {
+<script lang="ts">
+import Vue from 'vue'
+
+export default Vue.extend({
   props: {
     text: {
       type: String,
       required: true
     },
     to: {
-      type: String,
+      type: String
     },
     simple: {
-      type: Boolean,
+      type: Boolean
+    },
+    small: {
+      type: Boolean
+    },
+    color: {
+      type: String
+    },
+    inline: {
+      type: Boolean
     }
     // cancel: {
     //   type: Boolean,
     //   required: false
     // },
-  }
-}
+  },
+})
 </script>
 
 <style lang="scss" scoped>
   button {
-    width: 10rem;
-    height: 2rem;
-    margin: 0 auto 1.5rem auto;
+    width: 10em;
+    height: 2em;
+    margin: 0 auto 1rem auto;
     @include center;
     font-size: 1rem;
     font-weight: 600;
@@ -40,6 +53,13 @@ export default {
 
   .simple {
     background: transparent;
+    margin: 0 auto;
+  }
+
+  .small {
+    width: 6em;
+    height: 1.5em;
+    font-size: .75rem;
   }
 
   // .cancel {

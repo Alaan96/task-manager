@@ -1,40 +1,22 @@
 <template>
-	<task-form v-if="editable"
-		:contentEditable="task"
-		v-model="task"
-		@updateChanges="editionEnds($event)"
-		@discardChanges="editionEnds($event)">
-	</task-form>
-
-	<article v-else
+	<article
 		class="task"
-		:class="[{'urgent': task.urgent}, {'showDate': task.date.length > 0}]"
 		:style="{'border-color': task.tag.color}"
 		
 		@touchstart="optionsStart"
 		@touchmove.prevent="swypeOptions">
 
 		<!-- Date -->
-		<div v-if="task.date.length > 0"
+		<!-- <div v-if="task.date.length > 0"
 			class="date"
 			:style="{'backgroundColor': task.tag.color}">
 			<span>
 				{{ task.date.slice(0, 2) }}
 			</span>
-		</div>
-		<!-- <div v-if="task.date.length > 0"
-			class="date"
-			:class="{'extend-date': showFullDate}"
-			:style="{'backgroundColor': task.tag.color}"
-			@click="showFullDate = !showFullDate">
-			<span>
-				{{ task.date }}
-			</span>
 		</div> -->
 		
 		<!-- Title -->
-		<div 
-			class="title">
+		<div class="title">
 			{{task.title}}
 		</div>
 		
@@ -69,10 +51,10 @@
 		</div> -->
 
 		<!-- Time -->
-		<!-- <div v-if="task.time.initial.active || task.time.final.active"
+		<div v-if="task.time"
 			class="time">
-			<span>Horario: {{task.time.initial.hour}}hs - {{task.time.final.hour}}hs.</span>
-		</div> -->
+			<span>Horario: {{task.time}}hs</span>
+		</div>
 
 		<div class="options"
 			:class="{'show-options': options}">
@@ -88,21 +70,40 @@
 	</article>
 </template>
 
-<script>
-import taskForm from './task-form'
+<script lang="ts">
+import Vue, { PropOptions } from 'vue'
 
-import simpleBtn from '@/components/simple-button'
-import tags from '@/components/tags'
+import taskForm from './form.vue'
+
+import simpleBtn from '@/components/simple-button.vue'
+import tags from '@/components/tags.vue'
 
 // Icons
-import cross from '@/components/icons/cross'
-import arrow from '@/components/icons/arrow'
-import edit from '@/components/icons/edit'
+import cross from '@/components/icons/cross.vue'
+import arrow from '@/components/icons/arrow.vue'
+import edit from '@/components/icons/edit.vue'
 
 // Mixins
-import { helpers } from '@/assets/mixins/api-helpers' // Mixin
+import { helpers } from '@/assets/mixins/api-helpers'
 
-export default {
+interface Task {
+	title: string,
+	description: string,
+	tag: object,
+	time: string
+}
+
+export default Vue.extend({
+	props: {
+		content: {
+			type: Object,
+			required: false
+		} as PropOptions<Task>,
+		index: {
+			type: Number,
+			required: true
+		}
+	},
 	components: {
 		'task-form': taskForm,
 
@@ -123,49 +124,31 @@ export default {
 				title: '',
 				description: '',
 				tag: {},
-				important: false,
-				urgent: false,
-				date: '',
-				// time: {
-				// 	initial: {
-				// 		hour: '09:00',
-				// 		active: false
-				// 	},
-				// 	final: {
-				// 		hour: '13:00',
-				// 		active: false
-				// 	}
-				// },
-				// list: {
-				// 	title: '',
-				// 	items: [],
-
-				// },
-			},
-
-			// showFullDate: false,
+				time: ''
+			} as PropOptions<Task>,
 
 			touches: {
 				start: 0
-			},
+			} as any,
 
-			editable: false,
+			editable: false as boolean,
 
-			options: false
+			options: false as boolean
 		}
 	},
 	methods: {
-		useDBContent(target, content) {
+		useDBContent(target: object, content: object): void {
 			Object.assign(target, content)
-			// console.log('The content has been updated')
 		},
 
-		optionsStart() {
-			this.touches.start = event.touches[0].clientY
+		optionsStart(): void {
+			const ev: any = event
+			this.touches.start = ev.touches[0].clientY
 		},
-		swypeOptions() {
-			let position = event.touches[0].clientY
-			let swype = position - this.touches.start
+		swypeOptions(): void {
+			const ev: any = event
+			let position: number = ev.touches[0].clientY
+			let swype: number = position - this.touches.start
 			if (swype > 20) {
 				this.options = true
 			} else if (swype < 20) {
@@ -173,44 +156,24 @@ export default {
 			}
 		},
 
-		edit() {
+		edit(): void {
 			this.editable = true
 		},
-		editionEnds($event) {
+		editionEnds($event: any): void {
 			console.log($event)
 			this.task = $event
 			this.editable = false
 			this.options = false
 		},
 
-		removeTask() {
+		removeTask(): void {
 			this.$store.commit('task/deleteOne', this.index)
-			this.$axios.$put(`${this.url}/disable-task/${this.task._id}`)
+			// this.$axios.$put(`${this.url}/disable-task/${this.task._id}`)
+			console.log('Remove task');
 		}
 	},
 	mixins: [helpers],
-	// filters: {
-	// 	useDateOnly(fullDate)/*String*/ {
-	// 		if (fullDate && typeof fullDate === 'string') {
-	// 			let splitedDate/*String*/ = fullDate.split('/')
-	// 			console.log(splitedDate[0])
-	// 			return splitedDate[0]
-	// 		} else {
-	// 			console.log('The filter could not be performed.')
-	// 		}
-	// 	}
-	// },
-	props: {
-		index: {
-			type: Number,
-			required: true
-		},
-		content: {
-			type: Object,
-			required: false
-		}
-	}
-}
+})
 </script>
 
 <style lang="scss" scoped>

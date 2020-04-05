@@ -1,15 +1,15 @@
 <template>
   <section>
-    <button class="month"
-      v-for="(monthText, index) in months"
-      :key="monthText"
-      :class="{'selected': index === monthSelected}">
+    <button class="year"
+      v-for="(year, index) in years"
+      :key="year"
+      :class="{'selected': index === yearSelected}">
       <input type="radio"
-        :id="monthText"
+        :id="year"
         :value="index"
         @change="setMonth(index)"
-        v-model="monthSelected">
-      <label :for="monthText">{{monthText}}</label>
+        v-model="yearSelected">
+      <label :for="year">{{year}}</label>
     </button>
   </section>
 </template>
@@ -21,29 +21,36 @@ import { mapState } from 'vuex'
 export default Vue.extend({
   data() {
     return {
-      monthSelected: 0 as number
+      years: [] as number[],
+      yearSelected: '' as string
+    }
+  },
+  methods: {
+    setYears(year: number): void {
+      this.years = []
+
+      const maxYear: number = this.year + 3
+      const yearsSelection: any = 12
+
+      for(let year in yearsSelection) {
+        this.years.push(maxYear - yearsSelection)
+      }
+      console.log(this.years);
     }
   },
   mounted() {
-    this.monthSelected = this.month
-  },
-  methods: {
-    // setMonth(month) {
-    //   this.$store.commit('calendar/setMonth', month),
-    //   this.monthSelected = month
-    // }
+    
   },
   computed: {
     ...mapState('calendar', {
-      months: 'months',
-      month: 'month'
+      year: 'year'
     })
   }
 })
 </script>
 
 <style lang="scss" scoped>
-  $btn-height: 5rem;
+$btn-height: 5rem;
 
   section {
     width: 100%;
@@ -68,13 +75,13 @@ export default Vue.extend({
       // transition: .2s ease;
 
       @for $i from 1 through 12 {
-        // &:nth-child(#{$i}) {
-        //   animation: load-months
-        //   .5s
-        //   cubic-bezier(.44,.44,.58,.89)
-        //   #{$i * 0.075}s
-        //   backwards;
-        // }
+        &:nth-child(#{$i}) {
+          // animation: load-months
+          // .5s
+          // cubic-bezier(.44,.44,.58,.89)
+          // #{$i * 0.075}s
+          // backwards;
+        }
       }
 
       & input {
