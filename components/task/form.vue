@@ -1,8 +1,9 @@
 <template>
   <form @submit.prevent
-    ref="task-form"
-    @keyup.enter="saveTask()"
-    @keyup.esc="discardTask()">
+    @keyup.enter="save()"
+    @keyup.esc="discard()">
+
+    <header>{{title}}</header>
 
     <section class="text-fields">
       <text-field
@@ -42,7 +43,7 @@
 
     <section class="time">
       <time-field @getTime="setPropertyIn('time', $event)" v-model="task"></time-field>
-      <div class="date"><span>Fecha</span> <span>{{$store.getters['date/selected']}}</span></div>
+      <div class="date"><span>Fecha</span> <span>{{selectedDate}}</span></div>
     </section>
 
     <div class="buttons">
@@ -54,10 +55,10 @@
 </template>
 
 <script lang="ts">
-import Vue from 'vue'
+import Vue, { PropOptions } from 'vue'
 
-import textField from '@/components/text-field.vue'
-import timeField from '@/components/inputs/time.vue'
+import textField from '@/components/inputs/text-field.vue'
+import timeField from '@/components/inputs/time-field.vue'
 import tags from '@/components/tags.vue'
 import modal from '@/components/modal.vue'
 import btn from '@/components/buttons/button.vue'
@@ -69,39 +70,47 @@ export default Vue.extend({
 		tags,
 		modal,
     btn,
-    
   },
   data() {
 		return {
-      active: false as boolean,
-
-      activeDate: true as boolean,
-
-      onEdit: false as boolean,
-      
       task: {
 				title: '',
 				description: '',
 				tag: {},
-				time: ''
-			} as any,
+        time: '',
+        date: ''
+      } as any,
 		}
   },
   computed: {
-    // dateSelected: {
-    //   set(date) {
-    //     this.$store.commit('date/changeSelected', date)
-    //   },
-    //   get() {
-    //     const date = this.$store.getters['date/selected']
-    //     this.task.date = date
-    //     return date
-    //   }
-    // }
+    title(): string {
+      if (this.edit) {
+        return 'Editar tarea'
+      }
+      return 'Nueva tarea'
+    },
+    selectedDate(): string {
+      return this.$store.getters['date/selected']
+    },
+    edit(): boolean {
+      let taskForEdit: string = this.$store.state.task.edit
+      if (taskForEdit.length > 0) {
+        const task: any = this.$store.getters['task/forEdition']
+        if (task) {
+          Object.assign(this.task, task)
+          return true
+        }
+      }
+      return false
+    }
+  },
+  beforeMount() {
+    this.edit
   },
   methods: {
-    setPropertyIn(property: string, $event: any): void {
-      if (property && $event) {
+    // Set a property into the task object model
+    setPropertyIn(property: string, $event: Event): void {
+      if (property) {
         this.task[property] = $event
       }
     },
@@ -131,70 +140,77 @@ export default Vue.extend({
       const validate: boolean = this.validate(this.task)
 
       if (validate) {
-        const id: string = this.$store.getters['user/id']
-        console.log(this.task);
-        // this.$axios.$post(`${location.origin}/save-task${id}`, this.task)
-        //   .then( res => {
-        //     console.log(res)
-        //     this.$store.dispatch('task/lastSaved', `${location.origin}/last-saved/${id}`)
-        //     this.resetForm()
-        //   })
-        //   .catch( err => console.warn(err))
+        this.task.date = this.selectedDate
+        console.log(`
+        Título: ${this.task.title}
+        
+        Descripción: ${this.task.description}
+        Etiqueta: ${this.task.tag.text}
+        Horario: ${this.task.time},
+        Fecha: ${this.task.date}
+        `);
+        if (this.edit) {
+          this.editTask()
+        } else {
+          this.newTask()
+        }
+      } else {
+        console.log('The form have invalid fields.');
       }
-      console.log('The form have invalid fields.');
     },
     discard(): void {
       this.$store.commit('modal/close', 'task')
-      this.resetForm()
+      // this.resetForm()
     },
-
+    editTask(): void {
+      this.$axios.$put(`${location.origin}/update-task/${this.task._id}`, this.task)
+        .then( res => {
+          console.log(res)
+          this.$store.commit('task/edited', res.changes)
+          this.discard()
+        })
+        .catch( err => console.warn(err.response.data) )
+    },
+    newTask(): void {
+      const id: string = this.$store.getters['user/id']
+      this.$axios.$post(`${location.origin}/save-task/${id}`, this.task)
+        .then( res => {
+          const task_id: string = res.task._id
+          this.$store.dispatch('task/lastSaved', `${location.origin}/task/${task_id}`)
+          this.discard()
+          this.resetForm()
+        })
+        .catch( err => console.log(err.response) )
+    },
     resetForm(fields: string[] = ['title', 'description', 'time']): void {
       const fieldsToReset: string[] = fields
       for(let field of fieldsToReset) {
         this.task[field] = ''
       }
     },
-
-    // editContent() {
-    //   if (this.contentEditable) {
-    //     console.log(this.contentEditable)
-    //     Object.assign(this.task, this.contentEditable)
-    //     if (this.contentEditable.date === '') {
-    //       this.activeDate = false
-    //       this.task.date = ''
-    //     }
-    //     this.onEdit = true
-    //     this.toggleForm('open')
-    //   }
-    // }
   },
-  beforeMount() {
-    // this.editContent()
-    // this.dateSelected
-  },
-  props: {
-    contentEditable: {
-      type: Object,
-      required: false
-    }
-  }
 })
 </script>
 
 <style lang="scss" scoped>
 
-$btn-height: 2rem;
 form {
   width: 100%;
-  padding: 1.5rem 2rem;
+  padding: 1.5rem 1.5rem;
   margin: auto;
   background: transparent;
 	display: flex;
 	align-items: center;
 	flex-direction: column;
 	border-radius: $radius;
-	
-	// transition: .4s ease;
+}
+
+header {
+  width: 100%;
+  margin-bottom: 1rem;
+  text-align: center;
+  font-size: 1.25rem;
+  font-weight: 700;
 }
 
 section {
@@ -244,9 +260,6 @@ div.tags {
 
 div.buttons {
   margin-top: .5rem;
-  // & button {
-  //   margin: 0;
-  // }
 }
 
 
@@ -255,9 +268,9 @@ div.buttons {
 }
 
 @keyframes flicker {
-	// 0% {
-	// 	opacity: 1;
-	// }
+	0% {
+		opacity: 1;
+	}
 	25% {
 		opacity: .6;
 	}

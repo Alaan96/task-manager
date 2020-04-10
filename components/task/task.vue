@@ -1,90 +1,40 @@
 <template>
-	<article
-		class="task"
-		:style="{'border-color': task.tag.color}"
+	<article class="task"	:style="{'border-color': task.tag.color}"
+		@click="edit(task._id)">
+		<!-- @touchstart="optionsStart" -->
+		<!-- @touchmove.prevent="swypeOptions" -->
 		
-		@touchstart="optionsStart"
-		@touchmove.prevent="swypeOptions">
-
-		<!-- Date -->
-		<!-- <div v-if="task.date.length > 0"
-			class="date"
-			:style="{'backgroundColor': task.tag.color}">
-			<span>
-				{{ task.date.slice(0, 2) }}
-			</span>
-		</div> -->
-		
-		<!-- Title -->
-		<div class="title">
+		<span class="title">
 			{{task.title}}
-		</div>
+		</span>
 		
-		<!-- Description -->
-		<div v-if="task.description" 
-			class="description"
-			:class="{'withDate': task.date.length > 0}">
-			<p>{{task.description}}</p>
-		</div>
+		<span v-if="task.time.length > 0" class="time">{{task.time}}hs</span>
+		
+		<p v-if="task.description.length > 0" class="description">
+			{{task.description}}
+		</p>
 
-		<!-- List -->
-		<!-- <div v-if="task.list.items.length > 0"
-			class="list">
-			<span v-if="task.list.title.length > 0">{{task.list.title}}</span>
-			<ul>
-				<li v-for="(item, index) in task.list.items"
-					:key="`${index}-${item.text}`"
-					:class="{complete: item.complete}">
-					<input type="checkbox" 
-						:id="`${index + 1}-${item.text}`"
-						v-model="item.complete">
-					<label :for="`${index + 1}-${item.text}`">{{item.text}}</label>
-				</li>
-			</ul>
-		</div> -->
-
-		<!-- Important -->
-		<!-- <div v-if="task.important"
-			class="important"
-			:style="{'backgroundColor': task.tag.color}">
-			!
-		</div> -->
-
-		<!-- Time -->
-		<div v-if="task.time"
-			class="time">
-			<span>Horario: {{task.time}}hs</span>
-		</div>
-
-		<div class="options"
+		<!-- <div class="options"
 			:class="{'show-options': options}">
 			<button @click="edit()">
-				<!-- <edit-icon></edit-icon> -->
+				<edit-icon></edit-icon>
 				<span>Editar</span>
 			</button>
 			<button @click="removeTask()">
-				<!-- <cross></cross> -->
+				<cross></cross>
 				<span>Borrar</span>
 			</button>
-		</div>
+		</div> -->
 	</article>
 </template>
 
 <script lang="ts">
 import Vue, { PropOptions } from 'vue'
 
-import taskForm from './form.vue'
-
-import simpleBtn from '@/components/simple-button.vue'
-import tags from '@/components/tags.vue'
-
 // Icons
-import cross from '@/components/icons/cross.vue'
-import arrow from '@/components/icons/arrow.vue'
-import edit from '@/components/icons/edit.vue'
-
-// Mixins
-import { helpers } from '@/assets/mixins/api-helpers'
+// import cross from '@/components/icons/cross.vue'
+// import arrow from '@/components/icons/arrow.vue'
+// import edit from '@/components/icons/edit.vue'
 
 interface Task {
 	title: string,
@@ -94,29 +44,26 @@ interface Task {
 }
 
 export default Vue.extend({
+	components: {
+		// Icons
+		// cross,
+		// arrow,
+		// 'edit-icon': edit
+	},
 	props: {
 		content: {
 			type: Object,
-			required: false
+			required: true
 		} as PropOptions<Task>,
+
+		// List index for remove()
 		index: {
 			type: Number,
 			required: true
 		}
 	},
-	components: {
-		'task-form': taskForm,
-
-		'simple-button': simpleBtn,
-		tags,
-		
-		// Icons
-		cross,
-		arrow,
-		'edit-icon': edit
-	},
 	beforeMount() {
-		this.useDBContent(this.task, this.content)
+		this.loadTask(this.task, this.content)
 	},
 	data() {
 		return {
@@ -127,184 +74,90 @@ export default Vue.extend({
 				time: ''
 			} as PropOptions<Task>,
 
-			touches: {
-				start: 0
-			} as any,
+			// touches: {
+			// 	start: 0
+			// } as any,
 
-			editable: false as boolean,
-
-			options: false as boolean
+			// options: false as boolean
 		}
 	},
 	methods: {
-		useDBContent(target: object, content: object): void {
+		loadTask(target: object, content: object): void {
 			Object.assign(target, content)
 		},
 
-		optionsStart(): void {
-			const ev: any = event
-			this.touches.start = ev.touches[0].clientY
-		},
-		swypeOptions(): void {
-			const ev: any = event
-			let position: number = ev.touches[0].clientY
-			let swype: number = position - this.touches.start
-			if (swype > 20) {
-				this.options = true
-			} else if (swype < 20) {
-				this.options = false
-			}
+		edit(id: string): void {
+			this.$store.commit('task/setForEdition', id)
+      this.$store.commit('modal/open', 'task')
 		},
 
-		edit(): void {
-			this.editable = true
-		},
-		editionEnds($event: any): void {
-			console.log($event)
-			this.task = $event
-			this.editable = false
-			this.options = false
-		},
+		// removeTask(): void {
+		// 	this.$store.commit('task/deleteOne', this.index)
+		// 	// this.$axios.$put(`${this.url}/disable-task/${this.task._id}`)
+		// 	console.log('Remove task');
+		// }
 
-		removeTask(): void {
-			this.$store.commit('task/deleteOne', this.index)
-			// this.$axios.$put(`${this.url}/disable-task/${this.task._id}`)
-			console.log('Remove task');
-		}
-	},
-	mixins: [helpers],
+
+		// Touch events
+		// optionsStart(): void {
+		// 	const ev: any = event
+		// 	this.touches.start = ev.touches[0].clientY
+		// },
+		// swypeOptions(): void {
+		// 	const ev: any = event
+		// 	let position: number = ev.touches[0].clientY
+		// 	let swype: number = position - this.touches.start
+		// 	if (swype > 20) {
+		// 		this.options = true
+		// 	} else if (swype < 20) {
+		// 		this.options = false
+		// 	}
+		// },
+	}
 })
 </script>
 
 <style lang="scss" scoped>
-.task {
+article.task {
 	width: 100%;
 	min-height: 3rem;
-	margin: .5rem auto;
-	padding: 0 1rem;
+	margin: .25rem auto;
+	padding: 1rem;
 	background: $line;
 	border-left: .5rem solid $secondary;
 	color: $primary;
 	display: flex;
-	align-items: flex-start;
-	flex-direction: column;
+	align-items: center;
+	flex-wrap: wrap;
 	border-radius: $radius;
 	position: relative;
-	animation: task-in .6s ease-in;
-
-	& > * {
-		margin-bottom: .5rem;
-	}
-	
-	& .title {
-		width: 100%;
-		min-height: 3rem;
-		// height: 2rem;
-		margin: 0;
-		padding: .5rem 0;
-		display: flex;
-		align-items: center;
-		font-weight: 700;
-	}
-
-	& .description {
-		width: 100%;
-		font-size: .75rem;
-		& p {
-			overflow-wrap: break-word;
-		}
-	}
-
-	// & .list {
-	// 	width: 100%;
-	// 	margin-top: .5rem;
-	// 	& span {
-	// 		font-weight: 700;
-	// 	}
-	// 	& ul {
-	// 		width: 100%;
-	// 		padding: 0 .5rem;
-	// 		display: flex;
-	// 		flex-direction: column;
-	// 		border-left: 1px solid $line;
-	// 		& li {
-	// 			flex: 0 1 2.5rem;
-	// 			padding: 0 1rem;
-	// 			margin-bottom: .25rem;
-	// 			border-radius: .25rem;
-	// 			display: flex;
-	// 			align-items: center;
-	// 			background: $line;
-	// 			font-size: .875rem;
-	// 			& input {
-	// 				display: none;
-	// 			}
-	// 			& label {
-	// 				width: 100%;
-	// 				height: 100%;
-	// 			}
-	// 		}
-	// 	}
-	// }
-
-	& .important {
-		width: 1.3rem;
-		height: 1.3rem;
-		margin: 0;
-		@include center;
-		position: absolute;
-		top: 0;
-		right: 0;
-		background: $secondary;
-		font-weight: 700;
-		border-radius: 0 $radius 0 $radius;
-	}
-
-	// & .time {
-	// 	font-size: .75rem;
-	// }
-
-	& .date {
-		width: 3rem;
-		height: 3rem;
-		@include center;
-		position: absolute;
-		top: 0;
-		left: -.5rem;
-		font-size: 1.25rem;
-		// font-family: $lato;
-		font-weight: 700;
-		text-align: center;
-		border-radius: $radius;
-		transition: .2s ease;
-		& span {
-			width: 47%;
-			overflow: hidden;
-		}
-	}
-
+	animation: task-in .2s ease-in;
 }
 
-// .date.extend-date {
-// 	width: 7em;
-// 	& span {
-// 		width: auto;
-// 	}
-// }
+span.title {
+	flex: 0 1 auto;
+	margin-right: 1rem;
+	// margin-bottom: .25rem;
+	font-weight: 700;
+}
 
-article.showDate {
-	padding-left: 3.5rem;
+span.time {
+	flex: 0 1 auto;
+	margin-right: 1rem;
+	font-size: 1rem;
+	font-weight: 600;
+}
+
+p.description {
+	flex: 1 1 auto;
+	font-size: 1rem;
+	overflow-wrap: break-word;
+	color: $light;
 }
 
 // .complete {
 // 	text-decoration: line-through;
 // 	opacity: .4;
-// }
-
-// .urgent {
-	// filter: brightness(150%);
-	// background: $light;
-	// box-shadow: 0 0 .75rem transparentize($cancel, .6);
 // }
 
 div.options {
@@ -332,7 +185,6 @@ div.options {
 	// }
 	& span {
 		font-size: .75rem;
-		// font-family: $niramit;
 		color: $primary;
 	}
 }
@@ -345,13 +197,9 @@ div.show-options {
 
 @keyframes task-in {
   0% {
-    transform: scaleY(.4);
-    transform: scaleX(.8);
-    opacity: 0;
-  }
-  50% {
-    transform: scaleY(1.05);
-    transform: scaleX(1.02);
+    transform: scaleY(.6);
+    transform: scaleX(.95);
+    opacity: .2;
   }
   100% {
     transform: scaleY(1);

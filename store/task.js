@@ -1,5 +1,7 @@
 export const state = () => ({
-  list: []
+  list: [],
+  edit: '',
+  // update: false
 })
 
 export const mutations = {
@@ -11,7 +13,6 @@ export const mutations = {
     }
     console.log('Task already exist in the list.')
   },
-
   setList(state, list) {
     state.list = list
   },
@@ -20,13 +21,36 @@ export const mutations = {
   },
   deleteOne(state, index) {
     state.list.splice(index, 1)
-  }
+  },
+  setForEdition(state, id) {
+    if (id) {
+      state.edit = id
+    }
+  },
+  edited(state, changes) {
+    if (changes) {
+      const id = state.edit
+      const properties = Object.keys(changes)
+      const index = state.list.findIndex( task => task._id === id)
+      
+      if (index !== -1) {
+        properties.forEach( prop => {
+          state.list[index][prop] = changes[prop]
+        })
+        console.log(state.list[index]);
+        // state.update = true
+        state.edit = ''
+      }
+    }
+  },
+  // listUpdated(state) {
+  //   // state.update = false
+  // }
 }
 
 export const getters = {
-  list(state) {
-    return state.list
-  }
+  list: state => state.list,
+  forEdition: state => state.list.find( (task) => task._id === state.edit )
 }
 
 export const actions = {

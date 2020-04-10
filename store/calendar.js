@@ -1,13 +1,13 @@
 export const state = () => ({
+  year: new Date().getFullYear(),
+  months: [
+    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
+  ],
+  month: new Date().getMonth(),
   // Order of the week
   days: [
     // 'Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado'
   ],
-  months: [
-    'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
-  ],
-  year: new Date().getFullYear(),
-  month: new Date().getMonth(),
   date: new Date().getDate(),
 })
 
@@ -28,22 +28,28 @@ export const mutations = {
     }
   },
   setMonth(state, month) {
-    if (month && typeof month === 'number') {
-      state.month = month
+    if (month) {
+      const index = state.months.indexOf(month)
+      state.month = index
+    }
+  },
+  changeYear(state, orientation) {
+    if (orientation === 'up') {
+      state.year -= 1
+    } else if (orientation === 'down') {
+      state.year += 1
     }
   },
   changeWeekStart(state, firstDay) {
     if (firstDay === 'Lunes') {
       state.days = ['Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado', 'Domingo']
-    }
-    if (firstDay === 'Domingo') {
+    } else if (firstDay === 'Domingo') {
       state.days = ['Domingo', 'Lunes', 'Martes', 'Miércoles', 'Jueves', 'Viernes', 'Sábado']
     }
   },
-  showTasksOf(state, date) {
-    console.log(`Showing tasks dated ${date}`);
-
-  }
+  // showTasksOf(state, date) {
+  //   console.log(`Showing tasks dated ${date}`);
+  // }
 }
 
 export const getters = {

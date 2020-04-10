@@ -4,7 +4,7 @@
     <input type="text"
       id="time"
       name="time"
-      placeholder="-- : --"
+      placeholder="--:--"
       pattern="^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$"
       v-model="value.time"
       autocomplete="off"
@@ -17,22 +17,13 @@
 import Vue from 'vue'
 
 export default Vue.extend({
-  filters: {
-    formatTime(value: string): string {
-      let formatedValue: string = value
-      if (value.length === 2) {
-        formatedValue.concat(':')
-      }
-      return formatedValue
-    }
-  },
-  data() {
-    return {
-      // time: {} as any,
-      // validated: {} as any
+  props: {
+    value: {
+      type: Object
     }
   },
   methods: {
+    // Format nnnn to nn:nn
     formatTime(name: string): any {
       const field: any = this.$refs[name]
       const ev: any = event
@@ -42,11 +33,6 @@ export default Vue.extend({
           field.value += ':'
       }
     },
-  },
-  props: {
-    value: {
-      type: Object
-    }
   }
 })
 </script>
@@ -65,7 +51,7 @@ export default Vue.extend({
 
   input {
     max-width: 5em;
-    padding: 0 .5rem;
+    padding: 0;
     height: 1.5rem;
     text-align: center;
     font-weight: 600;

@@ -2,12 +2,6 @@
   <main>
     <div class="content">
       <nuxt />
-  
-      <reminder :items="reminders"></reminder>
-      <modal id="task"
-        title="Nueva tarea">
-        <task-form></task-form>
-      </modal>
       <!-- Notifications -->
       <!-- <notify></notify> -->
     </div>
@@ -20,17 +14,11 @@ import Vue from 'vue'
 
 import menu from '@/components/menu.vue'
 import notify from '@/components/notify.vue'
-import reminder from '@/components/reminder.vue'
-import modal from '@/components/modal.vue'
-import taskForm from '@/components/task/form.vue'
 
 export default Vue.extend({
   components: {
     'nav-menu': menu,
     notify,
-    reminder,
-    modal,
-    'task-form': taskForm
   },
   data() {
     return {
@@ -49,17 +37,6 @@ export default Vue.extend({
           text: 'Tareas'
         }
       ] as any[],
-      reminders: [
-        {
-          text:'Beber agua'
-        },
-        {
-          text:'Hacer ejercicio'
-        },
-        {
-          text:'Cuidado personal'
-        },
-      ] as any[]
     }
   }
 })

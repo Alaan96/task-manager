@@ -6,7 +6,6 @@ const { authenticate } = require('../middlewares/authentication')
 
 const app = express()
 
-
 // Get all task of a profile
 app.get('/tasks/:id', authenticate, (req, res) => {
   const id = req.params.id
@@ -54,6 +53,41 @@ app.get('/tasks/:id', authenticate, (req, res) => {
   })
 })
 
+// Get one task by ID
+app.get('/task/:task_id', authenticate, (req, res) => {
+  const task_id = req.params.task_id
+
+  if (!task_id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Task id is required.'
+    })
+  }
+
+  Task.findById(task_id, (err, task) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Error getting the task.',
+        err
+      })
+    }
+
+    if (!task) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'Task not found.'
+      })
+    }
+
+    return res.json({
+      status: 'success',
+      message: 'Task getted correctly.',
+      task
+    })
+  })
+})
+
 // Save new task
 app.post('/save-task/:id', authenticate, (req, res) => {
   const id  = req.params.id
@@ -79,12 +113,9 @@ app.post('/save-task/:id', authenticate, (req, res) => {
     title: body.title,
     description: body.description,
     tag: body.tag,
-    important: body.important,
-    urgent: body.urgent,
     author: id,
     date: body.date,
-    // time: body.time,
-    // list: body.list,
+    time: body.time,
   })
 
   task.save( (err, taskDB) => {
@@ -146,24 +177,24 @@ app.get('/last-saved/:id', authenticate, (req, res) => {
 
     return res.json({
       status: 'success',
-      message: 'Last task get correctly.',
+      message: 'Last task getted correctly.',
       task: lastTask
     })
   })
 })
 
 // Update task properties
-app.put('/update-task/:taskId', authenticate, (req, res) => {
-  const id = req.params.taskId
+app.put('/update-task/:task_id', authenticate, (req, res) => {
+  const id = req.params.task_id
 
   if (!id) {
     return res.status(400).json({
       status: 'error',
-      message: 'Id is required.'
+      message: 'Task id is required.'
     })
   }
 
-  const fields = ['title', 'description', 'tag', 'important', 'urgent', 'date']
+  const fields = ['title', 'description', 'tag', 'time', 'date']
 
   const data = _.pick(req.body, fields)
 
@@ -185,7 +216,7 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
 
     const dataContent = Object.keys(data)
     // console.log(dataContent)
-
+    
     if (dataContent.length === 0) {
       return res.status(400).json({
         status: 'error',
@@ -194,17 +225,23 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
         task: taskDB
       })
     }
-
+    
     let propertiesForUpdate = []
+
+    // Real fields with different values
+    let changes = {}
 
     dataContent.forEach(property => {
       if (taskDB[property] !== data[property]) {
         // console.log(`${property} has a different value.`)
         propertiesForUpdate.push(property)
+        
+        changes[property] = data[property] // Set real changes
       } else {
         // console.log(`${property} has the same value.`)
       }
     })
+
 
     if (propertiesForUpdate.length === 0) {
       return res.status(400).json({
@@ -238,7 +275,7 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
       return res.json({
         status: 'success',
         message: 'Task updated correctly.',
-        changes: data,
+        changes,
         task: taskDB
       })
     })
@@ -268,8 +305,8 @@ app.put('/update-task/:taskId', authenticate, (req, res) => {
 })
 
 // Disable a task
-app.put('/disable-task/:taskId', authenticate, (req, res) => {
-  const id = req.params.taskId
+app.put('/disable-task/:task_id', authenticate, (req, res) => {
+  const id = req.params.task_id
 
   if (!id) {
     return res.status(400).json({
@@ -305,8 +342,8 @@ app.put('/disable-task/:taskId', authenticate, (req, res) => {
 })
 
 // Active a task
-app.put('/active-task/:taskId', authenticate, (req, res) => {
-  const id = req.params.taskId
+app.put('/active-task/:task_id', authenticate, (req, res) => {
+  const id = req.params.task_id
 
   if (!id) {
     return res.status(400).json({
@@ -342,8 +379,8 @@ app.put('/active-task/:taskId', authenticate, (req, res) => {
 })
 
 // Remove a task
-app.delete('/remove-task/:taskId', authenticate, (req, res) => {
-  const id = req.params.taskId
+app.delete('/remove-task/:task_id', authenticate, (req, res) => {
+  const id = req.params.task_id
 
   if (!id) {
     return res.status(400).json({

@@ -22,7 +22,7 @@ export default Vue.extend({
   props: {
     items: {
       type: Array,
-      required: true
+      // required: true
     }
   }
 })
@@ -38,7 +38,7 @@ export default Vue.extend({
 
   div {
     flex: 0 1 3rem;
-    margin: .25rem 1rem;
+    margin: .25rem 0;
     padding: 0 1rem;
     display: flex;
     align-items: center;

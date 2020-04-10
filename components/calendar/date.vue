@@ -10,9 +10,12 @@
     </text>
     <g class="points" :data-full-date="fullDate" v-if="points.length > 0">
       <circle class="orbit" cx="24" cy="24" r="21" />
-      <!-- <circle class="point" cx="36" cy="42" r="4" fill="#F16D6D" /> -->
-      <circle class="point" v-for="(point, index) in points" :key="point._id"
-        :cx="pointPosition[index].x" :cy="pointPosition[index].y" r="4" :fill="point.tag.color" />
+      <circle class="point"
+        v-for="(point, index) in points"
+        :key="point._id"
+        cx="45" cy="24" r="4"
+        :style="{'transform': `rotate(${360 / maxTasks * (index)}deg)`}"
+        :fill="point.tag.color" />
     </g>
   </g>
 </template>
@@ -21,29 +24,31 @@
 import Vue from 'vue'
 import { mapState } from 'vuex'
 
-// Mixins
-import { datesFunctions } from '@/assets/mixins/format-functions'
-
 export default Vue.extend({
-  data() {
-    return {
-      pointPosition: [
-        {x: 36, y: 42},
-        {x: 44, y: 24},
-        {x: 36, y: 8},
-      ] as object[]
-    }
-  },
-  mixins: [datesFunctions],
-  methods: {
-    // selectDate(fullDate) {
-    //   this.selected = fullDate
-    // },
+  props: {
+    index: {
+      type: Number
+    },
+    x: {
+      type: Number
+    },
+    y: {
+      type: Number
+    },
+    day: {
+      type: Number
+    },
+    fullDate: {
+      type: String
+    },
+    calendarMonth: {
+      type: Number
+    },
   },
   computed: {
     selected(): boolean {
       const dateSelected: any = this.$store.getters['date/selected']
-      if (dateSelected === this.fullDate) {
+      if (dateSelected.length > 0 && dateSelected === this.fullDate) {
         return true
       } else {
         return false
@@ -66,41 +71,27 @@ export default Vue.extend({
       }
     },
     points(): object[] {
-      const points: object[] = this.$store.getters['task/list']
-          .filter( (task: any) => task.date === this.fullDate)
+      const points: object[] = this.$store.getters['task/list'].filter( (task: any) => task.date === this.fullDate )
       return points
+    },
+    maxTasks(): number {
+      let max: number = 10
+      const points: number = this.points.length
+      if (points > max) {
+        return points
+      }
+      return max
     },
     ...mapState('calendar', {
       year: 'year',
       month: 'month',
       date: 'date'
     })
-  },
-  props: {
-    index: {
-      type: Number
-    },
-    x: {
-      type: Number
-    },
-    y: {
-      type: Number
-    },
-    day: {
-      type: Number
-    },
-    fullDate: {
-      type: String
-    },
-    calendarMonth: {
-      type: Number
-    },
   }
 })
 </script>
 
 <style lang="scss" scoped>
-
 .date {
   opacity: .3;
   & text {
@@ -157,6 +148,10 @@ export default Vue.extend({
   }
 }
 
+// g.points {
+//   transform-origin: center;
+// }
+
 @keyframes create-point {
   0% {
     opacity: 0;
@@ -176,7 +171,8 @@ export default Vue.extend({
   stroke-width: 1px;
   stroke: $line;
 }
-.point {
+circle.point {
+  transform-origin: 24px 24px;
   animation: create-point .4s ease-out;
   box-shadow: 0 0 .5rem rgba(0, 0, 0, 0.2);
 }

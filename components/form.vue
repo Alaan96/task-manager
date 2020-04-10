@@ -24,12 +24,8 @@
 <script lang="ts">
 import Vue, { PropOptions } from 'vue'
 
-import textField from '@/components/text-field.vue'
+import textField from '@/components/inputs/text-field.vue'
 import btn from '@/components/buttons/button.vue'
-
- // Mixins
-// import { notify } from '@/assets/mixins/notify'
-import { helpers } from '@/assets/mixins/api-helpers'
 
 export default Vue.extend({
 	components: {

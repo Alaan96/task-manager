@@ -1,42 +1,31 @@
 <template>
   <div class="date-info">
     <header>
-      <span>{{this.date | formatedDate}}</span>
-      <!-- <button><cross></cross></button> -->
+      <span>{{this.selectedDate | formatedDate}}</span>
+      <button class="close" @click="close()"><cross></cross></button>
     </header>
     <div class="content">
-      <template v-if="tasks.length > 0">
-        <task v-for="(task, index) in tasks"
-          :key="index"
-          :content="task"
-          :index="index">
-
-        </task>
-      </template>
-      <span v-else>Sin tareas en esta fecha.</span>
+      <task-list></task-list>
     </div>
-    <button class="add" @click="newTask()">
-      Agregar
-    </button>
+    <button class="add" @click="openTaskForm()">Agregar</button>
   </div>
 </template>
 
 <script lang="ts">
 import Vue from 'vue'
 
-import task from './task.vue'
+import task_list from './list.vue'
 
 // Icons
 import cross from '@/components/icons/cross.vue'
 
 export default Vue.extend({
-  data() {
-    return {
-      // open: true as boolean,
-      todayTask: [] as any[]
-    }
+  components: {
+    'task-list': task_list,
+    cross
   },
   filters: {
+    // Format dd/mm/aaaa to ddd 00 
     formatedDate(fullDate: string): string {
       let formatedDate: string = ''
       if (fullDate) {
@@ -53,45 +42,27 @@ export default Vue.extend({
       return formatedDate
     }
   },
-  methods: {
-    close(): void {
-      this.$store.commit('calendar/closeModal')
-    },
-    newTask(): void {
-      this.$store.commit('modal/open', 'task')
+  computed: {
+    selectedDate(): string {
+      return this.$store.state.date.selected
     }
   },
-  computed: {
-    open(): boolean {
-      return this.$store.state.calendar.modalActive
+  methods: {
+    openTaskForm(): void {
+      this.$store.commit('modal/open', 'task')
     },
-    date(): string {
-      return this.$store.state.date.selected
-    },
-    tasks(): object[] {
-      const fullList: any[] = this.$store.getters['task/list']
-      const tasks: any[] = fullList.filter(task => task.date === this.date)
-      return tasks
-    },
-  },
-  components: {
-    task,
-    cross
+    close(): void {
+      this.$store.commit('modal/close', 'date')
+    }
   }
 })
 </script>
 
 <style lang="scss" scoped>
-  .container {
-    width: 100vw;
-    height: 100vh;
-    @include center;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
   .date-info {
     width: 100%;
+    display: flex;
+    flex-direction: column;
     background: $black;
     border-radius: .5rem;
   }
@@ -99,6 +70,7 @@ export default Vue.extend({
   header {
     width: 100%;
     height: 2em;
+    flex: 0 1 2em;
     padding: 0 .5rem;
     display: flex;
     justify-content: space-between;
@@ -106,20 +78,25 @@ export default Vue.extend({
     font-size: 1rem;
     font-weight: 600;
     border-bottom: 1px solid $line;
-    & svg {
+
+    & button.close {
       width: 1rem;
+      height: 1rem;
     }
   }
 
   .content {
     width: 100%;
     min-height: 3rem;
+    max-height: 100vmin;
     @include center;
+    flex-direction: column;
+    overflow-y: scroll;
   }
 
   button.add {
     width: 100%;
-    height: 2rem;
+    height: 2em;
     font-size: 1rem;
     font-weight: 600;
     color: $primary;

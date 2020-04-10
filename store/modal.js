@@ -1,6 +1,6 @@
 export const state = () => ({
-  date: false,
-  task: false
+  task: false,
+  date: false
 })
 
 export const mutations = {
@@ -11,3 +11,15 @@ export const mutations = {
     state[modal] = false
   }
 }
+
+// export const getters = {
+//   some_active(state) {
+//     const modals = Object.values(state)
+//     const active = modals.some( (modal) => modal === true)
+//     if (active === true) {
+//       console.log('Hay ventanas activas');
+//       return true
+//     }
+//     return false
+//   }
+// }

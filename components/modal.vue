@@ -1,5 +1,6 @@
 <template>
-  <div class="container" v-show="active" @click.self="close()" @keyup.esc="close()">
+  <div class="container" v-show="active" @click.self="close(id)" @keyup.esc="close(id)"
+    :style="{'z-index': z}">
     <div class="modal">
       <header class="title" v-if="title">{{title}}</header>
 
@@ -19,10 +20,17 @@ import Vue from 'vue';
 import btn from '@/components/buttons/button.vue'
 
 export default Vue.extend({
+  components: {
+    btn
+  },
   props: {
     id: {
       type: String,
       required: true
+    },
+    z: {
+      type: Number,
+      default: 10
     },
     title: {
       type: String,
@@ -37,17 +45,14 @@ export default Vue.extend({
       required: false
     }
   },
-  components: {
-    btn
-  },
-  methods: {
-    close(): void {
-      this.$store.commit('modal/close', this.id)
-    }
-  },
   computed: {
     active(): boolean {
       return this.$store.state.modal[this.id]
+    }
+  },
+  methods: {
+    close(id: string): void {
+      this.$store.commit('modal/close', id)
     }
   }
 })
@@ -56,18 +61,19 @@ export default Vue.extend({
 <style lang="scss" scoped>
 .container {
   width: 100vw;
-  height: 100vh;
+  height: calc(100vh - 4em);
   @include center;
   position: absolute;
   top: 0;
   left: 0;
+  backdrop-filter: blur(.25rem);
 }
 .modal {
-  width: calc(100% - 2rem);
+  width: 100%;
   margin: 0 auto;
-  // padding: 1.5rem 1rem;
   background: $black;
   border-radius: .5rem;
+  box-shadow: 0 0 .75rem rgba(0, 0, 0, 0.25);
 }
 
 header.title {

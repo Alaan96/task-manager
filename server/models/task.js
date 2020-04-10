@@ -1,5 +1,4 @@
 const mongoose = require('mongoose')
-const uniqueValidator = require('mongoose-unique-validator')
 
 let Schema = mongoose.Schema
 
@@ -12,31 +11,19 @@ let taskSchema = new Schema({
     type: String,
     required: false
   },
-  important: {
-    type: Boolean,
-    required: false
-  },
-  urgent: {
-    type: Boolean,
-    required: false
-  },
   tag: {
     type: Object,
     required: true,
-    default: { text: 'Tarea', color: '#66BBD1' }
+    default: {text: 'Tarea', color: '#66BBD1'}
   },
   date: {
     type: String,
     required: false,
   },
-  // time: {
-  //   type: Object,
-  //   required: false
-  // },
-  // list: {
-  //   type: Object,
-  //   required: false
-  // },
+  time: {
+    type: String,
+    required: false
+  },
   active: {
     type: Boolean,
     required: false,
@@ -56,7 +43,5 @@ let taskSchema = new Schema({
     required: false
   }
 })
-
-// taskSchema.plugin(uniqueValidator, { message: '{PATH} already exist in database.' })
 
 module.exports = mongoose.model('Task', taskSchema)
