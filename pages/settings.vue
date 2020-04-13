@@ -1,219 +1,174 @@
 <template>
-  <div class="container">
-    <tags></tags>
-    <!-- <settings-data :data="configs" negative>
-    </settings-data> -->
-    <ul class="negative">
+  <section>
+    <header>
+      <img src="@/static/settings.svg" alt="settings-icon">
+      <h1>Configuración</h1>
+    </header>
+
+    <ul id="settings">
       <li>
-        <span class="title">Etiquetas</span>
-        <div class="config">
-          <span @click="$store.commit('modal/showModal')">
-            Gestionar etiquetas
-          </span>
-        </div>
+        <span>Etiquetas</span>
+        <button @click="manage_tags()">Gestionar etiquetas</button>
       </li>
       <li>
-        <span class="title">Vista al iniciar</span>
-        <div class="config">
-          <select name="defaultView" v-model="defaultView"
-            @change="changeDefaultView(defaultView)">
-            <option v-for="view in defaultViewOptions"
-              :key="view.text"
-              :value="view.value">
-              {{view.text}}
-            </option>
-          </select>
-        </div>
+        <span>Personalizar calendario</span>
+        <button>Personalizar</button>
       </li>
       <li>
-        <span class="title">Inicio de semana</span>
-        <div class="config">
-          <select name="weekStart" v-model="weekStart"
-            @change="changeWeekStart(weekStart)">
-            <option v-for="day in weekStartOptions"
-              :key="day.text"
-              :value="day.value">
-              {{day.text}}
-            </option>
-          </select>
-        </div>
+        <span>Vista al iniciar</span>
+        <select-field :options="default_view_options"
+          name="default_view"
+          v-model="settings">
+        </select-field>
       </li>
       <li>
-        <span class="title">Funcionar sin conexión</span>
-        <div class="config">
-          <span class="soon">Proximamente</span>
-          <!-- <button-checkbox ></button-checkbox> -->
-          <!-- <button :class="{'active': workOffline}">
-            <label for="work-offline">{{workOffline ? 'Activado' : 'Desactivado'}}</label>
-            <input type="checkbox" id="work-offline" v-model="workOffline">
-          </button> -->
-        </div>
+        <span>Funcionar sin conexión</span>
+        <toggle-button id="work_offline" v-model="settings" />
       </li>
       <li>
-        <span class="title">Modo oscuro</span>
-        <div class="config">
-          <span class="soon">Proximamente</span>
-          <!-- <button-checkbox ></button-checkbox> -->
-          <!-- <button :class="{'active': darkMode}">
-            <label for="dark-mode">{{darkMode ? 'Activado' : 'Desactivado'}}</label>
-            <input type="checkbox" id="dark-mode" v-model="darkMode">
-          </button> -->
-        </div>
+        <span>Modo oscuro</span>
+        <toggle-button id="dark_mode" v-model="settings" />
+      </li>
+      <li>
+        <span>Acerca de</span>
+        <button>Ver más info</button>
+      </li>
+      <li>
+        <button class="logout">Cerrar sesión</button>
       </li>
     </ul>
-  </div>
+
+    <!-- Modals -->
+    <modal id="tags" key="tags" closeTxt="Cerrar">
+      <tags-manager></tags-manager>
+    </modal>
+  </section>
 </template>
 
-<script>
-import data from '@/components/data'
-import tags from '@/components/tags'
-import modal from '@/components/modal'
-// import btnCheckbox from '@/components/inputs/button-checkbox'
+<script lang="ts">
+import Vue from 'vue'
 
-import { helpers } from '@/assets/mixins/api-helpers'
+import btn from '@/components/buttons/button.vue'
+import selectField from '@/components/inputs/select-field.vue'
+import toggleBtn from '@/components/buttons/toggle-button.vue'
+import modal from '@/components/modal.vue'
+import tagsManager from '@/components/tags/manager.vue'
+// import data from '@/components/data.vue'
+// import tags from '@/components/tags.vue'
 
-export default {
+export default Vue.extend({
   components: {
-    // 'settings-data': data,
-    tags,
+    btn,
+    'select-field': selectField,
+    'toggle-button': toggleBtn,
     modal,
-    // 'button-checkbox': btnCheckbox
-  },
-  created() {
-    this.weekStart = this.$store.state.user.weekStart
-    this.defaultView = this.$store.state.user.defaultView
+    'tags-manager': tagsManager
   },
   data() {
     return {
-      defaultViewOptions: [
-        {text: 'Diaria', value: 'date'},
+      settings: {
+        default_view: '',
+        work_offline: false,
+        dark_mode: false,
+      } as any,
+
+      default_view_options: [
         {text: 'Calendario', value: 'calendar'},
-      ],
-      defaultView: '',
-
-      weekStartOptions: [
-        {text: 'Lunes', value: 'Lunes'},
-        {text: 'Domingo', value: 'Domingo'},
-      ],
-      weekStart: '',
-
-      workOffline: false,
-      darkMode: false,
-
-      options: {}
+        {text: 'Tareas', value: 'tasks'},
+      ] as object[],
     }
   },
-  mixins: [helpers],
+  beforeMount() {
+    this.setSettingsFromDB('default_view', 'calendar')
+    this.setSettingsFromDB('work_offline', false)
+    this.setSettingsFromDB('dark_mode', true)
+  },
   methods: {
-    changeWeekStart(firstDay) {
-      console.log('Change week start')
-      this.options.weekStart = firstDay
-      this.sendChanges()
+    setSettingsFromDB(setting: string, value: string|boolean): void {
+      if (setting && value) {
+        this.settings[setting] = value
+      }
     },
-    changeDefaultView(view) {
-      console.log('Change view')
-      this.options.defaultView = view
-      this.sendChanges()
-    },
-
-    sendChanges() {
-      let options = this.options
-      console.log(options)
-      this.$axios.$put(`${this.url}/user/${this.id}`, options)
-        .then( res => {
-          console.log(res)
-        })
-        .catch( err => {
-          console.log(err)
-        })
-
-      this.options = {}
-    },
+    manage_tags(): void {
+      this.$store.commit('modal/open', 'tags')
+    }
   }
-}
+})
 </script>
 
 <style lang="scss" scoped>
-.container {
+section {
   width: 100%;
-  height: 10rem;
+  height: 100%;
+  padding: 0 1rem;
+  background: linear-gradient($black, transparentize($black, .8));
+}
+
+header {
+  width: 100%;
+  height: 3rem;
   display: flex;
-  justify-content: center;
-  background: $primary;
+  align-items: center;
+  & img {
+    width: 1rem;
+    margin-right: .5rem;
+  }
+  & h1 {
+    font-size: 1rem;
+    font-weight: 700;
+  }
 }
 
 ul {
   width: 100%;
-  padding: 2rem 1rem;
+  margin-top: 1rem;
   & li {
     width: 100%;
-    height: 4rem;
+    min-height: 4rem;
     padding: 0 1rem;
     display: flex;
     justify-content: space-between;
     align-items: center;
     border-bottom: 1px solid $line;
-    & .title {
+    & span {
+      flex: 0 1 auto;
+      margin-right: .25rem;
       font-weight: 700;
     }
-    & .config {
-      & span {
-        font-weight: 600;
-        color: $secondary;
-        cursor: pointer;
-      }
-      & span.soon {
-        color: $black;
-        opacity: .4;
-      }
+    &:last-child {
+      border: none;
     }
-  }
-}
-
-.negative {
-  & li {
-    border-color: $gray;
-  }
-  & .title {
-    color: $black;
-  }
-}
-
-
-select {
-  min-width: 8rem;
-  min-height: 2rem;
-  padding: 0 .5rem;
-  font-size: .75rem;
-  font-family: $niramit;
-  background: $primary;
-  color: $black;
-  border-color: $gray;
-  border-radius: $radius;
-  outline: none;
-  & option {
-    outline: none;
   }
 }
 
 button {
-  width: 6rem;
-  height: 1.5rem;
-  @include center;
-  font-size: .75rem;
-  font-family: $niramit;
-  background: $gray;
-  color: $black;
-  border-radius: 1rem;
-  & label {
-    width: 100%;
-    height: 100%;
-    display: block;
-  }
-  & input {
-    display: none;
-  }
+  font-size: .80rem;
+  font-weight: 600;
+  color: $secondary;
 }
+button.logout {
+  font-size: 1rem;
+  color: $cancel;
+}
+
+// button {
+//   width: 6rem;
+//   height: 1.5rem;
+//   @include center;
+//   font-size: .75rem;
+//   font-family: $niramit;
+//   background: $gray;
+//   color: $black;
+//   border-radius: 1rem;
+//   & label {
+//     width: 100%;
+//     height: 100%;
+//     display: block;
+//   }
+//   & input {
+//     display: none;
+//   }
+// }
 
 .active {
   background: $secondary;

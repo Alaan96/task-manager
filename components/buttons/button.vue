@@ -1,7 +1,8 @@
 <template>
   <button :class="[{simple}, {small}]"
     :style="[{display: inline ? 'inline' : ''},
-            {backgroundColor: color ? color : ''}]">
+            {backgroundColor: bgColor ? bgColor : ''},
+            {color: color}]">
     {{text}}
   </button>
 </template>
@@ -27,6 +28,9 @@ export default Vue.extend({
     color: {
       type: String
     },
+    bgColor: {
+      type: String
+    },
     inline: {
       type: Boolean
     }
@@ -34,7 +38,7 @@ export default Vue.extend({
     //   type: Boolean,
     //   required: false
     // },
-  },
+  }
 })
 </script>
 
@@ -42,18 +46,21 @@ export default Vue.extend({
   button {
     width: 10em;
     height: 2em;
-    margin: 0 auto 1rem auto;
+    // margin: 0 auto 1rem auto;
     @include center;
     font-size: 1rem;
     font-weight: 600;
     color: $primary;
     background: $tertiary;
     border-radius: 1rem;
+    &:hover, &:focus {
+      filter: brightness(1.15);
+    }
   }
 
   .simple {
     background: transparent;
-    margin: 0 auto;
+    // margin: 0 auto;
   }
 
   .small {

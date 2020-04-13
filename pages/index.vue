@@ -36,7 +36,7 @@ export default Vue.extend({
       $axios.defaults.headers.common.token = localStorage.getItem('token')
       const loaded: boolean = store.getters['user/loaded']
       if (loaded === false) {
-        const id = localStorage.getItem('id')
+        const id: string = localStorage.getItem('id') || ''
 
         // Load user data
         await store.dispatch('user/profileData', `${location.origin}/user/${id}`)

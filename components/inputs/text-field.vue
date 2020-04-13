@@ -27,14 +27,15 @@ export default Vue.extend({
 		},
 		type: {
 			type: String,
-			required: true,
+			required: false,
 			default: 'text'
 		},
 		// V-model object must be declare in parent data()
 		value: {
 			type: Object
 		},
-	}
+	},
+	inheritAttrs: false
 })
 </script>
 

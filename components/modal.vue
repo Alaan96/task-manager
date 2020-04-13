@@ -1,5 +1,5 @@
 <template>
-  <div class="container" v-show="active" @click.self="close(id)" @keyup.esc="close(id)"
+  <div class="modal-container" v-show="active" @click.self="close(id)" @keyup.esc="close(id)"
     :style="{'z-index': z}">
     <div class="modal">
       <header class="title" v-if="title">{{title}}</header>
@@ -8,8 +8,10 @@
         <slot></slot>
       </div>
 
-      <btn :text="button" v-if="button"/>
-      <btn :text="closeTxt" simple v-if="closeTxt" @click.native="close()" />
+      <div class="buttons">
+        <btn :text="button" v-if="button"/>
+        <btn :text="closeTxt" simple v-if="closeTxt" @click.native="close()" />
+      </div>
     </div>
   </div>
 </template>
@@ -26,7 +28,7 @@ export default Vue.extend({
   props: {
     id: {
       type: String,
-      required: true
+      // required: true
     },
     z: {
       type: Number,
@@ -52,16 +54,17 @@ export default Vue.extend({
   },
   methods: {
     close(id: string): void {
-      this.$store.commit('modal/close', id)
+      this.$store.commit('modal/close', this.id)
     }
   }
 })
 </script>
 
 <style lang="scss" scoped>
-.container {
+.modal-container {
   width: 100vw;
   height: calc(100vh - 4em);
+  padding: 0 1rem;
   @include center;
   position: absolute;
   top: 0;
@@ -88,6 +91,13 @@ header.title {
   width: 100%;
   min-height: 2em;
   @include center;
+}
+
+.buttons {
+  width: 100%;
+  margin-bottom: .5rem;
+  @include center;
+  flex-direction: column;
 }
 
 @keyframes fade-in {

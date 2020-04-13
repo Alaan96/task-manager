@@ -1,6 +1,7 @@
 export const state = () => ({
   task: false,
-  date: false
+  date: false,
+  tags: false
 })
 
 export const mutations = {

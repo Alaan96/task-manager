@@ -30,12 +30,12 @@
           <span>Etiquetas</span>
           <btn text="Nueva" small color="#6BB4E5" inline />
         </div>
-        <tags
+        <!-- <tags
           list
           :context="`ID: ${task._id}`"
           :selected="task.tag.text"
           @getTag="setPropertyIn('tag', $event)">
-        </tags>
+        </tags> -->
   
         <!-- <tags></tags> -->
       </div>
@@ -59,7 +59,7 @@ import Vue, { PropOptions } from 'vue'
 
 import textField from '@/components/inputs/text-field.vue'
 import timeField from '@/components/inputs/time-field.vue'
-import tags from '@/components/tags.vue'
+// import tags from '@/components/tags.vue'
 import modal from '@/components/modal.vue'
 import btn from '@/components/buttons/button.vue'
 
@@ -67,7 +67,7 @@ export default Vue.extend({
   components: {
     'text-field': textField,
     'time-field': timeField,
-		tags,
+		// tags,
 		modal,
     btn,
   },
