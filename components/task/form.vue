@@ -28,26 +28,19 @@
       <div class="tags">
         <div class="create-tag">
           <span>Etiquetas</span>
-          <btn text="Nueva" small color="#6BB4E5" inline />
+          <btn text="Nueva" small bgColor="#6BB4E5" inline />
         </div>
-        <!-- <tags
-          list
-          :context="`ID: ${task._id}`"
-          :selected="task.tag.text"
-          @getTag="setPropertyIn('tag', $event)">
-        </tags> -->
-  
-        <!-- <tags></tags> -->
+        <tag-picker default v-model="task.tag" />
       </div>
     </section>
 
     <section class="time">
-      <time-field @getTime="setPropertyIn('time', $event)" v-model="task"></time-field>
+      <time-field v-model="task.time" />
       <div class="date"><span>Fecha</span> <span>{{selectedDate}}</span></div>
     </section>
 
     <div class="buttons">
-      <btn text="Guardar" color="#6BB4E5" @click.native="save()" />
+      <btn text="Guardar" bgColor="#6BB4E5" @click.native="save()" />
       <btn text="Cancelar" simple @click.native="discard()" />
     </div>
 
@@ -59,16 +52,33 @@ import Vue, { PropOptions } from 'vue'
 
 import textField from '@/components/inputs/text-field.vue'
 import timeField from '@/components/inputs/time-field.vue'
-// import tags from '@/components/tags.vue'
-import modal from '@/components/modal.vue'
+import tagPicker from '@/components/tag/picker.vue'
 import btn from '@/components/buttons/button.vue'
+
+interface Tag {
+  text: string,
+  color: string
+}
+
+interface Task {
+  _id: string,
+  title: string,
+  description: string,
+  tag: Tag,
+  time: string,
+  date: string,
+
+  author: string,
+  creationDate: string,
+  active: boolean,
+  // sharedWith: string[]
+}
 
 export default Vue.extend({
   components: {
     'text-field': textField,
     'time-field': timeField,
-		// tags,
-		modal,
+    'tag-picker': tagPicker,
     btn,
   },
   data() {
@@ -76,10 +86,10 @@ export default Vue.extend({
       task: {
 				title: '',
 				description: '',
-				tag: {},
+				tag: {} as Tag,
         time: '',
         date: ''
-      } as any,
+      } as Task,
 		}
   },
   computed: {
@@ -108,12 +118,6 @@ export default Vue.extend({
     this.edit
   },
   methods: {
-    // Set a property into the task object model
-    setPropertyIn(property: string, $event: Event): void {
-      if (property) {
-        this.task[property] = $event
-      }
-    },
     validate(form: any): boolean {
       // Title validation
       const title = form.title
@@ -160,9 +164,12 @@ export default Vue.extend({
     },
     discard(): void {
       this.$store.commit('modal/close', 'task')
-      // this.resetForm()
+      if (this.edit === false) {
+        this.resetForm()
+      }
     },
     editTask(): void {
+      // this.$api()
       this.$axios.$put(`${location.origin}/update-task/${this.task._id}`, this.task)
         .then( res => {
           console.log(res)
@@ -173,20 +180,27 @@ export default Vue.extend({
     },
     newTask(): void {
       const id: string = this.$store.getters['user/id']
-      this.$axios.$post(`${location.origin}/save-task/${id}`, this.task)
-        .then( res => {
+      this.$api('post', `save-task/${id}`, this.task)
+        .then((res: any) => {
           const task_id: string = res.task._id
           this.$store.dispatch('task/lastSaved', `${location.origin}/task/${task_id}`)
           this.discard()
           this.resetForm()
         })
-        .catch( err => console.log(err.response) )
+        .catch( (err: { response: { data: any } }) => console.log(err.response.data) )
+      // this.$axios.$post(`${location.origin}/save-task/${id}`, this.task)
+      //   .then( res => {
+      //     const task_id: string = res.task._id
+      //     this.$store.dispatch('task/lastSaved', `${location.origin}/task/${task_id}`)
+      //     this.discard()
+      //     this.resetForm()
+      //   })
+      //   .catch( err => console.log(err.response) )
     },
-    resetForm(fields: string[] = ['title', 'description', 'time']): void {
-      const fieldsToReset: string[] = fields
-      for(let field of fieldsToReset) {
-        this.task[field] = ''
-      }
+    resetForm(): void {
+      this.task.title = ''
+      this.task.description = ''
+      this.task.time = ''
     },
   },
 })
