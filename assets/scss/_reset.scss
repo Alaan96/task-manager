@@ -17,6 +17,7 @@ button {
 	font-family: $quicksand;
 	background: transparent;
 	border: none;
+	cursor: pointer;
 }
 
 li {
@@ -33,14 +34,6 @@ a {
 	&:hover {
 		filter: brightness(120%);
 	}
-}
-
-input {
-	font-family: $quicksand;
-	background: inherit;
-	border: none;
-	color: inherit;
-	caret-color: $secondary;
 }
 
 body {

@@ -10,27 +10,18 @@
     <radio-field
       v-for="tag in tags"
       :key="tag.text"
-      :text="tag.text"
       name="tag"
       :id="tag.text"
       :val="tag"
       :value="value"
-      @input="$emit('input', tag)">
+      @input="$emit('input', $event)">
+      <div class="tag" :class="{'selected': tag === value}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
+          <circle cx="4" cy="4" r="4" :fill="tag.color" />
+        </svg>
+        <label :for="tag.text">{{tag.text}}</label>
+      </div>
     </radio-field>
-
-    <!-- <button v-for="tag in tags"
-      :key="tag.color"
-      class="tag">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
-        <circle cx="4" cy="4" r="4" :fill="tag.color" />
-      </svg>
-      <input type="radio"
-        name="tag"
-        :id="tag.text"
-        :value="tag"
-        @change="$emit('input', tag)">
-      <label :for="tag.text">{{tag.text}}</label>
-    </button> -->
   </section>
 </template>
 
@@ -50,7 +41,7 @@ export default Vue.extend({
   },
   props: {
     value: {
-      type: Object
+      required: true
     },
     display: {
       type: String,
@@ -58,11 +49,19 @@ export default Vue.extend({
       validator: value => {
         return ['small', 'medium'].includes(value)
       }
+    },
+    default: {
+      type: Boolean
     }
   },
   computed: {
     tags(): Tag[] {
       return this.$store.getters['user/tags']
+    }
+  },
+  mounted() {
+    if (this.default === true) {
+      this.$emit('input', this.tags[0])
     }
   }
 })
@@ -90,10 +89,14 @@ section.tag-list {
   font-size: .75rem;
   color: $primary;
   background: transparent;
+  border: 1px solid $primary;
   border: 1px solid $line;
   border-radius: 1rem;
   transition: .2s ease;
-  opacity: .5;
+  opacity: 1;
+  // &:hover {
+  //   opacity: 1;
+  // }
   
   &:first-child {
     margin-left: 0;
@@ -103,14 +106,13 @@ section.tag-list {
   }
   & label {
     margin-left: .5rem;
-  }
-  & input[type="radio"] {
-    width: 1rem;
-    // display: none;
+    font-weight: 600;
   }
 }
 
-// button.tag.selected {
-//   opacity: 1;
-// }
+.selected {
+  color: $black;
+  background: $primary;
+  opacity: 1;
+}
 </style>

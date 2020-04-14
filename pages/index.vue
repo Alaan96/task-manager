@@ -45,11 +45,11 @@ export default Vue.extend({
         await store.dispatch('task/tasksDB', `${location.origin}/tasks/${id}`)
       }
     } catch(err) {
-      if (err.response.data) {
-        console.log(err.response.data)
-      } else {
+      // if (err.response.data) {
+      //   console.log(err.response.data)
+      // } else {
         console.log(err)
-      }
+      // }
     }
   },
   created() {

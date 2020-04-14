@@ -40,7 +40,7 @@
 
     <!-- Modals -->
     <modal id="tags" key="tags" closeTxt="Cerrar">
-      <tags-manager></tags-manager>
+      <tag-manager></tag-manager>
     </modal>
   </section>
 </template>
@@ -52,9 +52,7 @@ import btn from '@/components/buttons/button.vue'
 import selectField from '@/components/inputs/select-field.vue'
 import toggleBtn from '@/components/buttons/toggle-button.vue'
 import modal from '@/components/modal.vue'
-import tagsManager from '@/components/tags/manager.vue'
-// import data from '@/components/data.vue'
-// import tags from '@/components/tags.vue'
+import tagManager from '@/components/tag/manager.vue'
 
 export default Vue.extend({
   components: {
@@ -62,7 +60,7 @@ export default Vue.extend({
     'select-field': selectField,
     'toggle-button': toggleBtn,
     modal,
-    'tags-manager': tagsManager
+    'tag-manager': tagManager
   },
   data() {
     return {
@@ -145,6 +143,7 @@ button {
   font-size: .80rem;
   font-weight: 600;
   color: $secondary;
+  cursor: pointer;
 }
 button.logout {
   font-size: 1rem;

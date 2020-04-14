@@ -40,6 +40,7 @@ export default Vue.extend({
       width: 100%;
       height: inherit;
       color: $primary;
+      cursor: pointer;
     }
     & input[type="checkbox"] {
       display: none;

@@ -6,7 +6,8 @@
       name="time"
       placeholder="--:--"
       pattern="^(0[0-9]|1[0-9]|2[0-3]):([0-5][0-9])$"
-      v-model="value.time"
+      :value="value"
+      @input="$emit('input', $event.target.value)"
       autocomplete="off"
       @keyup.self="formatTime('time')"
       ref="time">
@@ -19,7 +20,7 @@ import Vue from 'vue'
 export default Vue.extend({
   props: {
     value: {
-      type: Object
+      required: true
     }
   },
   methods: {

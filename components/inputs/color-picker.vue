@@ -8,9 +8,12 @@
       :val="dot.color"
       :value="value"
       @input="$emit('input', $event)">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
-        <circle cx="4" cy="4" r="4" :fill="dot.color" />
-      </svg>
+      <div class="dot"
+        :style="{'border-color': dot.color === value ? dot.color : 'transparent'}">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
+          <circle cx="4" cy="4" r="4" :fill="dot.color" />
+        </svg>
+      </div>
     </radio-field>
   </div>
 </template>
@@ -26,7 +29,6 @@ export default Vue.extend({
   },
   props: {
     value: {
-      // type: Object,
       required: true
     },
     mode: {
@@ -82,5 +84,11 @@ export default Vue.extend({
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+.dot {
+  padding-bottom: .5rem;
+  border-bottom: .1rem solid transparent;
+  opacity: 1;
 }
 </style>

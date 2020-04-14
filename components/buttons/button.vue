@@ -38,7 +38,8 @@ export default Vue.extend({
     //   type: Boolean,
     //   required: false
     // },
-  }
+  },
+  inheritAttrs: false
 })
 </script>
 
