@@ -1,6 +1,11 @@
 @import 'fonts';
 @import 'colors';
 @import 'keyframes';
+@import 'mixins';
+
+.soon {
+	opacity: .2;
+}
 
 $shadow: 0 0.2rem 0.5rem rgba(0, 0, 0, 0.1);
 
@@ -28,6 +33,3 @@ $high: 100;
 
 // Header, cart, filter
 $mid: 50;
-
-@import 'mixins';
-

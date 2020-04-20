@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="9.9" height="9.9" viewBox="0 0 9.9 9.9">
+  <g id="Edición" transform="translate(143.994 -322.696) rotate(45)">
+    <path id="Punta" d="M1,0A15.986,15.986,0,0,1,2,3H0A15.986,15.986,0,0,1,1,0Z" transform="translate(134.361 336) rotate(180)" fill="#efefef"/>
+    <path id="Final" d="M1,0H1A1,1,0,0,1,2,1V2A0,0,0,0,1,2,2H0A0,0,0,0,1,0,2V1A1,1,0,0,1,1,0Z" transform="translate(132.361 324)" fill="#efefef"/>
+    <rect id="Cuerpo" width="2" height="6" transform="translate(132.361 327)" fill="#efefef"/>
+  </g>
+</svg>

@@ -42,24 +42,17 @@ let userSchema = new Schema({
       { text: 'Eventos', color: '#E9B786' },
     ]
   },
-  defaultView: {
-    type: String,
+  settings: {
+    type: Object,
     required: false,
-    default: 'date'
-  },
-  weekStart: {
-    type: String,
-    required: false,
-    default: 'Lunes'
-  },
-  // workOffline: {
-  //   type: Boolean,
-  //   required: false,
-  // },
-  // darkMode: {
-  //   type: Boolean,
-  //   required: false,
-  // }
+    default: {
+      calendar_week_start: 'Domingo',
+      calendar_highlight_weekend: true,
+      default_view: 'calendar',
+      work_offline: false,
+      dark_mode: false,
+    }
+  }
 })
 
 userSchema.methods.toJSON = function () {

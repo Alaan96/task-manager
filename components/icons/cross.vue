@@ -8,7 +8,7 @@
         H ${strokeWidth}
         H ${size - strokeWidth}`"
       :class="{rotate}"
-      :style="{'stroke-width': strokeWidth}"/>
+      :style="[{'stroke-width': strokeWidth}, {'stroke': color ? color : undefined}]"/>
   </svg>
 </template>
 
@@ -26,6 +26,9 @@ export default {
     rotate: {
       type: Boolean,
       default: false
+    },
+    color: {
+      type: String
     }
   }
 }

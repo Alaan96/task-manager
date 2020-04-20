@@ -1,5 +1,5 @@
 <template>
-  <select :name="name" v-model="value[name]">
+  <select :name="name" :value="value" @input="$emit('input', $event.target.value)">
     <option v-for="option in options"
       :key="option.text"
       :value="option.value">
@@ -11,25 +11,23 @@
 <script lang="ts">
 import Vue, { PropOptions } from 'vue'
 
-interface Option {
-  text: string,
-  value: string
-}
+
+import { Option } from '@/assets/interfaces.ts'
 
 export default Vue.extend({
   props: {
     value: {
-      type: Object,
-      required: true
-    },
-    name: {
-      type: String,
+      // type: Object,
       required: true
     },
     options: {
       type: Array,
       required: true
-    } as PropOptions<Array<Option>>
+    } as PropOptions<Option[]>,
+    name: {
+      type: String,
+      // required: true
+    }
   },
   inheritAttrs: false
 })

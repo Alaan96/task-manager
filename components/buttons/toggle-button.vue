@@ -1,7 +1,7 @@
 <template>
-  <button :class="{'active': value[id]}">
-    <label :for="id">{{value[id] ? texts[1] : texts[0]}}</label>
-    <input type="checkbox" :id="id" v-model="value[id]">
+  <button :class="{'active': value === true}">
+    <label :for="id">{{value === true ? texts[1] : texts[0]}}</label>
+    <input type="checkbox" :id="id" :checked="value" @input="$emit('input', $event.target.checked)">
   </button>
 </template>
 
@@ -15,7 +15,6 @@ export default Vue.extend({
       required: true
     },
     value: {
-      type: Object,
       required: true
     },
     texts: {

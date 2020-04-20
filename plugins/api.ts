@@ -20,21 +20,21 @@ declare module 'vuex/types/index' {
 
 
 const api: Plugin = (context: any, inject) => {
-  inject('api', (httpMethod: string, endpoint: string, content: any = null) => {
+  inject('api', (httpMethod: string, endpoint: string, content: any = null): any => {
     console.log('Plugin funcionando');
-    if (httpMethod === '' || endpoint === '') {
-      const url = `${location.origin}/${endpoint}`
-      console.log(url);
+    if (httpMethod !== '' || endpoint !== '') {
+      const url: string = `${location.origin}/${endpoint}`
+      console.log(url)
   
       context.$axios[`$${httpMethod}`](url, content)
-        // .then((res: any) => {
-        //   console.log(res)
-        //   return res
-        // })
-        // .catch((err: { response: { data: any } }) => {
-        //   console.warn(err.response.data)
-        //   return err.response.data
-        // })
+        .then((res: any) => {
+          console.log(res)
+          return res
+        })
+        .catch((err: any) => {
+          console.log(err)
+          return err
+        })
     }
   })
 }

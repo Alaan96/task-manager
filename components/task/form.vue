@@ -11,7 +11,7 @@
         placeholder="Título"
         pattern=""
         type="text"
-        v-model="task"
+        v-model="task.title"
         ref="form-title">
       </text-field>
   
@@ -20,7 +20,7 @@
         placeholder="Descripción"
         pattern=""
         type="text"
-        v-model="task">
+        v-model="task.description">
       </text-field>
     </section>
     
@@ -30,7 +30,7 @@
           <span>Etiquetas</span>
           <btn text="Nueva" small bgColor="#6BB4E5" inline />
         </div>
-        <tag-picker default v-model="task.tag" />
+        <tags picker default v-model="task.tag" />
       </div>
     </section>
 
@@ -52,33 +52,17 @@ import Vue, { PropOptions } from 'vue'
 
 import textField from '@/components/inputs/text-field.vue'
 import timeField from '@/components/inputs/time-field.vue'
-import tagPicker from '@/components/tag/picker.vue'
+import tags from '@/components/tag/tags.vue'
 import btn from '@/components/buttons/button.vue'
 
-interface Tag {
-  text: string,
-  color: string
-}
 
-interface Task {
-  _id: string,
-  title: string,
-  description: string,
-  tag: Tag,
-  time: string,
-  date: string,
-
-  author: string,
-  creationDate: string,
-  active: boolean,
-  // sharedWith: string[]
-}
+import { Tag, Task } from '@/assets/interfaces.ts'
 
 export default Vue.extend({
   components: {
     'text-field': textField,
     'time-field': timeField,
-    'tag-picker': tagPicker,
+    'tags': tags,
     btn,
   },
   data() {
@@ -180,22 +164,14 @@ export default Vue.extend({
     },
     newTask(): void {
       const id: string = this.$store.getters['user/id']
-      this.$api('post', `save-task/${id}`, this.task)
-        .then((res: any) => {
+      this.$axios.$post(`${location.origin}/save-task/${id}`, this.task)
+        .then( res => {
           const task_id: string = res.task._id
           this.$store.dispatch('task/lastSaved', `${location.origin}/task/${task_id}`)
           this.discard()
           this.resetForm()
         })
         .catch( (err: { response: { data: any } }) => console.log(err.response.data) )
-      // this.$axios.$post(`${location.origin}/save-task/${id}`, this.task)
-      //   .then( res => {
-      //     const task_id: string = res.task._id
-      //     this.$store.dispatch('task/lastSaved', `${location.origin}/task/${task_id}`)
-      //     this.discard()
-      //     this.resetForm()
-      //   })
-      //   .catch( err => console.log(err.response) )
     },
     resetForm(): void {
       this.task.title = ''

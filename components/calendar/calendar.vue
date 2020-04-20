@@ -29,8 +29,10 @@
 
       <template v-if="calendar === 'default'">
         <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 336 326">
-          <rect :x="highlightDayColumn('Sábado', 336)" y="0"  width="48" height="100%" rx="2" />
-          <rect :x="highlightDayColumn('Domingo', 336)" y="0"  width="48" height="100%" rx="2" />
+          <g v-if="highlightDays">
+            <rect :x="highlightDayColumn('Sábado', 336)" y="0"  width="48" height="100%" rx="2" />
+            <rect :x="highlightDayColumn('Domingo', 336)" y="0"  width="48" height="100%" rx="2" />
+          </g>
           <g class="week">
             <text v-for="(dayWeek, index) in days" :key="dayWeek"
               :x="48 * index + 24" y="24" text-anchor="middle">
@@ -111,6 +113,9 @@ export default Vue.extend({
   computed: {
     dates(): number {
       return this.$store.getters['calendar/dates']
+    },
+    highlightDays(): boolean {
+      return this.$store.getters['user/settings'].calendar_highlight_weekend
     },
     ...mapState('calendar', {
       year: 'year',

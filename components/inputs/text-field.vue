@@ -5,7 +5,8 @@
 		:placeholder="placeholder"
 		:pattern="pattern ? pattern : undefined"
 		autocomplete="off"
-		v-model.trim="value[name]"/>
+		:value="value"
+		@input="$emit('input', $event.target.value)" />
 </template>
 
 <script lang="ts">
@@ -30,9 +31,8 @@ export default Vue.extend({
 			required: false,
 			default: 'text'
 		},
-		// V-model object must be declare in parent data()
 		value: {
-			type: Object
+			required: true
 		},
 	},
 	inheritAttrs: false

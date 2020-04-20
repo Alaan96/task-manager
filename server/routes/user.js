@@ -291,7 +291,7 @@ app.delete('/user/delete/:id', authenticate, (req, res) => {
 })
 
 // Update propery
-app.put('/user/:id', authenticate, (req, res) => {
+app.put('/update/:id', authenticate, (req, res) => {
   const id = req.params.id
 
   if (!id) {
@@ -301,7 +301,7 @@ app.put('/user/:id', authenticate, (req, res) => {
     })
   }
 
-  const fields = ['name', 'email', 'weekStart', 'defaultView']
+  const fields = ['name', 'email', 'settings']
 
   const body = _.pick(req.body, fields)
 
@@ -589,7 +589,7 @@ app.post('/set-birthday/:id', authenticate, (req, res) => {
 })
 
 // Add new tag
-app.post('/tag/:id', authenticate, (req, res) => {
+app.post('/new-tag/:id', authenticate, (req, res) => {
   const id = req.params.id
 
   if (!id) {
@@ -602,10 +602,10 @@ app.post('/tag/:id', authenticate, (req, res) => {
   const text = req.body.text
   const color = req.body.color
 
-  if (!text || !color) {
+  if (text.length === 0 || color.length === 0) {
     return res.status(400).json({
       status: 'error',
-      message: 'All fields are required.'
+      message: 'Text and color fields are required.'
     })
   }
 
@@ -674,8 +674,107 @@ app.post('/tag/:id', authenticate, (req, res) => {
   })
 })
 
+// Update tag data
+app.put('/update-tag/:id', authenticate, (req, res) => {
+  const id = req.params.id
+
+  if (!id) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Id is required.'
+    })
+  }
+
+  const text = req.body.text
+  const color = req.body.color
+  const old_text = req.body.old_text
+  const old_color = req.body.old_color
+  
+  if (text === '' || color === '' || old_text === '' || old_color === '') {
+    return res.status(400).json({
+      status: 'error',
+      message: 'Text and color fields are required.'
+    })
+  }
+
+  if (!color.includes('#') && !color.includes('hsl') && !color.includes('rgb') && 
+    !old_color.includes('#') && !old_color.includes('hsl') && !old_color.includes('rgb')) {
+    return res.status(400).json({
+      status: 'error',
+      message: 'The color isn\'t valid.'
+    })
+  }
+
+  const tag = { text, color }
+  const old_tag = { text: old_text, color: old_color }
+
+  if (tag === old_tag) {
+    console.log(tag, old_tag);
+    return res.status(400).json({
+      status: 'error',
+      message: 'No changes found.'
+    })
+  }
+
+  User.findById(id).exec((err, userDB) => {
+    if (err) {
+      return res.status(500).json({
+        status: 'error',
+        message: 'Unable to access.',
+        err
+      })
+    }
+
+    if (!userDB) {
+      return res.status(404).json({
+        status: 'error',
+        message: 'User not found.'
+      })
+    }
+
+    const tags = userDB.tags
+
+    const index = tags.findIndex( tag => tag.text === old_text )
+
+    if (index === -1) {
+      return res.status(400).json({
+        status: 'error',
+        message: 'The tag was not found.',
+        details: `The tag ${old_text} was not found in database. Try again later.`
+      })
+    }
+
+
+    tags.splice(index, 1, tag)
+
+    userDB.save((err, userUpdated) => {
+      if (err) {
+        return res.status(500).json({
+          status: 'error',
+          message: 'Unable to save the tag.',
+          err
+        })
+      }
+
+      if (!userUpdated) {
+        return res.status(404).json({
+          status: 'error',
+          message: 'User not found.'
+        })
+      }
+
+      return res.json({
+        status: 'success',
+        message: 'Tag updated correctly.',
+        tag
+      })
+
+    })
+  })
+})
+
 // Delete tag
-app.delete('/tag/:id', authenticate, (req, res) => {
+app.patch('/tag/:id', authenticate, (req, res) => {
   const id = req.params.id
 
   if (!id) {
@@ -687,7 +786,7 @@ app.delete('/tag/:id', authenticate, (req, res) => {
 
   const text = req.body.text
 
-  if (!text) {
+  if (text === '') {
     return res.status(400).json({
       status: 'error',
       message: 'No tag selected.'
@@ -712,11 +811,11 @@ app.delete('/tag/:id', authenticate, (req, res) => {
 
     const tags = user.tags
 
-    const selectedTag = tags.find(tag => tag.text === text)
+    const tagToRemove = tags.find(tag => tag.text === text)
+    
+    const position = tags.indexOf(tagToRemove)
 
-    const position = tags.indexOf(selectedTag)
-
-    if (position < 0) {
+    if (position === -1) {
       return res.status(404).json({
         status: 'error',
         message: 'Tag not found.'
@@ -743,7 +842,8 @@ app.delete('/tag/:id', authenticate, (req, res) => {
       }
       return res.json({
         status: 'success',
-        message: 'Tag deleted correctly.'
+        message: 'Tag deleted correctly.',
+        tag: tagToRemove
       })
     })
   })

@@ -12,9 +12,13 @@ export const state = () => ({
     // {text: 'Eventos', color: '#E9B786'},
   ],
 
-  // Settings
-  defaultView: '',
-  weekStart: '',
+  settings: {
+  //   calendar_week_start: '',
+  //   calendar_highlight_weekend: false,
+  //   default_view: '',
+  //   work_offline: false,
+  //   dark_mode: false,
+  },
 
   loaded: false
 })
@@ -33,42 +37,45 @@ export const mutations = {
       state.email = user.email
       state.tags = user.tags
 
-      state.weekStart = user.weekStart
-      state.defaultView = user.defaultView
+      state.settings = user.settings
 
       if (user.birthday) {
         // Format birthday
         let bd = new Date(user.birthday)
         state.birthday = `${bd.getDate()}/${bd.getMonth() + 1}/${bd.getFullYear()}`
       }
-      
 
       state.loaded = true
       console.log('User data loaded correctly.')
     }
   },
-  // changeView(state) {
-  //   if (state.defaultView === 'calendar') {
-  //     state.defaultView = 'date'
-  //   } else if (state.defaultView === 'date') {
-  //     state.defaultView = 'calendar'
-  //   }
-  // },
   addNewTag(state, tag) {
     state.tags.push(tag)
+  },
+  removeTag(state, tagRef) {
+    const index = state.tags.findIndex(tag => tag.text === tagRef.text)
+    state.tags.splice(index, 1)
+  },
+  updateTag(state, data) {
+    if (data) {
+      const index = state.tags.findIndex(tag => tag.text === data.old_tag.text)
+      console.log(index);
+      state.tags.splice(index, 1, data.tag)
+      console.log(state.tags);
+    }
+  },
+  setSettings(state, settings) {
+    if (settings) {
+      state.settings = settings
+    }
   }
 }
 
 export const getters = {
-  id(state) {
-    return state.id
-  },
-  loaded(state) {
-    return state.loaded
-  },
-  tags(state) {
-    return state.tags
-  }
+  id: state => state.id,
+  loaded: state => state.loaded,
+  tags: state => state.tags,
+  settings: state => state.settings
 }
 
 export const actions = {

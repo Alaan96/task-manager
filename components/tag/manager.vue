@@ -5,24 +5,16 @@
     <div class="create-new-tag">
       <text-field name="text"
         placeholder="Nueva etiqueta"
-        v-model="tag" />
-      <btn text="Agregar" bgColor="#6BB4E5" />
+        v-model="tag.text" />
+      <button class="cancel-edit" v-if="edition" @click="cancelEdition()">
+        <cross color="#F16D6D"></cross>
+      </button>
+      <btn text="Guardar" bgColor="#6BB4E5" @click.native="save()" :class="{ready}" />
       
       <color-picker mode="dots" v-model="tag.color" />
     </div>
     
-    <!-- <tag-picker display="medium" v-model="tag" /> -->
-
-    <section class="user-tags">
-      <div class="user-tag"
-        v-for="user_tag in tags"
-        :key="user_tag.text">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8">
-          <circle cx="4" cy="4" r="4" :fill="user_tag.color" />
-        </svg>
-        <span>{{user_tag.text}}</span>
-      </div>
-    </section>
+    <tags @input="startEdition($event)" />
   </section>
 </template>
 
@@ -32,38 +24,44 @@ import Vue from 'vue'
 import textField from '@/components/inputs/text-field.vue'
 import btn from '@/components/buttons/button.vue'
 import colorPicker from '@/components/inputs/color-picker.vue'
-import tagPicker from '@/components/tag/picker.vue'
+import tags from '@/components/tag/tags.vue'
 
-interface Tag {
-  text: string,
-  color: string
-}
+// Icons
+import cross from '@/components/icons/cross.vue'
+
+import { Tag } from '@/assets/interfaces.ts'
 
 export default Vue.extend({
   components: {
     'text-field': textField,
     btn,
     'color-picker': colorPicker,
-    'tag-picker': tagPicker
+    'tags': tags,
+
+    // Icons
+    cross
   },
   data() {
     return {
       tag: {
-        text: '' as string,
-        color: '' as string
+        text: '',
+        color: ''
       } as Tag,
-
+      old_tag: {
+        text: '',
+        color: ''
+      } as Tag,
       edition: false as boolean,
     }
   },
   computed: {
-    tags(): Tag[] {
-      return this.$store.getters['user/tags']
+    ready(): boolean {
+      return this.validateTag(this.tag)
     }
   },
   methods: {
     validateTag(tag: Tag): boolean {
-      if (!tag || tag.text.length === 0 || tag.color.length === 0) {
+      if (!tag || tag.text === '' || tag.color === '') {
         return false
       }
       return true
@@ -72,21 +70,60 @@ export default Vue.extend({
       const validation: boolean = this.validateTag(this.tag)
       if (validation === true) {
         if (this.edition === true) {
-          this.updateTag(this.tag)
+          this.updateTag(this.tag, this.old_tag)
         } else {
           this.createNewTag(this.tag)
         }
       }
     },
-    updateTag(tag: Tag) {
-      // Axios call
-      console.log('Updating tag', tag);
-      // this.$api('put', 'update', tag)
+    startEdition($event: Tag): void {
+      this.edition = true
+      Object.assign(this.tag, $event)
+      Object.assign(this.old_tag, $event)
+    },
+    cancelEdition(): void {
+      this.edition = false
+      this.resetForm()
+    },
+    updateTag(tag: Tag, old_tag: Tag): void {
+      const data: object = {
+        text: tag.text,
+        color: tag.color,
+        old_text: old_tag.text,
+        old_color: old_tag.color
+      }
+      const id: string = this.$store.getters['user/id']
+      this.$axios.$put(`${location.origin}/update-tag/${id}`, data)
+        .then((res: any) => {
+          console.log(res)
+          const storeData: object = {
+            tag: res.tag,
+            old_tag
+          }
+          this.$store.commit('user/updateTag', storeData)
+          this.cancelEdition()
+        })
+        .catch((err: any) => {
+          console.log(err.response.data)
+        })
     },
     createNewTag(tag: Tag): void {
-      // Axios call
-      console.log('Creating new tag', tag);
-      // this.$api('post', 'tag', tag)
+      const id: string = this.$store.getters['user/id']
+      this.$axios.$post(`${location.origin}/new-tag/${id}`, tag)
+        .then((res: any) => {
+          console.log(res)
+          this.$store.commit('user/addNewTag', res.tag)
+          this.resetForm()
+        })
+        .catch((err: any) => {
+          console.log(err)
+        })
+    },
+    resetForm(): void {
+      this.tag = {
+        text: '',
+        color: ''
+      }
     }
   }
 })
@@ -113,41 +150,26 @@ header {
   width: 100%;
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
+  // position: relative;
   & input {
     flex: 1;
   }
   & button {
     flex: 0 1 6rem;
+    opacity: .8;
+  }
+  & button.cancel-edit {
+    flex: 0 1 1rem;
+    height: 1rem;
+    margin: 0 .5rem;
+    & svg {
+      width: 1rem;
+    }
   }
 }
 
-section.user-tags {
-  width: 100%;
-  margin: auto;
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(5rem, 1fr));
-  grid-gap: .5rem;
-}
-
-.user-tag {
-  width: 100%;
-  height: 100%;
-  padding: 1rem 0;
-  @include center;
-  flex-direction: column;
-  border: 1px solid $line;
-  border-radius: .5rem;
-  opacity: .7;
-  &:hover {
-    opacity: 1;
-  }
-  & svg {
-    width: 1.5rem;
-  }
-  span {
-    margin-top: .25rem;
-    font-weight: 600;
-    text-overflow: ellipsis;
-  }
+button.ready {
+  opacity: 1;
 }
 </style>

@@ -9,20 +9,16 @@
       <h2>El servidor no responde</h2>
       <p>Ha ocurrido un error en el servidor.</p>
     </div>
-    <simple-button
-      text="Volver a Inicio"
-      to="/"
-      color="tertiary">
-    </simple-button>
+    <nuxt-link to="/">Volver a Inicio</nuxt-link>
   </div>
 </template>
 
 <script>
-import button from "@/components/buttons/button"
+// import button from "@/components/buttons/button"
 
 export default {
   components: {
-    'simple-button': button
+    // 'simple-button': button
   },
   props: ['error']
 }

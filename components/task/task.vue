@@ -36,12 +36,7 @@ import Vue, { PropOptions } from 'vue'
 // import arrow from '@/components/icons/arrow.vue'
 // import edit from '@/components/icons/edit.vue'
 
-interface Task {
-	title: string,
-	description: string,
-	tag: object,
-	time: string
-}
+import { Task } from '@/assets/interfaces.ts'
 
 export default Vue.extend({
 	components: {

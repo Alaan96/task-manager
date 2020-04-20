@@ -53,7 +53,7 @@ export default Vue.extend({
     }
   },
   created() {
-    const firstDay = this.$store.state.user.weekStart
+    const firstDay: string = this.$store.getters['user/settings'].calendar_week_start
     this.$store.commit('calendar/changeWeekStart', firstDay)
   },
   beforeMount() {
