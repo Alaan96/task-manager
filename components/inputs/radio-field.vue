@@ -1,10 +1,10 @@
 <template>
   <div :class="{focus}">
-    <input type="radio"
+    <input :type="type"
       :id="id"
       :name="name"
       :value="val"
-      @change="$emit('input', val)"
+      @change="$emit('input', $event.target.checked)"
       @focus="focus = true"
       @blur="focus = false">
     <slot></slot>
@@ -18,6 +18,13 @@ export default Vue.extend({
   props: {
     value: {
       required: true
+    },
+    type: {
+      type: String,
+      default: 'radio',
+      validator: value => {
+        return ['radio', 'checkbox'].includes(value)
+      }
     },
     name: {
       type: String
@@ -45,7 +52,7 @@ export default Vue.extend({
 
 <style lang="scss" scoped>
 div {
-  flex: 0 1 1.5rem;
+  flex: 0 1 auto;
   @include center;
   position: relative;
   transition: opacity .1s ease;
@@ -60,7 +67,6 @@ div {
     position: absolute;
     opacity: 0;
     z-index: 25;
-    // opacity: 0.8;
   }
 }
 

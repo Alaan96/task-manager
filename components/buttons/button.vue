@@ -2,7 +2,8 @@
   <button :class="[{simple}, {small}]"
     :style="[{display: inline ? 'inline' : ''},
             {backgroundColor: bgColor ? bgColor : ''},
-            {color: color}]">
+            {color: color},
+            {width: large(text) ? 'auto': ''}]">
     {{text}}
   </button>
 </template>
@@ -39,7 +40,16 @@ export default Vue.extend({
     //   required: false
     // },
   },
-  inheritAttrs: false
+  inheritAttrs: false,
+  methods: {
+    large(text: string): boolean {
+      const textLength: number = text.length
+      if (textLength > 16) {
+        return true
+      }
+      return false
+    }
+  }
 })
 </script>
 

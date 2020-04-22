@@ -8,10 +8,13 @@
 
     <template v-slot:options>
       <div class="options">
-        <div class="keep-session">
-          <input type="checkbox" id="keep-session" v-model="keepSession">
-          <label for="keep-session">Mantener sesión</label>
-        </div>
+
+        <check type="checkbox" id="keep-session" :val="keepSession" v-model="keepSession">
+          <div class="keep-session">
+            <check-icon :checked="keepSession" />
+            <label for="keep-session">Mantener sesión</label>
+          </div>
+        </check>
   
         <button class="password-reset">Olvidé la contraseña</button>
       </div>
@@ -25,10 +28,15 @@
 import Vue from 'vue'
 
 import loginForm from '@/components/form.vue'
+import check from "@/components/inputs/radio-field.vue";
+import checkIcon from "@/components/icons/checkbox.vue";
 
 export default Vue.extend({
   components: {
-    'login-form': loginForm
+    'login-form': loginForm,
+    check,
+    
+    'check-icon': checkIcon
   },
   data() {
     return {
@@ -48,6 +56,13 @@ export default Vue.extend({
       ] as object[],
 
       keepSession: false as boolean,
+    }
+  },
+  beforeMount() {
+    const savedKeepSession: string | null = localStorage.getItem('keepSession') || ''
+    if (savedKeepSession !== '') {
+      const keepSession: boolean = JSON.parse(savedKeepSession)
+      this.keepSession = keepSession
     }
   },
   methods: {
@@ -73,27 +88,30 @@ export default Vue.extend({
 </script>
 
 <style lang="scss" scoped>
-  .options {
-    width: 100%;
-    margin-bottom: 1.5rem;
-    display: flex;
-    justify-content: space-between;
-    & .keep-session {
-      display: flex;
-      align-items: center;
-      & svg {
-        width: 1rem;
-      }
-      & label {
-        margin-left: .5rem;
-        font-size: .75rem;
-        color: $light;
-      }
-    }
 
-    & .password-reset {
-      font-size: .75rem;
-      color: $secondary;
-    }
+.options {
+  width: 100%;
+  margin-bottom: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.keep-session {
+  flex: 1 0 auto;
+  // display: flex;
+  align-items: center;
+  & svg {
+    width: 1.5rem;
   }
+  & label {
+    margin-left: .5rem;
+    font-size: .75rem;
+    color: $primary;
+  }
+}
+
+.password-reset {
+  font-size: .75rem;
+  color: $secondary;
+}
 </style>

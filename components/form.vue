@@ -8,7 +8,7 @@
       :placeholder="field.placeholder"
       :pattern="field.pattern"
       :type="field.type"
-      v-model="values"
+      v-model="values[field.name]"
       @keyup.native="validateInputs(field.name, values[field.name], field.pattern)">
     </text-field>
 
@@ -17,6 +17,10 @@
     <div class="buttons">
       <btn :text="button"></btn>
 			<slot></slot>
+
+			<btn text="Acceder como invitado" simple color="#D8D8D8"
+				class="guest-access"
+				@click.native="guestAccess()" />
     </div>
   </form>
 </template>
@@ -119,6 +123,9 @@ export default Vue.extend({
 				}
 			}
 		},
+		guestAccess(): void {
+			console.log('Proximamente accederás como invitado.');
+		}
 		// 'password-reset'(res) {
 		// 	console.log(res)
 		// 	localStorage.setItem('pass-token', res.passToken)
@@ -143,6 +150,10 @@ export default Vue.extend({
     margin: 0 auto;
   }
 
+	input[type="text"], input[type="email"], input[type="password"] {
+		margin-bottom: 1rem;
+	}
+
   span {
     margin-bottom: .5rem;
     display: block;
@@ -154,5 +165,12 @@ export default Vue.extend({
     margin-bottom: 2rem;
     display: flex;
     flex-direction: column;
+		align-items: center;
+		& * {
+			margin-bottom: 1.5rem;
+		}
+		& .guest-access {
+			margin-top: 1rem;
+		}
   }
 </style>
