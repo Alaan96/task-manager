@@ -17,8 +17,13 @@ interface Tag {
   color: string
 }
 
+interface Api {
+  readonly url: string
+}
+
 interface User {
   readonly _id: string,
+  readonly token: string,
   name: string,
   email: string,
   google: boolean,
@@ -36,6 +41,7 @@ interface Option {
 export {
   Task,
   Tag,
+  Api,
   User,
   Option,
 }

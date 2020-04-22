@@ -16,11 +16,15 @@
 import Vue from 'vue'
 import { mapState } from 'vuex'
 
+import authenticated from "@/middleware/authenticated.ts";
+
 import modal from '@/components/modal.vue'
 import taskForm from '@/components/task/form.vue'
 import dateInfo from '@/components/task/date-info.vue'
 import calendar from '@/components/calendar/calendar.vue'
 import reminder from '@/components/reminder.vue'
+
+import { fetch } from '@/assets/mixins/fetch.ts'
 
 export default Vue.extend({
   components: {
@@ -30,28 +34,8 @@ export default Vue.extend({
     calendar,
     reminder,
   },
-  // middleware: 'authenticated',
-  async fetch({ $axios, store }) {
-    try {
-      $axios.defaults.headers.common.token = localStorage.getItem('token')
-      const loaded: boolean = store.getters['user/loaded']
-      if (loaded === false) {
-        const id: string = localStorage.getItem('id') || ''
-
-        // Load user data
-        await store.dispatch('user/profileData', `${location.origin}/user/${id}`)
-
-        // Load tasks
-        await store.dispatch('task/tasksDB', `${location.origin}/tasks/${id}`)
-      }
-    } catch(err) {
-      // if (err.response.data) {
-      //   console.log(err.response.data)
-      // } else {
-        console.log(err)
-      // }
-    }
-  },
+  middleware: authenticated,
+  mixins: [fetch],
   created() {
     const firstDay: string = this.$store.getters['user/settings'].calendar_week_start
     this.$store.commit('calendar/changeWeekStart', firstDay)
@@ -59,12 +43,6 @@ export default Vue.extend({
   beforeMount() {
     // this.openBirthdayModal()
   },
-  // computed: {
-  //   blur(): boolean {
-  //     const some_modal_active: boolean = this.$store.getters['modal/some_active']
-  //     return some_modal_active
-  //   }
-  // },
   methods: {
     // openBirthdayModal() {
     //   if (!this.$store.state.user.birthday || this.$store.state.user.birthday === '') {
@@ -84,8 +62,4 @@ export default Vue.extend({
   padding-bottom: 1rem;
   transition: .2s ease;
 }
-
-// .blurred {
-//   filter: blur(.25rem);
-// }
 </style>

@@ -54,7 +54,7 @@ export const getters = {
 }
 
 export const actions = {
-  async tasksDB(context, url) {
+  async download(context, url) {
     const data = await this.$axios.$get(url)
     if (data.status === 'success') {
       console.log(data)

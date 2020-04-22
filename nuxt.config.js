@@ -52,7 +52,8 @@ module.exports = {
   ** Plugins to load before mounting the App
   */
   plugins: [
-    // '@/plugins/api.ts'
+    '@/plugins/api.ts',
+    '@/plugins/user.ts'
   ],
   /*
   ** Nuxt.js dev-modules

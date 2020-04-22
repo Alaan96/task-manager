@@ -46,7 +46,7 @@ export const mutations = {
       }
 
       state.loaded = true
-      console.log('User data loaded correctly.')
+      // console.log('User data loaded correctly.')
     }
   },
   addNewTag(state, tag) {
@@ -73,19 +73,30 @@ export const mutations = {
 
 export const getters = {
   id: state => state.id,
+  logged: state => state.logged,
   loaded: state => state.loaded,
   tags: state => state.tags,
   settings: state => state.settings
 }
 
 export const actions = {
-  async profileData(context, url) {
+  async download(context, url) {
     const data = await this.$axios.$get(url)
     if (data.status === 'success') {
       console.log(data)
       context.commit('setUserData', data.user)
     } else {
       console.log('Unable to load user data.')
+    }
+  },
+
+  async fetchSettings({ commit }, url) {
+    const data = await this.$axios.$get(url)
+    if (data.status === 'success') {
+      console.log(data)
+      commit('setSettings', data.user.settings)
+    } else {
+      console.log('Settings not found.');
     }
   }
 }

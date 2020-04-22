@@ -37,7 +37,7 @@
         <button @click="about_app()">Ver más info</button>
       </li>
       <li>
-        <button class="logout">Cerrar sesión</button>
+        <button class="logout" @click="logout()">Cerrar sesión</button>
       </li>
     </ul>
 
@@ -204,6 +204,11 @@ export default Vue.extend({
         })
       }
       return equal
+    },
+
+    logout(): void {
+      this.$store.commit('user/logout')
+      this.$router.push('/login')
     }
   }
 })
