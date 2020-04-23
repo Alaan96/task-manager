@@ -87,6 +87,7 @@ export default Vue.extend({
 }
 
 .dot {
+  width: 1.5rem;
   padding-bottom: .5rem;
   border-bottom: .1rem solid transparent;
   opacity: 1;

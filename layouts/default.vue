@@ -36,7 +36,7 @@ export default Vue.extend({
           route: '/tasks',
           text: 'Tareas'
         }
-      ] as any[],
+      ] as object[],
     }
   }
 })

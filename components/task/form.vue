@@ -28,7 +28,8 @@
       <div class="tags">
         <div class="create-tag">
           <span>Etiquetas</span>
-          <btn text="Nueva" small bgColor="#6BB4E5" inline />
+          <btn text="Nueva" small bgColor="#6BB4E5" inline
+            @click.native="openTags()" />
         </div>
         <tags picker default v-model="task.tag" />
       </div>
@@ -178,6 +179,9 @@ export default Vue.extend({
       this.task.description = ''
       this.task.time = ''
     },
+    openTags(): void {
+      this.$store.commit('modal/open', 'tags')
+    }
   },
 })
 </script>
@@ -250,6 +254,9 @@ div.tags {
 
 div.buttons {
   margin-top: .5rem;
+  & * {
+    margin-top: 1rem;
+  }
 }
 
 

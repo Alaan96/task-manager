@@ -189,10 +189,11 @@ export default Vue.extend({
 section.tag-list {
   width: 100%;
   display: flex;
-  overflow-x: scroll;
-  &::-webkit-scrollbar {
-    display: none;
-  }
+  flex-wrap: wrap;
+  // overflow-x: scroll;
+  // &::-webkit-scrollbar {
+  //   display: none;
+  // }
 }
 
 .tag {

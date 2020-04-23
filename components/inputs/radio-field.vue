@@ -4,7 +4,7 @@
       :id="id"
       :name="name"
       :value="val"
-      @change="$emit('input', $event.target.checked)"
+      @change="$emit('input', type === 'radio' ? val : $event.target.checked)"
       @focus="focus = true"
       @blur="focus = false">
     <slot></slot>

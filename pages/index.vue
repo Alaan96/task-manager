@@ -1,5 +1,8 @@
 <template>
   <div class="container">
+    <modal id="tags" :z="75" key="tags" closeTxt="Cerrar">
+      <tag-manager></tag-manager>
+    </modal>
     <modal id="task" :z="50" key="task">
       <task-form></task-form>
     </modal>
@@ -19,6 +22,7 @@ import { mapState } from 'vuex'
 import authenticated from "@/middleware/authenticated.ts";
 
 import modal from '@/components/modal.vue'
+import tagManager from "@/components/tag/manager.vue";
 import taskForm from '@/components/task/form.vue'
 import dateInfo from '@/components/task/date-info.vue'
 import calendar from '@/components/calendar/calendar.vue'
@@ -29,6 +33,7 @@ import { fetch } from '@/assets/mixins/fetch.ts'
 export default Vue.extend({
   components: {
     modal,
+    'tag-manager': tagManager,
     'task-form': taskForm,
     'date-info': dateInfo,
     calendar,
