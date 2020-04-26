@@ -257,7 +257,7 @@ app.put('/user/enable/:id', authenticate, (req, res) => {
 })
 
 // Delete
-app.delete('/user/delete/:id', authenticate, (req, res) => {
+app.patch('/user/delete/:id', authenticate, (req, res) => {
   const id = req.params.id
 
   if (!id) {

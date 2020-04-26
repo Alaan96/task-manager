@@ -43,9 +43,14 @@ export const mutations = {
       }
     }
   },
-  // listUpdated(state) {
-  //   // state.update = false
-  // }
+  deleteById(state, id) {
+    if (id) {
+      const index = state.list.findIndex( task => task._id === id)
+      if (index !== -1) {
+        state.list.splice(index, 1)
+      }
+    }
+  }
 }
 
 export const getters = {

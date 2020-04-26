@@ -91,7 +91,7 @@ export default Vue.extend({
     max-height: 100vmin;
     @include center;
     flex-direction: column;
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 
   button.add {

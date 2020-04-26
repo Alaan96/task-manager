@@ -14,9 +14,9 @@
     "heroku-postbuild": "npm run build"
   },
   "dependencies": {
-    "@nuxtjs/axios": "^5.3.6",
+    "@nuxtjs/axios": "^5.10.1",
     "@nuxtjs/dotenv": "^1.4.0",
-    "@nuxtjs/pwa": "^3.0.0-0",
+    "@nuxtjs/pwa": "^3.0.0-beta.20",
     "@nuxtjs/style-resources": "^1.0.0",
     "axios": "^0.19.2",
     "bcryptjs": "^2.4.3",
@@ -24,21 +24,21 @@
     "cross-env": "^5.2.0",
     "express": "^4.16.4",
     "jsonwebtoken": "^8.5.1",
-    "mongoose": "^5.8.3",
+    "mongoose": "^5.9.10",
     "mongoose-unique-validator": "^2.0.3",
-    "nodemailer": "^6.4.2",
-    "nuxt": "^2.10.2",
-    "nuxt-typed-vuex": "^0.1.17",
-    "underscore": "^1.9.1"
+    "nodemailer": "^6.4.6",
+    "nuxt": "^2.12.2",
+    "nuxt-typed-vuex": "^0.1.18",
+    "underscore": "^1.10.2"
   },
   "devDependencies": {
     "@nuxt/typescript-build": "^0.6.0",
-    "@vue/test-utils": "^1.0.0-beta.27",
+    "@vue/test-utils": "^1.0.0-beta.33",
     "babel-jest": "^24.1.0",
     "jest": "^24.1.0",
-    "node-sass": "^4.13.0",
+    "node-sass": "^4.14.0",
     "nodemon": "^1.18.9",
-    "sass-loader": "^8.0.0",
+    "sass-loader": "^8.0.2",
     "vue-jest": "^4.0.0-0"
   },
   "engines": {

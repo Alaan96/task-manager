@@ -379,7 +379,7 @@ app.put('/active-task/:task_id', authenticate, (req, res) => {
 })
 
 // Remove a task
-app.delete('/remove-task/:task_id', authenticate, (req, res) => {
+app.patch('/remove-task/:task_id', authenticate, (req, res) => {
   const id = req.params.task_id
 
   if (!id) {
@@ -389,7 +389,7 @@ app.delete('/remove-task/:task_id', authenticate, (req, res) => {
     })
   }
 
-  Task.findByIdAndRemove(id, (err, disabledTask) => {
+  Task.findByIdAndRemove(id, (err, deletedTask) => {
     if (err) {
       return res.status(500).json({
         status: 'error',
@@ -398,7 +398,7 @@ app.delete('/remove-task/:task_id', authenticate, (req, res) => {
       })
     }
 
-    if (!disabledTask) {
+    if (!deletedTask) {
       return res.status(404).json({
         status: 'error',
         message: 'Task not found.'
@@ -408,7 +408,7 @@ app.delete('/remove-task/:task_id', authenticate, (req, res) => {
     return res.json({
       status: 'success',
       message: 'Task removed correctly.',
-      // task: disabledTask
+      task: deletedTask
     })
   })
 })
